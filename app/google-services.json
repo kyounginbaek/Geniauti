@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "968975910613",
+    "firebase_url": "https://geniauti.firebaseio.com",
+    "project_id": "geniauti",
+    "storage_bucket": "geniauti.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:968975910613:android:919f751a10726d3b",
+        "android_client_info": {
+          "package_name": "com.geniauti.geniauti"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "968975910613-inhd6ph1qhb89mu50v3drbopsldkaqek.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.geniauti.geniauti",
+            "certificate_hash": "ff76afc0950a0ba8c525dcfac221b492b50a1afd"
+          }
+        },
+        {
+          "client_id": "968975910613-v68dtnsra9haqshd7f35bncvu4ptmtma.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAOQ-tGIhq2outIry-V1lqAFnJTG_SVPgY"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "968975910613-v68dtnsra9haqshd7f35bncvu4ptmtma.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
