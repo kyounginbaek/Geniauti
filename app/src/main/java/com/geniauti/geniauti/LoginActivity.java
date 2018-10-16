@@ -36,6 +36,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
@@ -109,6 +110,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             public void onClick(View view) {
                 Intent intent=new Intent(LoginActivity.this,SignupActivity.class);
                 startActivity(intent);
+                finish();
             }
         });
 
@@ -182,19 +184,19 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         View focusView = null;
 
         // Check for a valid password, if the user entered one.
-        if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
-            mPasswordView.setError(getString(R.string.error_invalid_password));
+        if (TextUtils.isEmpty(password) && !isPasswordValid(password)) {
+            mPasswordView.setError("6자리 이상의 비밀번호를 입력해주세요.");
             focusView = mPasswordView;
             cancel = true;
         }
 
         // Check for a valid email address.
         if (TextUtils.isEmpty(email)) {
-            mEmailView.setError(getString(R.string.error_field_required));
+            mEmailView.setError("이메일을 입력해주세요.");
             focusView = mEmailView;
             cancel = true;
         } else if (!isEmailValid(email)) {
-            mEmailView.setError(getString(R.string.error_invalid_email));
+            mEmailView.setError("잘못된 이메일 형식입니다.");
             focusView = mEmailView;
             cancel = true;
         }
@@ -217,10 +219,23 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                                 // FirebaseUser user = mAuth.getCurrentUser();
                                 // updateUI(user);
                             } else {
+                                FirebaseAuthException e = (FirebaseAuthException )task.getException();
+                                if(e.getErrorCode()=="ERROR_INVALID_EMAIL") {
+                                    Toast.makeText(LoginActivity.this, "잘못된 이메일 주소 형식입니다.", Toast.LENGTH_SHORT).show();
+                                    return;
+                                } else if(e.getErrorCode()=="ERROR_USER_NOT_FOUND") {
+                                    Toast.makeText(LoginActivity.this, "가입되지 않은 이메일 주소입니다.", Toast.LENGTH_SHORT).show();
+                                    return;
+                                } else if(e.getErrorCode()=="ERROR_WRONG_PASSWORD") {
+                                    Toast.makeText(LoginActivity.this, "비밀번호를 다시 한번 확인해주세요.", Toast.LENGTH_SHORT).show();
+                                    return;
+                                } else {
+                                    Toast.makeText(LoginActivity.this, "오류가 발생했습니다.", Toast.LENGTH_SHORT).show();
+                                    return;
+                                }
                                 // If sign in fails, display a message to the user.
                                 // Log.w(TAG, "signInWithEmail:failure", task.getException());
-                                Toast.makeText(LoginActivity.this, "Authentication failed.",
-                                        Toast.LENGTH_SHORT).show();
+                                // Toast.makeText(LoginActivity.this, e.getErrorCode(), Toast.LENGTH_SHORT).show();
                                 // updateUI(null);
                             }
                         }
@@ -240,7 +255,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
     private boolean isPasswordValid(String password) {
         //TODO: Replace this with your own logic
-        return password.length() > 4;
+        return password.length() > 5;
     }
 
     /**

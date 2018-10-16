@@ -33,13 +33,20 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
@@ -69,14 +76,18 @@ public class SignupActivity extends AppCompatActivity implements LoaderCallbacks
     private AutoCompleteTextView mEmailView;
     private EditText mPasswordView;
     private EditText mPasswordCheckView;
+    private EditText mUserNameView;
     private View mProgressView;
     private View mLoginFormView;
     private FirebaseAuth firebaseAuth;
+    private FirebaseFirestore db;
+    private FirebaseUser user;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         firebaseAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
@@ -107,6 +118,19 @@ public class SignupActivity extends AppCompatActivity implements LoaderCallbacks
                 return false;
             }
         });
+
+        mUserNameView = (EditText) findViewById(R.id.signup_username);
+        mUserNameView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
+                if (id == EditorInfo.IME_ACTION_DONE || id == EditorInfo.IME_NULL) {
+                    attemptLogin();
+                    return true;
+                }
+                return false;
+            }
+        });
+
 
         Button mEmailSignInButton = (Button) findViewById(R.id.signup_email_sign_up_button);
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
@@ -182,25 +206,38 @@ public class SignupActivity extends AppCompatActivity implements LoaderCallbacks
         String email = mEmailView.getText().toString();
         String password = mPasswordView.getText().toString();
         String password_check = mPasswordCheckView.getText().toString();
+        String child_name = mUserNameView.getText().toString();
 
         boolean cancel = false;
         View focusView = null;
 
         // Check for a valid password, if the user entered one.
-        if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
-            mPasswordView.setError(getString(R.string.error_invalid_password));
+        if (TextUtils.isEmpty(password) && !isPasswordValid(password)) {
+            mPasswordView.setError("6자리 이상의 비밀번호를 입력해주세요.");
             focusView = mPasswordView;
+            cancel = true;
+        }
+
+        if (TextUtils.isEmpty(password_check) && !isPasswordValid(password_check)) {
+            mPasswordCheckView.setError("6자리 이상의 비밀번호를 입력해주세요.");
+            focusView = mPasswordCheckView;
             cancel = true;
         }
 
         // Check for a valid email address.
         if (TextUtils.isEmpty(email)) {
-            mEmailView.setError(getString(R.string.error_field_required));
+            mEmailView.setError("이메일을 입력해주세요.");
             focusView = mEmailView;
             cancel = true;
         } else if (!isEmailValid(email)) {
-            mEmailView.setError(getString(R.string.error_invalid_email));
+            mEmailView.setError("잘못된 이메일 형식입니다.");
             focusView = mEmailView;
+            cancel = true;
+        }
+
+        if (TextUtils.isEmpty(child_name)) {
+            mUserNameView.setError("자녀 이름을 입력해주세요.");
+            focusView = mUserNameView;
             cancel = true;
         }
 
@@ -214,18 +251,51 @@ public class SignupActivity extends AppCompatActivity implements LoaderCallbacks
                         .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task) {
-                                Log.d("태그", "createUserWithEmail:onComplete:" + task.isSuccessful());
-
                                 // If sign in fails, display a message to the user. If sign in succeeds
                                 // the auth state listener will be notified and logic to handle the
                                 // signed in user can be handled in the listener.
                                 if (!task.isSuccessful()) {
                                     FirebaseAuthException e = (FirebaseAuthException )task.getException();
-                                    Toast.makeText(SignupActivity.this, "Failed Registration: "+e.getMessage(), Toast.LENGTH_SHORT).show();
-                                    return;
+
+                                    if(e.getErrorCode()=="ERROR_INVALID_EMAIL") {
+                                        Toast.makeText(SignupActivity.this, "잘못된 이메일 주소 형식입니다.", Toast.LENGTH_SHORT).show();
+                                        return;
+                                    } else if(e.getErrorCode()=="ERROR_EMAIL_ALREADY_IN_USE") {
+                                        Toast.makeText(SignupActivity.this, "이미 가입된 이메일 주소입니다.", Toast.LENGTH_SHORT).show();
+                                        return;
+                                    } else {
+                                        Toast.makeText(SignupActivity.this, "오류가 발생했습니다.", Toast.LENGTH_SHORT).show();
+                                        return;
+                                    }
                                 } else {
-                                    startActivity(new Intent(SignupActivity.this,MainActivity.class));
-                                    finish();
+                                    user = FirebaseAuth.getInstance().getCurrentUser();
+
+                                    // Create a new user with a first and last name
+                                    Map<String, Object> user_data = new HashMap<>();
+                                    user_data.put("email", mEmailView.getText().toString());
+                                    user_data.put("name", mUserNameView.getText().toString());
+                                    user_data.put("child", "");
+                                    user_data.put("childname", "");
+
+                                    // Add a new document with a generated ID
+                                    db.collection("users").document(user.getUid())
+                                            .set(user_data)
+                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                @Override
+                                                public void onSuccess(Void aVoid) {
+                                                    startActivity(new Intent(SignupActivity.this,MainActivity.class));
+                                                    finish();
+                                                    // Log.d("DocumentSnapshot added with ID: " + documentReference.getId());
+                                                }
+                                            })
+                                            .addOnFailureListener(new OnFailureListener() {
+                                                @Override
+                                                public void onFailure(@NonNull Exception e) {
+                                                    Toast.makeText(SignupActivity.this, "오류가 발생했습니다.", Toast.LENGTH_SHORT).show();
+                                                    return;
+                                                    // Log.w("Error adding document", e);
+                                                }
+                                            });
                                 }
                             }
                         });
@@ -250,7 +320,7 @@ public class SignupActivity extends AppCompatActivity implements LoaderCallbacks
 
     private boolean isPasswordValid(String password) {
         //TODO: Replace this with your own logic
-        return password.length() > 4;
+        return password.length() > 5;
     }
 
     /**
