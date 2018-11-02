@@ -1,5 +1,6 @@
 package com.geniauti.geniauti;
 
+import android.app.Activity;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.content.Intent;
@@ -8,7 +9,7 @@ import android.os.Handler;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-public class SplashActivity extends AppCompatActivity {
+public class SplashActivity extends Activity {
 
     /** 로딩 화면이 떠있는 시간(밀리초단위)  **/
     private final int SPLASH_DISPLAY_LENGTH = 1500;

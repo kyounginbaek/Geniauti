@@ -12,6 +12,11 @@ import android.view.ViewGroup;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
@@ -78,6 +83,9 @@ public class ChartFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_chart, container, false);
+        getActivity().setTitle("차트");
+
+        // PieChart
         PieChart chart = (PieChart) v.findViewById(R.id.chart);
         chart.setUsePercentValues(true);
         chart.getDescription().setEnabled(false);
@@ -133,6 +141,52 @@ public class ChartFragment extends Fragment {
         data.setValueTextColor(Color.BLACK);
         chart.setData(data);
         chart.invalidate(); // refresh
+
+        // LineChart
+        LineChart lineChart = v.findViewById(R.id.linechart);
+        // lineChart.setOnChartGestureListener(getActivity());
+        // lineChart.setOnChartValueSelectedListener(getActivity());
+
+        lineChart.setDragEnabled(true);
+        lineChart.setScaleEnabled(false);
+        lineChart.getDescription().setEnabled(false);
+        lineChart.setDrawGridBackground(false);
+
+        XAxis x = lineChart.getXAxis();
+        x.setEnabled(false);
+
+        lineChart.getLegend().setEnabled(false);
+        lineChart.invalidate();
+
+        YAxis y = lineChart.getAxisLeft();
+        y.setLabelCount(6, false);
+        y.setPosition(YAxis.YAxisLabelPosition.INSIDE_CHART);
+        y.setEnabled(false);
+
+        lineChart.getAxisRight().setEnabled(false);
+
+        List<Entry> yValues = new ArrayList<>();
+        yValues.add(new Entry(0, 60f));
+        yValues.add(new Entry(1, 50f));
+        yValues.add(new Entry(2, 70f));
+        yValues.add(new Entry(3, 30f));
+        yValues.add(new Entry(4, 40f));
+        yValues.add(new Entry(5, 60f));
+        yValues.add(new Entry(6, 70f));
+
+        LineDataSet set1 = new LineDataSet(yValues, "Data Set 1");
+        set1.setCircleRadius(4f);
+        set1.setCircleColor(Color.WHITE);
+        set1.setCircleColorHole(Color.GREEN);
+        set1.setColor(Color.GREEN);
+        set1.setFillColor(Color.GREEN);
+        set1.setFillAlpha(100);
+        set1.setDrawFilled(true);
+
+        LineData linedata = new LineData(set1);
+        linedata.setValueTextSize(11f);
+
+        lineChart.setData(linedata);
 
         return v;
     }

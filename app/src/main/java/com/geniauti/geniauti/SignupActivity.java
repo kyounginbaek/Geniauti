@@ -144,6 +144,13 @@ public class SignupActivity extends AppCompatActivity implements LoaderCallbacks
         mProgressView = findViewById(R.id.login_progress);
     }
 
+    @Override
+    public void onBackPressed() {
+        startActivity(new Intent(SignupActivity.this, LoginActivity.class));
+        finish();
+        super.onBackPressed();
+    }
+
     private void populateAutoComplete() {
         if (!mayRequestContacts()) {
             return;
@@ -268,6 +275,9 @@ public class SignupActivity extends AppCompatActivity implements LoaderCallbacks
                                         return;
                                     }
                                 } else {
+                                    showProgress(true);
+                                    startActivity(new Intent(SignupActivity.this,MainActivity.class));
+                                    finish();
                                     user = FirebaseAuth.getInstance().getCurrentUser();
 
                                     // Create a new user with a first and last name
@@ -283,8 +293,6 @@ public class SignupActivity extends AppCompatActivity implements LoaderCallbacks
                                             .addOnSuccessListener(new OnSuccessListener<Void>() {
                                                 @Override
                                                 public void onSuccess(Void aVoid) {
-                                                    startActivity(new Intent(SignupActivity.this,MainActivity.class));
-                                                    finish();
                                                     // Log.d("DocumentSnapshot added with ID: " + documentReference.getId());
                                                 }
                                             })

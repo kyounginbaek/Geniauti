@@ -4,21 +4,15 @@ import android.content.Context;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
-import com.github.mikephil.charting.charts.LineChart;
-import com.github.mikephil.charting.charts.PieChart;
-import com.github.mikephil.charting.components.XAxis;
-import com.github.mikephil.charting.components.YAxis;
-import com.github.mikephil.charting.data.Entry;
-import com.github.mikephil.charting.data.LineData;
-import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
-import com.github.mikephil.charting.listener.OnChartGestureListener;
-import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
+import android.widget.Adapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -80,53 +74,53 @@ public class DicFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_dic, container, false);
+        getActivity().setTitle("사례");
 
-        LineChart lineChart = v.findViewById(R.id.linechart);
-        // lineChart.setOnChartGestureListener(getActivity());
-        // lineChart.setOnChartValueSelectedListener(getActivity());
-
-        lineChart.setDragEnabled(true);
-        lineChart.setScaleEnabled(false);
-        lineChart.getDescription().setEnabled(false);
-        lineChart.setDrawGridBackground(false);
-
-        XAxis x = lineChart.getXAxis();
-        x.setEnabled(false);
-
-        lineChart.getLegend().setEnabled(false);
-        lineChart.invalidate();
-
-        YAxis y = lineChart.getAxisLeft();
-        y.setLabelCount(6, false);
-        y.setPosition(YAxis.YAxisLabelPosition.INSIDE_CHART);
-        y.setEnabled(false);
-
-        lineChart.getAxisRight().setEnabled(false);
-
-        List<Entry> yValues = new ArrayList<>();
-        yValues.add(new Entry(0, 60f));
-        yValues.add(new Entry(1, 50f));
-        yValues.add(new Entry(2, 70f));
-        yValues.add(new Entry(3, 30f));
-        yValues.add(new Entry(4, 40f));
-        yValues.add(new Entry(5, 60f));
-        yValues.add(new Entry(6, 70f));
-
-        LineDataSet set1 = new LineDataSet(yValues, "Data Set 1");
-        set1.setCircleRadius(4f);
-        set1.setCircleColor(Color.WHITE);
-        set1.setCircleColorHole(Color.GREEN);
-        set1.setColor(Color.GREEN);
-        set1.setFillColor(Color.GREEN);
-        set1.setFillAlpha(100);
-        set1.setDrawFilled(true);
-
-        LineData data = new LineData(set1);
-        data.setValueTextSize(11f);
-
-        lineChart.setData(data);
+        // Setting ViewPager for each Tabs
+        ViewPager viewPager = (ViewPager) v.findViewById(R.id.viewpager);
+        setupViewPager(viewPager);
+        // Set Tabs inside Toolbar
+        TabLayout tabs = (TabLayout) v.findViewById(R.id.result_tabs);
+        tabs.setupWithViewPager(viewPager);
 
         return v;
+    }
+
+    // Add Fragments to Tabs
+    private void setupViewPager(ViewPager viewPager) {
+        Adapter adapter = new Adapter(getChildFragmentManager());
+        adapter.addFragment(new DicFirstFragment(), "행동 원인");
+        adapter.addFragment(new DicSecondFragment(), "행동 종류");
+        viewPager.setAdapter(adapter);
+    }
+
+    static class Adapter extends FragmentPagerAdapter {
+        private final List<Fragment> mFragmentList = new ArrayList<>();
+        private final List<String> mFragmentTitleList = new ArrayList<>();
+
+        public Adapter(FragmentManager manager) {
+            super(manager);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            return mFragmentList.get(position);
+        }
+
+        @Override
+        public int getCount() {
+            return mFragmentList.size();
+        }
+
+        public void addFragment(Fragment fragment, String title) {
+            mFragmentList.add(fragment);
+            mFragmentTitleList.add(title);
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return mFragmentTitleList.get(position);
+        }
     }
 
     // TODO: Rename method, update argument and hook method into UI event

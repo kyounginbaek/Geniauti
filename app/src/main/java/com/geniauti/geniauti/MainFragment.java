@@ -82,9 +82,10 @@ public class MainFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_main, container, false);
+        getActivity().setTitle("홈");
 
-        final ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(false);
+        // final ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        // actionBar.setDisplayHomeAsUpEnabled(false);
         // actionBar.setTitle(null);
 
         compactCalendar = (CompactCalendarView) v.findViewById(R.id.compactcalendar_view);
@@ -112,7 +113,7 @@ public class MainFragment extends Fragment {
 
             @Override
             public void onMonthScroll(Date firstDayOfNewMonth) {
-                actionBar.setTitle(dateFormatMonth.format(firstDayOfNewMonth));
+                // actionBar.setTitle(dateFormatMonth.format(firstDayOfNewMonth));
             }
         });
 
