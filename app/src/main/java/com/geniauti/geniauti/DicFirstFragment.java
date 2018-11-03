@@ -1,18 +1,26 @@
 package com.geniauti.geniauti;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ExpandableListView;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -47,69 +55,96 @@ public class DicFirstFragment extends Fragment {
 
         // Array list for header
         ArrayList<String> header = new ArrayList<String>();
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-        final DocumentReference docRef = db.collection("users").document();
-        docRef.addSnapshotListener(new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(@Nullable DocumentSnapshot snapshot,
-                                @Nullable FirebaseFirestoreException e) {
-                if (e != null) {
-                    // Log.w(TAG, "Listen failed.", e);
-                    // return;
-                }
-
-                if (snapshot != null && snapshot.exists()) {
-                    snapshot.get("name");
-                    // Log.d(TAG, "Current data: " + snapshot.getData());
-                } else {
-                    // Log.d(TAG, "Current data: null");
-                }
-            }
-        });
 
         // Array list for child items
-        List<String> child1 = new ArrayList<String>();
-        List<String> child2 = new ArrayList<String>();
-        List<String> child3 = new ArrayList<String>();
-        List<String> child4 = new ArrayList<String>();
+        final List<String> child_taskEvation = new ArrayList<String>();
+        final List<String> child_selfStimulation = new ArrayList<String>();
+        final List<String> child_interest = new ArrayList<String>();
+        final List<String> child_demand = new ArrayList<String>();
 
         // Hash map for both header and child
         HashMap<String, List<String>> hashMap = new HashMap<String, List<String>>();
 
+        header.add("과제 회피 사례");
+        header.add("자기 자극 사례");
+        header.add("관심 사례");
+        header.add("요구 사례");
 
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-//        // Adding headers to list
-        for (int i = 1; i < 5; i++) {
-            header.add("Group " + i);
+        db.collection("cases")
+                .whereEqualTo("case_tags.taskEvation", "true")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                child_taskEvation.add(document.get("case_title").toString());
+//                                (TAG, document.getId() + " => " + document.getData());
+                            }
+                        } else {
+//                            Log.d(TAG, "Error getting documents: ", task.getException());
+                        }
+                    }
+                });
 
-        }
-        // Adding child data
-        for (int i = 1; i < 5; i++) {
-            child1.add("Group 1  - " + " : Child" + i);
+        db.collection("cases")
+                .whereEqualTo("case_tags.selfStimulation", "true")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                child_selfStimulation.add(document.get("case_title").toString());
+//                                (TAG, document.getId() + " => " + document.getData());
+                            }
+                        } else {
+//                            Log.d(TAG, "Error getting documents: ", task.getException());
+                        }
+                    }
+                });
 
-        }
-        // Adding child data
-        for (int i = 1; i < 5; i++) {
-            child2.add("Group 2  - " + " : Child" + i);
+        db.collection("cases")
+                .whereEqualTo("case_tags.interest", "true")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                child_interest.add(document.get("case_title").toString());
+//                                (TAG, document.getId() + " => " + document.getData());
+                            }
+                        } else {
+//                            Log.d(TAG, "Error getting documents: ", task.getException());
+                        }
+                    }
+                });
 
-        }
-        // Adding child data
-        for (int i = 1; i < 6; i++) {
-            child3.add("Group 3  - " + " : Child" + i);
-
-        }
-        // Adding child data
-        for (int i = 1; i < 7; i++) {
-            child4.add("Group 4  - " + " : Child" + i);
-
-        }
+        db.collection("cases")
+                .whereEqualTo("case_tags.demand", "true")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                child_demand.add(document.get("case_title").toString());
+//                                (TAG, document.getId() + " => " + document.getData());
+                            }
+                        } else {
+//                            Log.d(TAG, "Error getting documents: ", task.getException());
+                        }
+                    }
+                });
 
         // Adding header and childs to hash map
-        hashMap.put(header.get(0), child1);
-        hashMap.put(header.get(1), child2);
-        hashMap.put(header.get(2), child3);
-        hashMap.put(header.get(3), child4);
+        hashMap.put(header.get(0), child_taskEvation);
+        hashMap.put(header.get(1), child_selfStimulation);
+        hashMap.put(header.get(2), child_interest);
+        hashMap.put(header.get(3), child_demand);
 
         adapter = new ExpandableListAdapter(getActivity(), header, hashMap);
 
@@ -136,22 +171,22 @@ public class DicFirstFragment extends Fragment {
 
         // This listener will expand one group at one time
         // You can remove this listener for expanding all groups
-        expandableListView
-                .setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {
-
-                    // Default position
-                    int previousGroup = -1;
-
-                    @Override
-                    public void onGroupExpand(int groupPosition) {
-                        if (groupPosition != previousGroup)
-
-                            // Collapse the expanded group
-                            expandableListView.collapseGroup(previousGroup);
-                        previousGroup = groupPosition;
-                    }
-
-                });
+//        expandableListView
+//                .setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {
+//
+//                    // Default position
+//                    int previousGroup = -1;
+//
+//                    @Override
+//                    public void onGroupExpand(int groupPosition) {
+//                        if (groupPosition != previousGroup)
+//
+//                            // Collapse the expanded group
+//                            expandableListView.collapseGroup(previousGroup);
+//                        previousGroup = groupPosition;
+//                    }
+//
+//                });
 
         // This listener will show toast on child click
         expandableListView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
@@ -159,8 +194,11 @@ public class DicFirstFragment extends Fragment {
             @Override
             public boolean onChildClick(ExpandableListView listview, View view,
                                         int groupPos, int childPos, long id) {
+                Intent intent = new Intent(getActivity(), CaseDetailActivity.class);
+                intent.putExtra("case_title", adapter.getChild(groupPos, childPos).toString());
+                startActivity(intent);
 //                Toast.makeText(
-//                        MainActivity.this,
+//                        getActivity(),
 //                        "You clicked : " + adapter.getChild(groupPos, childPos),
 //                        Toast.LENGTH_SHORT).show();
                 return false;

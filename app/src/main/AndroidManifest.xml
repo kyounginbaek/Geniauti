@@ -20,25 +20,31 @@
             android:label="LoginActivity" />
         <activity
             android:name=".MainActivity"
-            android:windowSoftInputMode="adjustPan"
-            android:label="@string/title_activity_main" />
+            android:label="@string/title_activity_main"
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings" />
         <activity
             android:name=".SignupActivity"
             android:label="@string/title_activity_signup" />
-        <activity android:name=".SplashActivity"
-                android:theme="@android:style/Theme.Black.NoTitleBar">
+        <activity
+            android:name=".SplashActivity"
+            android:theme="@android:style/Theme.Black.NoTitleBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
             android:name=".BehaviorActivity"
             android:label="@string/title_activity_behavior"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".CaseDetailActivity">
+
+        </activity>
     </application>
 
 </manifest>

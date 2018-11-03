@@ -26,7 +26,6 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnFr
             switch (item.getItemId()) {
                 case R.id.navigation_home:
                     fragment = new MainFragment();
-
                     break;
 
                 case R.id.navigation_dashboard:
@@ -60,31 +59,6 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnFr
         navigation.enableShiftingMode(false);
         navigation.enableItemShiftingMode(false);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_toolbar, menu);
-
-        MenuItem mSearch = menu.findItem(R.id.action_search);
-
-        SearchView mSearchView = (SearchView) mSearch.getActionView();
-        mSearchView.setQueryHint("행동 사례를 검색해주세요.");
-
-        mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                // mAdapter.getFilter().filter(newText);
-                return true;
-            }
-        });
-
-        return super.onCreateOptionsMenu(menu);
     }
 
     private boolean loadFragment(Fragment fragment) {
