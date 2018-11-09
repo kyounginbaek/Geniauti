@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingTop="70dp"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:background="#ffffff"
+    tools:context=".BehaviorFourthFragment">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="20sp"
+                android:textColor="#3b3b3b"
+                android:lineSpacingExtra="8sp"
+                android:text="이 행동을 왜 했다고\n생각하시나요?"
+                />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingTop="26dp"
+                android:orientation="vertical"
+                >
+
+                <CheckBox
+                    android:id="@+id/checkBox1"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:paddingLeft="35dp"
+                    android:textSize="16sp"
+                    android:textColor="#de000000"
+                    android:text="자신에게 관심을 갖는 것이 좋아서" />
+
+                <CheckBox
+                    android:id="@+id/checkBox2"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:paddingLeft="35dp"
+                    android:textSize="16sp"
+                    android:textColor="#de000000"
+                    android:text="행동을 통해 얻는 감각이 좋아서" />
+
+                <CheckBox
+                    android:id="@+id/checkBox3"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:paddingLeft="35dp"
+                    android:textSize="16sp"
+                    android:textColor="#de000000"
+                    android:text="타인에게 주목받는 것을 즐겨서" />
+
+                <CheckBox
+                    android:id="@+id/checkBox4"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:paddingLeft="35dp"
+                    android:textSize="16sp"
+                    android:textColor="#de000000"
+                    android:text="원하는 것을 즉각 얻지 못해서" />
+
+                <CheckBox
+                    android:id="@+id/checkBox5"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:paddingLeft="35dp"
+                    android:textSize="16sp"
+                    android:textColor="#de000000"
+                    android:text="시키는 일을 거부하려고" />
+
+                <CheckBox
+                    android:id="@+id/checkBox6"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:paddingLeft="35dp"
+                    android:textSize="16sp"
+                    android:textColor="#de000000"
+                    android:text="하라고 한 일이 힘들어서" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</FrameLayout>

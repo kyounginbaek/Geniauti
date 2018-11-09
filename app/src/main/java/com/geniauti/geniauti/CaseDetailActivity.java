@@ -1,6 +1,7 @@
 package com.geniauti.geniauti;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -13,6 +14,7 @@ import android.widget.TextView;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.GenericTypeIndicator;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -23,6 +25,8 @@ import java.util.List;
 import java.util.Map;
 
 public class CaseDetailActivity extends AppCompatActivity {
+
+    private View mProgressView;
 
     private TextView caseTitle;
     private TextView caseBackgroundInfo;
@@ -49,6 +53,8 @@ public class CaseDetailActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
 
+        mProgressView = findViewById(R.id.case_detail_progress);
+
         caseTitle = findViewById(R.id.case_title);
         caseBackgroundInfo = findViewById(R.id.case_backgroundInfo);
         caseBehavior = findViewById(R.id.case_behavior);
@@ -64,45 +70,28 @@ public class CaseDetailActivity extends AppCompatActivity {
         caseSolutionDescription3 = findViewById(R.id.case_solution_description3);
         caseEffect = findViewById(R.id.case_effect);
 
-        final String case_title= getIntent().getStringExtra("case_title");
+        Cases selectedCase = (Cases) getIntent().getSerializableExtra("temp");
 
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("cases")
-                .whereEqualTo("case_title", case_title)
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                caseTitle.setText(document.get("case_title").toString());
-                                caseBackgroundInfo.setText(document.get("case_backgroundInfo").toString());
-                                caseBehavior.setText(document.get("case_behavior").toString());
+        caseTitle.setText(selectedCase.case_title);
+        caseBackgroundInfo.setText(selectedCase.case_backgroundInfo);
+        caseBehavior.setText(selectedCase.case_behavior);
 
-                                List<HashMap<String,String>> case_cause = new ArrayList<HashMap<String,String>>();
-                                case_cause = (List<HashMap<String,String>>) document.get("case_cause");
-                                caseCauseTitle1.setText(case_cause.get(0).get("title").toString());
-                                caseCauseTitle2.setText(case_cause.get(1).get("title").toString());
-                                caseCauseDescription1.setText(case_cause.get(0).get("description").toString());
-                                caseCauseDescription2.setText(case_cause.get(1).get("description").toString());
+        List<HashMap<String,String>> case_cause = new ArrayList<HashMap<String,String>>();
+        case_cause = (List<HashMap<String,String>>) selectedCase.case_cause;
+        caseCauseTitle1.setText(case_cause.get(0).get("title"));
+        caseCauseTitle2.setText(case_cause.get(1).get("title"));
+        caseCauseDescription1.setText(case_cause.get(0).get("description"));
+        caseCauseDescription2.setText(case_cause.get(1).get("description"));
 
-                                List<HashMap<String,String>> case_solution = new ArrayList<HashMap<String,String>>();
-                                case_solution = (List<HashMap<String,String>>) document.get("case_solution");
-                                caseSolutionTitle1.setText(case_solution.get(0).get("title").toString());
-                                caseSolutionTitle2.setText(case_solution.get(1).get("title").toString());
-                                caseSolutionTitle3.setText(case_solution.get(2).get("title").toString());
-                                caseSolutionDescription1.setText(case_solution.get(0).get("description").toString());
-                                caseSolutionDescription2.setText(case_solution.get(1).get("description").toString());
-                                caseSolutionDescription3.setText(case_solution.get(2).get("description").toString());
-                                caseEffect.setText(document.get("case_effect").toString());
-//                                Log.d(TAG, document.getId() + " => " + document.getData());
-                            }
-                        } else {
-//                            Log.d(TAG, "Error getting documents: ", task.getException());
-                        }
-                    }
-                });
-
+        List<HashMap<String,String>> case_solution = new ArrayList<HashMap<String,String>>();
+        case_solution = (List<HashMap<String,String>>) selectedCase.case_solution;
+        caseSolutionTitle1.setText(case_solution.get(0).get("title"));
+        caseSolutionTitle2.setText(case_solution.get(1).get("title"));
+        caseSolutionTitle3.setText(case_solution.get(2).get("title"));
+        caseSolutionDescription1.setText(case_solution.get(0).get("description"));
+        caseSolutionDescription2.setText(case_solution.get(1).get("description"));
+        caseSolutionDescription3.setText(case_solution.get(2).get("description"));
+        caseEffect.setText(selectedCase.case_effect);
     }
 
 //    @Override
@@ -120,4 +109,5 @@ public class CaseDetailActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
 }

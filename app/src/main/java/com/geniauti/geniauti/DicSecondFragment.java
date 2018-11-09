@@ -56,7 +56,7 @@ public class DicSecondFragment extends Fragment {
     void setItems() {
 
         // Array list for header
-        ArrayList<String> header = new ArrayList<String>();
+        final ArrayList<String> header = new ArrayList<String>();
 
         // Array list for child items
         final List<String> child_harm = new ArrayList<String>();
@@ -66,7 +66,7 @@ public class DicSecondFragment extends Fragment {
         final List<String> child_sexual = new ArrayList<String>();
 
         // Hash map for both header and child
-        HashMap<String, List<String>> hashMap = new HashMap<String, List<String>>();
+        final HashMap<String, List<String>> hashMap = new HashMap<String, List<String>>();
 
         header.add("타해 사례");
         header.add("자해 사례");
@@ -74,85 +74,57 @@ public class DicSecondFragment extends Fragment {
         header.add("이탈 사례");
         header.add("성적 사례");
 
+        // Hash map for both header and child
+        final List<List<Cases>> c_Array = new ArrayList<List<Cases>>();
+
+        final List<Cases> c_harm = new ArrayList<Cases>();
+        final List<Cases> c_selfHarm = new ArrayList<Cases>();
+        final List<Cases> c_destruction = new ArrayList<Cases>();
+        final List<Cases> c_leave = new ArrayList<Cases>();
+        final List<Cases> c_sexual = new ArrayList<Cases>();
+
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("cases")
-                .whereEqualTo("case_tags.harm", "true")
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                child_harm.add(document.get("case_title").toString());
-//                                (TAG, document.getId() + " => " + document.getData());
-                            }
-                        } else {
-//                            Log.d(TAG, "Error getting documents: ", task.getException());
-                        }
-                    }
-                });
 
         db.collection("cases")
-                .whereEqualTo("case_tags.selfHarm", "true")
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : task.getResult()) {
-                                child_selfHarm.add(document.get("case_title").toString());
-//                                (TAG, document.getId() + " => " + document.getData());
-                            }
-                        } else {
-//                            Log.d(TAG, "Error getting documents: ", task.getException());
-                        }
-                    }
-                });
+                                HashMap<String,String> case_tags = new HashMap<String,String>();
+                                case_tags = (HashMap<String,String>) document.get("case_tags");
 
-        db.collection("cases")
-                .whereEqualTo("case_tags.destruction", "true")
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                child_destruction.add(document.get("case_title").toString());
-//                                (TAG, document.getId() + " => " + document.getData());
-                            }
-                        } else {
-//                            Log.d(TAG, "Error getting documents: ", task.getException());
-                        }
-                    }
-                });
+                                Cases c = new Cases(document.get("case_title").toString(), document.get("case_backgroundInfo").toString(), document.get("case_behavior").toString(), (List<HashMap<String, String>>) document.get("case_cause"), (List<HashMap<String, String>>) document.get("case_solution"), document.get("case_effect").toString(), (HashMap<String, String>) document.get("case_tags"));
 
-        db.collection("cases")
-                .whereEqualTo("case_tags.leave", "true")
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                child_leave.add(document.get("case_title").toString());
+                                if(case_tags.get("harm")!=null) {
+                                    c_harm.add(c);
+                                }
+                                if(case_tags.get("selfHArm")!=null) {
+                                    c_selfHarm.add(c);
+                                }
+                                if(case_tags.get("destruction")!=null) {
+                                    c_destruction.add(c);
+                                }
+                                if(case_tags.get("leave")!=null) {
+                                    c_leave.add(c);
+                                }
+                                if(case_tags.get("sexual")!=null) {
+                                    c_sexual.add(c);
+                                }
 //                                (TAG, document.getId() + " => " + document.getData());
-                            }
-                        } else {
-//                            Log.d(TAG, "Error getting documents: ", task.getException());
-                        }
-                    }
-                });
 
-        db.collection("cases")
-                .whereEqualTo("case_tags.sexual", "true")
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                child_sexual.add(document.get("case_title").toString());
-//                                (TAG, document.getId() + " => " + document.getData());
+                                // Adding header and childs to hash map
+                                c_Array.add(c_harm);
+                                c_Array.add(c_selfHarm);
+                                c_Array.add(c_destruction);
+                                c_Array.add(c_leave);
+                                c_Array.add(c_sexual);
+
+                                adapter = new ExpandableListAdapter(getActivity(), header, hashMap, c_Array);
+
+                                // Setting adpater over expandablelistview
+                                expandableListView.setAdapter(adapter);
                             }
                         } else {
 //                            Log.d(TAG, "Error getting documents: ", task.getException());
@@ -167,10 +139,6 @@ public class DicSecondFragment extends Fragment {
         hashMap.put(header.get(3), child_leave);
         hashMap.put(header.get(4), child_sexual);
 
-        adapter = new ExpandableListAdapter(getActivity(), header, hashMap);
-
-        // Setting adpater over expandablelistview
-        expandableListView.setAdapter(adapter);
     }
 
     // Setting different listeners to expandablelistview
@@ -217,7 +185,7 @@ public class DicSecondFragment extends Fragment {
                                         int groupPos, int childPos, long id) {
 
                 Intent intent = new Intent(getActivity(), CaseDetailActivity.class);
-                intent.putExtra("case_title", adapter.getChild(groupPos, childPos).toString());
+                intent.putExtra("temp", (Cases) adapter.getChild(groupPos, childPos));
                 startActivity(intent);
 //                Toast.makeText(
 //                        MainActivity.this,

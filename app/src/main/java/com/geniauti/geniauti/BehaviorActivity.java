@@ -1,7 +1,11 @@
 package com.geniauti.geniauti;
 
+import android.content.Intent;
+import android.net.Uri;
+import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
@@ -18,7 +22,7 @@ import android.view.ViewGroup;
 
 import android.widget.TextView;
 
-public class BehaviorActivity extends AppCompatActivity {
+public class BehaviorActivity extends AppCompatActivity implements BehaviorFirstFragment.OnFragmentInteractionListener, BehaviorSecondFragment.OnFragmentInteractionListener, BehaviorThirdFragment.OnFragmentInteractionListener, BehaviorFourthFragment.OnFragmentInteractionListener {
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -28,27 +32,100 @@ public class BehaviorActivity extends AppCompatActivity {
      * may be best to switch to a
      * {@link android.support.v4.app.FragmentStatePagerAdapter}.
      */
-    private SectionsPagerAdapter mSectionsPagerAdapter;
+    private PagerAdapter mSectionsPagerAdapter;
 
     /**
      * The {@link ViewPager} that will host the section contents.
      */
     private ViewPager mViewPager;
+    public Behavior tempBehavior;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_behavior);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.behavior_toolbar);
+        final Toolbar toolbar = (Toolbar) findViewById(R.id.behavior_toolbar);
         setSupportActionBar(toolbar);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+
+        tempBehavior = (Behavior) getIntent().getSerializableExtra("tempBehavior");
+
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+        mSectionsPagerAdapter = new PagerAdapter(getSupportFragmentManager());
 
         // Set up the ViewPager with the sections adapter.
-        mViewPager = (ViewPager) findViewById(R.id.container);
+        mViewPager = (ViewPager) findViewById(R.id.behavior_container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
+
+        toolbar.setNavigationIcon(getResources().getDrawable(R.drawable.ic_close_green_24dp));
+        final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.behavior_fab);
+
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener()
+        {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels)
+            {
+
+            }
+
+            @Override
+            public void onPageSelected(int position)
+            {
+                if(position==0) {
+                    toolbar.setNavigationIcon(getResources().getDrawable(R.drawable.ic_close_green_24dp));
+                } else {
+                    toolbar.setNavigationIcon(getResources().getDrawable(R.drawable.ic_arrow_back_green_24dp));
+                }
+
+                if(position==3) {
+                    fab.setImageResource(R.drawable.ic_check_white_24dp);
+                } else {
+                    fab.setImageResource(R.drawable.ic_arrow_forward_white_24dp);
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state)
+            {
+
+            }
+        });
+
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(mViewPager.getCurrentItem()==0) {
+                    finish();
+                } else {
+                    mViewPager.setCurrentItem(getItem(-1), true);
+                }
+            }
+        });
+
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(mViewPager.getCurrentItem()==0) {
+                    BehaviorFirstFragment bff = (BehaviorFirstFragment) getSupportFragmentManager().findFragmentById(R.id.behavior_first_frag);
+
+
+                    mViewPager.setCurrentItem(getItem(+1), true);
+                } else if(mViewPager.getCurrentItem()==1) {
+
+                    mViewPager.setCurrentItem(getItem(+1), true);
+                } else if(mViewPager.getCurrentItem()==2) {
+
+                    mViewPager.setCurrentItem(getItem(+1), true);
+                } else if(mViewPager.getCurrentItem()==3) {
+
+                    finish();
+                }
+            }
+        });
 
     }
 
@@ -114,23 +191,47 @@ public class BehaviorActivity extends AppCompatActivity {
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.
      */
-    public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
-        public SectionsPagerAdapter(FragmentManager fm) {
+    private int getItem(int i) {
+        return mViewPager.getCurrentItem() + i;
+    }
+
+    public class PagerAdapter extends FragmentStatePagerAdapter {
+        int mNumOfTabs = 4;
+
+        public PagerAdapter(FragmentManager fm) {
             super(fm);
         }
 
         @Override
         public Fragment getItem(int position) {
-            // getItem is called to instantiate the fragment for the given page.
-            // Return a PlaceholderFragment (defined as a static inner class below).
-            return PlaceholderFragment.newInstance(position + 1);
+
+            switch (position) {
+                case 0:
+                    BehaviorFirstFragment tab1 = new BehaviorFirstFragment();
+                    return tab1;
+                case 1:
+                    BehaviorSecondFragment tab2 = new BehaviorSecondFragment();
+                    return tab2;
+                case 2:
+                    BehaviorThirdFragment tab3 = new BehaviorThirdFragment();
+                    return tab3;
+                case 3:
+                    BehaviorFourthFragment tab4 = new BehaviorFourthFragment();
+                    return tab4;
+                default:
+                    return null;
+            }
         }
 
         @Override
         public int getCount() {
-            // Show 3 total pages.
-            return 3;
+            return mNumOfTabs;
         }
+    }
+
+    @Override
+    public void onFragmentInteraction(Uri uri){
+        System.out.println(uri);
     }
 }

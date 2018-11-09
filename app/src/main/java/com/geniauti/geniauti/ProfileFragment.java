@@ -26,6 +26,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserInfo;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -155,6 +156,23 @@ public class ProfileFragment extends Fragment {
         mTextRelation = (TextView) v.findViewById(R.id.parent_relation);
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            for (UserInfo profile : user.getProviderData()) {
+                // Id of the provider (ex: google.com)
+                String providerId = profile.getProviderId();
+
+                // UID specific to the provider
+                String uid = profile.getUid();
+
+                // Name, email address, and profile photo Url
+                String name = profile.getDisplayName();
+                mTextUserName.setText("사용자명: "+ name);
+                String email = profile.getEmail();
+                Uri photoUrl = profile.getPhotoUrl();
+            }
+            ;
+        }
+
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         final DocumentReference docRef = db.collection("users").document(user.getUid());
@@ -168,7 +186,7 @@ public class ProfileFragment extends Fragment {
                 }
 
                 if (snapshot != null && snapshot.exists()) {
-                    mTextUserName.setText("사용자명: "+ snapshot.get("name"));
+//                    mTextUserName.setText("사용자명: "+ snapshot.get("name"));
                     if(snapshot.get("childname")=="") {
                         mTextChildName.setText("자녀명을 등록해주세요.");
                         mTextRelation.setText("자녀와의 관계를 등록해주세요.");

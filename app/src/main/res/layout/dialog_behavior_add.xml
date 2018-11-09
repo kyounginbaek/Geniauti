@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/behavior_add"
+        android:layout_width="match_parent"
+        android:layout_height="72dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="24dp"
+            android:paddingTop="21dp"
+            android:paddingBottom="27dp"
+            android:textSize="16sp"
+            android:textColor="#3b3b3b"
+            android:lineSpacingExtra="8sp"
+            android:text="새로 기록 시작하기"
+            android:background="?android:attr/selectableItemBackground"
+            />
+
+    </LinearLayout>
+
+</LinearLayout>

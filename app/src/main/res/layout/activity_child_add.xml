@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:orientation="vertical"
+    tools:context=".ChildAddActivity">
+
+    <ProgressBar
+        android:id="@+id/child_add_progress"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:layout_centerVertical="true"
+        android:layout_marginBottom="8dp"
+        android:indeterminate="true"
+        android:visibility="gone"
+         />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="47dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="24sp"
+                android:textColor="#3b3b3b"
+                android:letterSpacing="-0.02"
+                android:text="우리 아이 추가하기"
+                />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingTop="45dp"
+                android:gravity="center">
+
+                <RelativeLayout
+                    android:layout_width="102dp"
+                    android:layout_height="102dp"
+                    >
+
+                    <ImageView
+                        android:id="@+id/child_image"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        app:srcCompat="@drawable/ic_profile_default"
+                        />
+
+                    <ImageView
+                        android:layout_width="31dp"
+                        android:layout_height="31dp"
+                        android:paddingRight="5dp"
+                        android:paddingBottom="5dp"
+                        android:layout_alignParentBottom="true"
+                        android:layout_alignParentRight="true"
+                        app:srcCompat="@drawable/ic_camera"
+                        />
+
+                </RelativeLayout>
+
+            </LinearLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="32dp">
+
+                <EditText
+                    android:id="@+id/txt_child_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    android:textColor="#de000000"
+                    app:backgroundTint="#1e000000"
+                    android:lineSpacingExtra="8sp"
+                    android:hint="이름"
+                    android:maxLines="1"
+                    android:singleLine="true" />
+
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="7dp"
+                >
+
+                <EditText
+                    android:id="@+id/txt_child_age"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    android:textColor="#de000000"
+                    app:backgroundTint="#1e000000"
+                    android:lineSpacingExtra="8sp"
+                    android:hint="나이"
+                    android:maxLines="1"
+                    android:singleLine="true"
+                    android:inputType="number"/>
+
+            </android.support.design.widget.TextInputLayout>
+
+            <RadioGroup
+                android:id="@+id/child_sex"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:paddingTop="13dp"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:id="@+id/boy"
+                    android:text="남자"
+                    android:textSize="16dp"
+                    android:textColor="#de3b3b3b"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="34dp"
+                    android:layout_weight="1"
+                    android:checked="true"/>
+
+                <RadioButton
+                    android:id="@+id/girl"
+                    android:text="여자"
+                    android:textSize="16dp"
+                    android:textColor="#de3b3b3b"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="34dp"
+                    android:layout_weight="1" />
+
+            </RadioGroup>
+
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="7dp"
+                >
+
+                <EditText
+                    android:id="@+id/txt_child_relation"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    android:textColor="#de000000"
+                    app:backgroundTint="#1e000000"
+                    android:lineSpacingExtra="8sp"
+                    android:hint="관계"
+                    android:maxLines="1"
+                    android:singleLine="true" />
+
+            </android.support.design.widget.TextInputLayout>
+
+            <Button
+                android:id="@+id/child_add_button"
+                style="?android:textAppearanceSmall"
+                android:layout_width="match_parent"
+                android:layout_height="36dp"
+                android:textSize="14sp"
+                android:textColor="#ffffff"
+                android:background="@color/coolGreen"
+                android:layout_marginTop="40dp"
+                android:text="추가하기"
+                />
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</LinearLayout>

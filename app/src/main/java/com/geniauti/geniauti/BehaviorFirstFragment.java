@@ -1,42 +1,28 @@
 package com.geniauti.geniauti;
 
 import android.app.AlertDialog;
-import android.support.v7.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
-import com.github.sundeepk.compactcalendarview.CompactCalendarView;
-import com.github.sundeepk.compactcalendarview.domain.Event;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
+import com.google.firebase.auth.FirebaseAuth;
 
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link MainFragment.OnFragmentInteractionListener} interface
+ * {@link BehaviorFirstFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link MainFragment#newInstance} factory method to
+ * Use the {@link BehaviorFirstFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class MainFragment extends Fragment {
-
-    CompactCalendarView compactCalendar;
-    private SimpleDateFormat dateFormatMonth = new SimpleDateFormat("MMMM- yyyy", Locale.getDefault());
-
+public class BehaviorFirstFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -46,9 +32,13 @@ public class MainFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
+    private LinearLayout locationDialog;
+    private LinearLayout locationCancel;
+    private LinearLayout locationAdd;
+
     private OnFragmentInteractionListener mListener;
 
-    public MainFragment() {
+    public BehaviorFirstFragment() {
         // Required empty public constructor
     }
 
@@ -58,11 +48,11 @@ public class MainFragment extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment MainFragment.
+     * @return A new instance of fragment BehaviorFirstFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static MainFragment newInstance(String param1, String param2) {
-        MainFragment fragment = new MainFragment();
+    public static BehaviorFirstFragment newInstance(String param1, String param2) {
+        BehaviorFirstFragment fragment = new BehaviorFirstFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -82,68 +72,39 @@ public class MainFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View v = inflater.inflate(R.layout.fragment_main, container, false);
-        getActivity().setTitle("홈");
 
-        // final ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-        // actionBar.setDisplayHomeAsUpEnabled(false);
-        // actionBar.setTitle(null);
-
-        compactCalendar = (CompactCalendarView) v.findViewById(R.id.compactcalendar_view);
-        compactCalendar.setUseThreeLetterAbbreviation(true);
-
-        //Set an event for Teachers' Professional Day 2016 which is 21st of October
-
-        Event ev1 = new Event(Color.GREEN, 1540490079000L, "Teachers' Professional Day");
-        compactCalendar.addEvent(ev1);
-
-        Event ev2 = new Event(Color.RED, 1540490079000L, "Teachers' Professional Day");
-        compactCalendar.addEvent(ev2);
-
-        compactCalendar.setListener(new CompactCalendarView.CompactCalendarViewListener() {
-            @Override
-            public void onDayClick(Date dateClicked) {
-                Context context = getContext();
-
-                if (dateClicked.toString().compareTo("Fri Oct 21 00:00:00 AST 2016") == 0) {
-                    // Toast.makeText(context, "Teachers' Professional Day", Toast.LENGTH_SHORT).show();
-                }else {
-                    // Toast.makeText(context, "No Events Planned for that day", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onMonthScroll(Date firstDayOfNewMonth) {
-                // actionBar.setTitle(dateFormatMonth.format(firstDayOfNewMonth));
-            }
-        });
+        View v = inflater.inflate(R.layout.fragment_behavior_first, container, false);
 
         AlertDialog.Builder mBuilder = new AlertDialog.Builder(getContext());
-        View mView = getLayoutInflater().inflate(R.layout.dialog_behavior_add, null);
+        View mView = getLayoutInflater().inflate(R.layout.dialog_location_add, null);
         mBuilder.setView(mView);
         final AlertDialog dialog = mBuilder.create();
 
-        LinearLayout behavior_add = (LinearLayout) mView.findViewById(R.id.behavior_add);
-        behavior_add.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent=new Intent(getActivity(),BehaviorActivity.class);
-                Behavior behavior = new Behavior();
-                intent.putExtra("tempBehavior", behavior);
-                startActivity(intent);
-                dialog.dismiss();
-            }
-        });
-
-        FloatingActionButton fab = (FloatingActionButton) v.findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+        locationDialog = (LinearLayout) v.findViewById(R.id.add_location);
+        locationDialog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 dialog.show();
             }
         });
 
+        locationCancel = (LinearLayout) mView.findViewById(R.id.location_cancel);
+        locationCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
+
+        locationAdd = (LinearLayout) mView.findViewById(R.id.location_add);
+        locationAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+
+        // Inflate the layout for this fragment
         return v;
     }
 

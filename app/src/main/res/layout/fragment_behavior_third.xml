@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingTop="70dp"
+    tools:context=".BehaviorThirdFragment">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:layout_marginBottom="110dp"
+                android:textSize="20sp"
+                android:textColor="#3b3b3b"
+                android:lineSpacingExtra="8sp"
+                android:text="아이의 문제 행동 강도를\n선택해주세요."
+                />
+
+            <com.xw.repo.BubbleSeekBar
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                app:bsb_auto_adjust_section_mark="true"
+                app:bsb_track_color="#42000000"
+                app:bsb_second_track_color="@color/coolGreen"
+                app:bsb_section_count="5"
+                app:bsb_section_text_position="below_section_mark"
+                app:bsb_show_section_mark="true"
+                app:bsb_show_section_text="true"
+                app:bsb_show_thumb_text="true"
+                app:bsb_thumb_text_size="18sp"
+                app:bsb_touch_to_seek="true"/>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</FrameLayout>

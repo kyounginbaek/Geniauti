@@ -17,20 +17,21 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
     private List<String> header; // header titles
     // Child data in format of header title, child title
     private HashMap<String, List<String>> child;
+    private List<List<Cases>> cases;
 
     public ExpandableListAdapter(Context context, List<String> listDataHeader,
-                                 HashMap<String, List<String>> listChildData) {
+                                 HashMap<String, List<String>> listChildData, List<List<Cases>> listClassData) {
         this._context = context;
         this.header = listDataHeader;
         this.child = listChildData;
+        this.cases = listClassData;
     }
 
     @Override
     public Object getChild(int groupPosition, int childPosititon) {
 
         // This will return the child
-        return this.child.get(this.header.get(groupPosition)).get(
-                childPosititon);
+        return cases.get(groupPosition).get(childPosititon);
     }
 
     @Override
@@ -43,7 +44,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
                              boolean isLastChild, View convertView, ViewGroup parent) {
 
         // Getting child text
-        final String childText = (String) getChild(groupPosition, childPosition);
+//        final String childText = (String) getChild(groupPosition, childPosition);
 
         // Inflating child layout and setting textview
         if (convertView == null) {
@@ -54,7 +55,9 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
         TextView child_text = (TextView) convertView.findViewById(R.id.child);
 
-        child_text.setText(childText);
+        Cases c = cases.get(groupPosition).get(childPosition);
+
+        child_text.setText(c.case_title);
         return convertView;
     }
 
@@ -62,7 +65,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
     public int getChildrenCount(int groupPosition) {
 
         // return children count
-        return this.child.get(this.header.get(groupPosition)).size();
+        return this.cases.get(groupPosition).size();
     }
 
     @Override

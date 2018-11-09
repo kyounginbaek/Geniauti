@@ -24,7 +24,9 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -40,6 +42,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -81,7 +84,6 @@ public class SignupActivity extends AppCompatActivity implements LoaderCallbacks
     private View mLoginFormView;
     private FirebaseAuth firebaseAuth;
     private FirebaseFirestore db;
-    private FirebaseUser user;
 
 
     @Override
@@ -93,6 +95,7 @@ public class SignupActivity extends AppCompatActivity implements LoaderCallbacks
         setContentView(R.layout.activity_signup);
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.signup_email);
+        this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         populateAutoComplete();
 
         mPasswordView = (EditText) findViewById(R.id.signup_password);
@@ -140,8 +143,18 @@ public class SignupActivity extends AppCompatActivity implements LoaderCallbacks
             }
         });
 
+        TextView mEmailSignInTextView = (TextView) findViewById(R.id.email_sign_in);
+        mEmailSignInTextView.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent=new Intent(SignupActivity.this,LoginActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        });
+
         mLoginFormView = findViewById(R.id.login_form);
-        mProgressView = findViewById(R.id.login_progress);
+        mProgressView = findViewById(R.id.signup_progress);
     }
 
     @Override
@@ -201,6 +214,11 @@ public class SignupActivity extends AppCompatActivity implements LoaderCallbacks
      * errors are presented and no actual login attempt is made.
      */
     private void attemptLogin() {
+        mProgressView.setVisibility(View.VISIBLE);
+
+        InputMethodManager imm = (InputMethodManager)getSystemService(INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+
         if (mAuthTask != null) {
             return;
         }
@@ -213,7 +231,7 @@ public class SignupActivity extends AppCompatActivity implements LoaderCallbacks
         String email = mEmailView.getText().toString();
         String password = mPasswordView.getText().toString();
         String password_check = mPasswordCheckView.getText().toString();
-        String child_name = mUserNameView.getText().toString();
+        final String user_name = mUserNameView.getText().toString();
 
         boolean cancel = false;
         View focusView = null;
@@ -233,7 +251,7 @@ public class SignupActivity extends AppCompatActivity implements LoaderCallbacks
 
         // Check for a valid email address.
         if (TextUtils.isEmpty(email)) {
-            mEmailView.setError("이메일을 입력해주세요.");
+            mEmailView.setError("이메일 주소를 입력해주세요.");
             focusView = mEmailView;
             cancel = true;
         } else if (!isEmailValid(email)) {
@@ -242,8 +260,8 @@ public class SignupActivity extends AppCompatActivity implements LoaderCallbacks
             cancel = true;
         }
 
-        if (TextUtils.isEmpty(child_name)) {
-            mUserNameView.setError("자녀 이름을 입력해주세요.");
+        if (TextUtils.isEmpty(user_name)) {
+            mUserNameView.setError("사용자명을 입력해주세요.");
             focusView = mUserNameView;
             cancel = true;
         }
@@ -262,6 +280,7 @@ public class SignupActivity extends AppCompatActivity implements LoaderCallbacks
                                 // the auth state listener will be notified and logic to handle the
                                 // signed in user can be handled in the listener.
                                 if (!task.isSuccessful()) {
+                                    mProgressView.setVisibility(View.GONE);
                                     FirebaseAuthException e = (FirebaseAuthException )task.getException();
 
                                     if(e.getErrorCode()=="ERROR_INVALID_EMAIL") {
@@ -275,33 +294,26 @@ public class SignupActivity extends AppCompatActivity implements LoaderCallbacks
                                         return;
                                     }
                                 } else {
-                                    showProgress(true);
-                                    startActivity(new Intent(SignupActivity.this,MainActivity.class));
-                                    finish();
-                                    user = FirebaseAuth.getInstance().getCurrentUser();
+                                    UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                                            .setDisplayName(user_name)
+                                            .build();
 
-                                    // Create a new user with a first and last name
-                                    Map<String, Object> user_data = new HashMap<>();
-                                    user_data.put("email", mEmailView.getText().toString());
-                                    user_data.put("name", mUserNameView.getText().toString());
-                                    user_data.put("child", "");
-                                    user_data.put("childname", "");
-
-                                    // Add a new document with a generated ID
-                                    db.collection("users").document(user.getUid())
-                                            .set(user_data)
-                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                                    user.updateProfile(profileUpdates)
+                                            .addOnCompleteListener(new OnCompleteListener<Void>() {
                                                 @Override
-                                                public void onSuccess(Void aVoid) {
-                                                    // Log.d("DocumentSnapshot added with ID: " + documentReference.getId());
-                                                }
-                                            })
-                                            .addOnFailureListener(new OnFailureListener() {
-                                                @Override
-                                                public void onFailure(@NonNull Exception e) {
-                                                    Toast.makeText(SignupActivity.this, "오류가 발생했습니다.", Toast.LENGTH_SHORT).show();
-                                                    return;
-                                                    // Log.w("Error adding document", e);
+                                                public void onComplete(@NonNull Task<Void> task) {
+                                                    if (task.isSuccessful()) {
+//                                                        Log.d(TAG, "User profile updated.");
+                                                        mProgressView.setVisibility(View.GONE);
+                                                        startActivity(new Intent(SignupActivity.this,ChildRegisterActivity.class));
+                                                        finish();
+                                                    } else {
+                                                        Toast.makeText(SignupActivity.this, "사용자 이름 등록 중에 오류가 발생했습니다.", Toast.LENGTH_SHORT).show();
+                                                        mProgressView.setVisibility(View.GONE);
+                                                        startActivity(new Intent(SignupActivity.this,ChildRegisterActivity.class));
+                                                        finish();
+                                                    }
                                                 }
                                             });
                                 }
@@ -310,6 +322,7 @@ public class SignupActivity extends AppCompatActivity implements LoaderCallbacks
                 // showProgress(true);
 
             } else {
+                mProgressView.setVisibility(View.GONE);
                 Toast.makeText(getApplicationContext(),"비밀번호와 비밀번호 확인이 일치하지 않습니다.",Toast.LENGTH_SHORT).show();
             }
 
