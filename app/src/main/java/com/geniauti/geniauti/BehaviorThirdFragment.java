@@ -7,6 +7,12 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.SeekBar;
+
+import com.xw.repo.BubbleSeekBar;
+
+import java.util.HashMap;
 
 
 /**
@@ -26,6 +32,9 @@ public class BehaviorThirdFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+
+    int seekbarValue;
+    SeekBar seek;
 
     private OnFragmentInteractionListener mListener;
 
@@ -63,8 +72,30 @@ public class BehaviorThirdFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+        View v = inflater.inflate(R.layout.fragment_behavior_third, container, false);;
+
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_behavior_third, container, false);
+        seek = (SeekBar) v.findViewById(R.id.seekBar);
+        seek.setOnSeekBarChangeListener(new yourListener());
+
+        return v;
+    }
+
+    private class yourListener implements SeekBar.OnSeekBarChangeListener {
+
+        public void onProgressChanged(SeekBar seekBar, int progress,
+                                      boolean fromUser) {
+            // Log the progress
+            //set textView's text
+            int seekValue = seek.getProgress();
+            seekbarValue = seekValue;
+        }
+
+        public void onStartTrackingTouch(SeekBar seekBar) {}
+
+        public void onStopTrackingTouch(SeekBar seekBar) {}
+
     }
 
     // TODO: Rename method, update argument and hook method into UI event

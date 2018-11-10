@@ -28,21 +28,15 @@
                 android:text="아이의 문제 행동 강도를\n선택해주세요."
                 />
 
-            <com.xw.repo.BubbleSeekBar
+            <SeekBar
+                android:id="@+id/seekBar"
                 android:layout_width="match_parent"
-                android:layout_height="20dp"
-                android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp"
-                app:bsb_auto_adjust_section_mark="true"
-                app:bsb_track_color="#42000000"
-                app:bsb_second_track_color="@color/coolGreen"
-                app:bsb_section_count="5"
-                app:bsb_section_text_position="below_section_mark"
-                app:bsb_show_section_mark="true"
-                app:bsb_show_section_text="true"
-                app:bsb_show_thumb_text="true"
-                app:bsb_thumb_text_size="18sp"
-                app:bsb_touch_to_seek="true"/>
+                android:layout_height="wrap_content"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                style="@style/Widget.AppCompat.SeekBar.Discrete"
+                android:max="5"
+                android:progress="0"/>
 
         </LinearLayout>
 

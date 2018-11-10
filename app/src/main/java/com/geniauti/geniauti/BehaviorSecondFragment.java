@@ -5,9 +5,16 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.LinearLayout;
+import android.widget.RadioGroup;
+
+import java.util.HashMap;
 
 
 /**
@@ -27,6 +34,15 @@ public class BehaviorSecondFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+
+    HashMap<String,Boolean> checkbox_type = new HashMap<String,Boolean>();
+
+    private CheckBox checkbox_harm;
+    private CheckBox checkbox_selfHarm;
+    private CheckBox checkbox_destruction;
+    private CheckBox checkbox_breakaway;
+    private CheckBox checkbox_sexual;
+    private CheckBox checkbox_etc;
 
     private OnFragmentInteractionListener mListener;
 
@@ -64,9 +80,59 @@ public class BehaviorSecondFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        View v = inflater.inflate(R.layout.fragment_behavior_second, container, false);
+
+        checkbox_harm = (CheckBox) v.findViewById(R.id.harm);
+        checkbox_selfHarm = (CheckBox) v.findViewById(R.id.selfHarm);
+        checkbox_destruction = (CheckBox) v.findViewById(R.id.destruction);
+        checkbox_breakaway = (CheckBox) v.findViewById(R.id.breakaway);
+        checkbox_sexual = (CheckBox) v.findViewById(R.id.sexual);
+        checkbox_etc = (CheckBox) v.findViewById(R.id.etc);
+
+        checkbox_harm.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView,boolean isChecked) {
+                checkbox_type.put("harm", true);
+                }
+            }
+        );
+        checkbox_selfHarm.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                                                     @Override
+                                                     public void onCheckedChanged(CompoundButton buttonView,boolean isChecked) {
+                                                         checkbox_type.put("selfHarm", true);
+                                                     }
+                                                 }
+        );
+        checkbox_destruction.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                                                         @Override
+                                                         public void onCheckedChanged(CompoundButton buttonView,boolean isChecked) {
+                                                             checkbox_type.put("destruction", true);
+                                                         }
+                                                     }
+        );
+        checkbox_breakaway.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                                                     @Override
+                                                     public void onCheckedChanged(CompoundButton buttonView,boolean isChecked) {
+                                                         checkbox_type.put("breakaway", true);
+                                                     }
+                                                 }
+        );
+        checkbox_sexual.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView,boolean isChecked) {
+                checkbox_type.put("sexual", true);
+            }
+        });
+
+        checkbox_etc.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView,boolean isChecked) {
+                checkbox_type.put("etc", true);
+            }
+        });
 
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_behavior_second, container, false);
+        return v;
     }
 
     // TODO: Rename method, update argument and hook method into UI event

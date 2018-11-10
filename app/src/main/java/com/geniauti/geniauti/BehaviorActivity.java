@@ -1,8 +1,10 @@
 package com.geniauti.geniauti;
 
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -14,13 +16,27 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
+import android.widget.RadioButton;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class BehaviorActivity extends AppCompatActivity implements BehaviorFirstFragment.OnFragmentInteractionListener, BehaviorSecondFragment.OnFragmentInteractionListener, BehaviorThirdFragment.OnFragmentInteractionListener, BehaviorFourthFragment.OnFragmentInteractionListener {
 
@@ -37,7 +53,7 @@ public class BehaviorActivity extends AppCompatActivity implements BehaviorFirst
     /**
      * The {@link ViewPager} that will host the section contents.
      */
-    private ViewPager mViewPager;
+    private CustomViewPager mViewPager;
     public Behavior tempBehavior;
 
     @Override
@@ -58,7 +74,7 @@ public class BehaviorActivity extends AppCompatActivity implements BehaviorFirst
         mSectionsPagerAdapter = new PagerAdapter(getSupportFragmentManager());
 
         // Set up the ViewPager with the sections adapter.
-        mViewPager = (ViewPager) findViewById(R.id.behavior_container);
+        mViewPager = (CustomViewPager) findViewById(R.id.behavior_container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
         toolbar.setNavigationIcon(getResources().getDrawable(R.drawable.ic_close_green_24dp));
@@ -93,6 +109,8 @@ public class BehaviorActivity extends AppCompatActivity implements BehaviorFirst
             {
 
             }
+
+
         });
 
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -106,28 +124,71 @@ public class BehaviorActivity extends AppCompatActivity implements BehaviorFirst
             }
         });
 
+        // mViewPager.setCurrentItem(getItem(+1), true);
+
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Fragment firstFragment = getSupportFragmentManager().findFragmentByTag("android:switcher:"+R.id.behavior_container+":"+0);
+                Fragment secondFragment = getSupportFragmentManager().findFragmentByTag("android:switcher:"+R.id.behavior_container+":"+1);
+                Fragment thirdFragment = getSupportFragmentManager().findFragmentByTag("android:switcher:"+R.id.behavior_container+":"+2);
+                Fragment fourthFragment = getSupportFragmentManager().findFragmentByTag("android:switcher:"+R.id.behavior_container+":"+3);
+                BehaviorFirstFragment f1 = (BehaviorFirstFragment) firstFragment;
+                BehaviorSecondFragment f2 = (BehaviorSecondFragment) secondFragment;
+                BehaviorThirdFragment f3 = (BehaviorThirdFragment) thirdFragment;
+                BehaviorFourthFragment f4 = (BehaviorFourthFragment) fourthFragment;
+
                 if(mViewPager.getCurrentItem()==0) {
-                    BehaviorFirstFragment bff = (BehaviorFirstFragment) getSupportFragmentManager().findFragmentById(R.id.behavior_first_frag);
-
-
                     mViewPager.setCurrentItem(getItem(+1), true);
                 } else if(mViewPager.getCurrentItem()==1) {
-
-                    mViewPager.setCurrentItem(getItem(+1), true);
+                    if(f2.checkbox_type.toString()=="{}"){
+                        Toast.makeText(BehaviorActivity.this, "행동을 골라주세요.", Toast.LENGTH_SHORT).show();
+                    } else {
+                        mViewPager.setCurrentItem(getItem(+1), true);
+                    }
                 } else if(mViewPager.getCurrentItem()==2) {
-
                     mViewPager.setCurrentItem(getItem(+1), true);
                 } else if(mViewPager.getCurrentItem()==3) {
+                    if(f4.checkbox_reason.toString()=="{}"){
+                        Toast.makeText(BehaviorActivity.this, "행동 원인을 골라주세요.", Toast.LENGTH_SHORT).show();
+                    } else {
+                        tempBehavior.place = f1.location;
+                        tempBehavior.type = f2.checkbox_type;
+                        tempBehavior.intensity = f3.seekbarValue;
+                        tempBehavior.reason = f4.checkbox_reason;
 
-                    finish();
-                }
+                        final FirebaseFirestore db = FirebaseFirestore.getInstance();
+                        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                        Map<String, Object> docData = new HashMap<>();
+                        docData.put("uid", user.getUid());
+                        docData.put("place", tempBehavior.place);
+                        docData.put("type", tempBehavior.type);
+                        docData.put("intensity", tempBehavior.intensity);
+                        docData.put("reason", tempBehavior.reason);
+
+                        db.collection("behaviors").document()
+                                .set(docData)
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+//                                    mProgressView.setVisibility(View.GONE);
+                                        finish();
+//                                Log.d(TAG, "DocumentSnapshot successfully written!");
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+//                                Log.w(TAG, "Error writing document", e);
+                                    }
+                                });
+                        }
+                    }
             }
         });
 
     }
+
 
 
     @Override
@@ -196,7 +257,7 @@ public class BehaviorActivity extends AppCompatActivity implements BehaviorFirst
         return mViewPager.getCurrentItem() + i;
     }
 
-    public class PagerAdapter extends FragmentStatePagerAdapter {
+    public class PagerAdapter extends FragmentPagerAdapter {
         int mNumOfTabs = 4;
 
         public PagerAdapter(FragmentManager fm) {
@@ -234,4 +295,6 @@ public class BehaviorActivity extends AppCompatActivity implements BehaviorFirst
     public void onFragmentInteraction(Uri uri){
         System.out.println(uri);
     }
+
 }
+

@@ -22,7 +22,7 @@
             app:theme="@style/ThemeOverlay.AppCompat.Dark"
             />
 
-        <android.support.v4.view.ViewPager
+        <com.geniauti.geniauti.CustomViewPager
             android:id="@+id/behavior_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

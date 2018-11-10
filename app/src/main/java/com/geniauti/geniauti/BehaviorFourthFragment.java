@@ -7,6 +7,10 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+
+import java.util.HashMap;
 
 
 /**
@@ -26,6 +30,16 @@ public class BehaviorFourthFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+
+    HashMap<String,Boolean> checkbox_reason = new HashMap<String,Boolean>();
+
+    private CheckBox checkbox1;
+    private CheckBox checkbox2;
+    private CheckBox checkbox3;
+    private CheckBox checkbox4;
+    private CheckBox checkbox5;
+    private CheckBox checkbox6;
+    private CheckBox checkbox7, checkbox8, checkbox9, checkbox10, checkbox11, checkbox12, checkbox13, checkbox14, checkbox15;
 
     private OnFragmentInteractionListener mListener;
 
@@ -63,8 +77,118 @@ public class BehaviorFourthFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        View v = inflater.inflate(R.layout.fragment_behavior_fourth, container, false);
+
+        checkbox1 = (CheckBox) v.findViewById(R.id.checkBox1);
+        checkbox2 = (CheckBox) v.findViewById(R.id.checkBox2);
+        checkbox3 = (CheckBox) v.findViewById(R.id.checkBox3);
+        checkbox4 = (CheckBox) v.findViewById(R.id.checkBox4);
+        checkbox5 = (CheckBox) v.findViewById(R.id.checkBox5);
+        checkbox6 = (CheckBox) v.findViewById(R.id.checkBox6);
+        checkbox7 = (CheckBox) v.findViewById(R.id.checkBox7);
+        checkbox8 = (CheckBox) v.findViewById(R.id.checkBox8);
+        checkbox9 = (CheckBox) v.findViewById(R.id.checkBox9);
+        checkbox10 = (CheckBox) v.findViewById(R.id.checkBox10);
+        checkbox11 = (CheckBox) v.findViewById(R.id.checkBox11);
+        checkbox12 = (CheckBox) v.findViewById(R.id.checkBox12);
+        checkbox13 = (CheckBox) v.findViewById(R.id.checkBox13);
+        checkbox14 = (CheckBox) v.findViewById(R.id.checkBox14);
+        checkbox15 = (CheckBox) v.findViewById(R.id.checkBox15);
+
+
+        checkbox1.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView,boolean isChecked) {
+                checkbox_reason.put("관심1", true);
+            }
+        });
+        checkbox2.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView,boolean isChecked) {
+                checkbox_reason.put("관심2", true);
+            }
+        });
+        checkbox3.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView,boolean isChecked) {
+                checkbox_reason.put("관심3", true);
+            }
+        });
+        checkbox4.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView,boolean isChecked) {
+                checkbox_reason.put("관심4", true);
+            }
+        });
+        checkbox5.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView,boolean isChecked) {
+                checkbox_reason.put("자기자극1", true);
+            }
+        });
+        checkbox6.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView,boolean isChecked) {
+                checkbox_reason.put("자기자극2", true);
+            }
+        });
+        checkbox7.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView,boolean isChecked) {
+                checkbox_reason.put("자기자극3", true);
+            }
+        });
+        checkbox8.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView,boolean isChecked) {
+                checkbox_reason.put("요구1", true);
+            }
+        });
+        checkbox9.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView,boolean isChecked) {
+                checkbox_reason.put("요구2", true);
+            }
+        });
+        checkbox10.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView,boolean isChecked) {
+                checkbox_reason.put("요구3", true);
+            }
+        });
+        checkbox11.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView,boolean isChecked) {
+                checkbox_reason.put("요구4", true);
+            }
+        });
+        checkbox12.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView,boolean isChecked) {
+                checkbox_reason.put("과제회피1", true);
+            }
+        });
+        checkbox13.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView,boolean isChecked) {
+                checkbox_reason.put("과제회피2", true);
+            }
+        });
+        checkbox14.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView,boolean isChecked) {
+                checkbox_reason.put("과제회피3", true);
+            }
+        });
+        checkbox15.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView,boolean isChecked) {
+                checkbox_reason.put("과제회피4", true);
+            }
+        });
+
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_behavior_fourth, container, false);
+        return v;
     }
 
     // TODO: Rename method, update argument and hook method into UI event

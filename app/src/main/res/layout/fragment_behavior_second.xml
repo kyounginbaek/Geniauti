@@ -35,7 +35,7 @@
                 >
 
                 <CheckBox
-                    android:id="@+id/checkBox1"
+                    android:id="@+id/selfHarm"
                     android:layout_width="match_parent"
                     android:layout_height="56dp"
                     android:paddingLeft="35dp"
@@ -44,7 +44,7 @@
                     android:text="자해 행동" />
 
                 <CheckBox
-                    android:id="@+id/checkBox2"
+                    android:id="@+id/harm"
                     android:layout_width="match_parent"
                     android:layout_height="56dp"
                     android:paddingLeft="35dp"
@@ -53,7 +53,7 @@
                     android:text="타해 행동" />
 
                 <CheckBox
-                    android:id="@+id/checkBox3"
+                    android:id="@+id/destruction"
                     android:layout_width="match_parent"
                     android:layout_height="56dp"
                     android:paddingLeft="35dp"
@@ -62,7 +62,7 @@
                     android:text="파괴 행동" />
 
                 <CheckBox
-                    android:id="@+id/checkBox4"
+                    android:id="@+id/breakaway"
                     android:layout_width="match_parent"
                     android:layout_height="56dp"
                     android:paddingLeft="35dp"
@@ -71,7 +71,7 @@
                     android:text="이탈 행동" />
 
                 <CheckBox
-                    android:id="@+id/checkBox5"
+                    android:id="@+id/sexual"
                     android:layout_width="match_parent"
                     android:layout_height="56dp"
                     android:paddingLeft="35dp"
@@ -80,7 +80,7 @@
                     android:text="성적 행동" />
 
                 <CheckBox
-                    android:id="@+id/checkBox6"
+                    android:id="@+id/etc"
                     android:layout_width="match_parent"
                     android:layout_height="56dp"
                     android:paddingLeft="35dp"

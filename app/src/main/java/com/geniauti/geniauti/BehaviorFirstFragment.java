@@ -10,8 +10,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 
 import com.google.firebase.auth.FirebaseAuth;
+
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**
@@ -31,6 +36,8 @@ public class BehaviorFirstFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+
+    public String location;
 
     private LinearLayout locationDialog;
     private LinearLayout locationCancel;
@@ -79,6 +86,13 @@ public class BehaviorFirstFragment extends Fragment {
         View mView = getLayoutInflater().inflate(R.layout.dialog_location_add, null);
         mBuilder.setView(mView);
         final AlertDialog dialog = mBuilder.create();
+
+        final RadioGroup radioGroup = (RadioGroup) v.findViewById(R.id.locationGroup);
+        int selectedId = radioGroup.getCheckedRadioButtonId();
+        // find the radiobutton by returned id
+        RadioButton radioButton = (RadioButton) v.findViewById(selectedId);
+
+        location = radioButton.getText().toString();
 
         locationDialog = (LinearLayout) v.findViewById(R.id.add_location);
         locationDialog.setOnClickListener(new View.OnClickListener() {
