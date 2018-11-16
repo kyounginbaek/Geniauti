@@ -1,5 +1,6 @@
 package com.geniauti.geniauti;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
@@ -7,12 +8,8 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
-import android.widget.SeekBar;
-
-import com.xw.repo.BubbleSeekBar;
-
-import java.util.HashMap;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 
 /**
@@ -33,8 +30,10 @@ public class BehaviorThirdFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    int seekbarValue;
-    SeekBar seek;
+    public TextView textInput;
+    private LinearLayout textDialog;
+    private LinearLayout textCancel;
+    private LinearLayout textAdd;
 
     private OnFragmentInteractionListener mListener;
 
@@ -72,30 +71,41 @@ public class BehaviorThirdFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
-        View v = inflater.inflate(R.layout.fragment_behavior_third, container, false);;
-
         // Inflate the layout for this fragment
-        seek = (SeekBar) v.findViewById(R.id.seekBar);
-        seek.setOnSeekBarChangeListener(new yourListener());
+        View v = inflater.inflate(R.layout.fragment_behavior_third, container, false);
+
+        textInput = (TextView) v.findViewById(R.id.text_input);
+
+        AlertDialog.Builder mBuilder = new AlertDialog.Builder(getContext());
+        View mView = getLayoutInflater().inflate(R.layout.dialog_text_add, null);
+        mBuilder.setView(mView);
+        final AlertDialog dialog = mBuilder.create();
+
+        textDialog = (LinearLayout) v.findViewById(R.id.add_text);
+        textDialog.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.show();
+            }
+        });
+
+        textCancel = (LinearLayout) mView.findViewById(R.id.text_cancel);
+        textCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
+
+        textAdd = (LinearLayout) mView.findViewById(R.id.text_add);
+        textAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
 
         return v;
-    }
-
-    private class yourListener implements SeekBar.OnSeekBarChangeListener {
-
-        public void onProgressChanged(SeekBar seekBar, int progress,
-                                      boolean fromUser) {
-            // Log the progress
-            //set textView's text
-            int seekValue = seek.getProgress();
-            seekbarValue = seekValue;
-        }
-
-        public void onStartTrackingTouch(SeekBar seekBar) {}
-
-        public void onStopTrackingTouch(SeekBar seekBar) {}
-
     }
 
     // TODO: Rename method, update argument and hook method into UI event

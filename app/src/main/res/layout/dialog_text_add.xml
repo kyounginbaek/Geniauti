@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="24dp"
+        android:paddingRight="24dp"
+        android:paddingTop="24dp"
+        android:textSize="20sp"
+        android:textColor="#de000000"
+        android:lineSpacingExtra="8sp"
+        android:text="텍스트로 입력하세요"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="24dp"
+        android:paddingRight="24dp"
+        android:paddingTop="20dp"
+        android:textSize="16sp"
+        android:textColor="#8a000000"
+        android:lineSpacingExtra="8sp"
+        android:text="취소 버튼을 누를 시 음성으로 작성할 수 있습니다."
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="24dp"
+        android:paddingRight="24dp"
+        android:paddingTop="33dp"
+        android:paddingBottom="48dp">
+
+        <EditText
+            android:id="@+id/text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:textColor="#de000000"
+            app:backgroundTint="#1e000000"
+            android:lineSpacingExtra="8sp"
+            android:hint="예) 바닥에서 굴렀다"
+            android:inputType="textMultiLine"
+            android:scrollbars="vertical"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:paddingRight="8dp"
+        android:gravity="right|center_vertical"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:id="@+id/text_cancel"
+            android:layout_width="75dp"
+            android:layout_height="36dp"
+            android:gravity="center"
+            android:background="?android:attr/selectableItemBackground">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:textColor="#ababab"
+                android:letterSpacing="0.04"
+                android:gravity="center_horizontal"
+                android:text="취소"
+                />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/text_add"
+            android:layout_width="75dp"
+            android:layout_height="36dp"
+            android:gravity="center"
+            android:background="?android:attr/selectableItemBackground">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:textColor="@color/coolGreen"
+                android:letterSpacing="0.04"
+                android:gravity="center_horizontal"
+                android:text="확인"
+                />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

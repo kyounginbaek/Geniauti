@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout
+    android:id="@+id/behavior_first_frag"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -9,89 +12,55 @@
     android:background="#ffffff"
     tools:context=".BehaviorSecondFragment">
 
-    <ScrollView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="26dp"
+            android:textSize="20sp"
+            android:textColor="#3b3b3b"
+            android:lineSpacingExtra="8sp"
+            android:text="문제 행동 제목을\n정해주세요."
+            />
+
+        <ListView
+            android:id="@+id/radio_listview_second"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        </ListView>
 
         <LinearLayout
+            android:id="@+id/add_title"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:layout_height="56dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:background="?android:attr/selectableItemBackground">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="5dp"
+                app:srcCompat="@drawable/ic_add_black_24dp"
+                />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="20sp"
-                android:textColor="#3b3b3b"
+                android:paddingLeft="37dp"
+                android:textSize="16sp"
+                android:textColor="#de000000"
                 android:lineSpacingExtra="8sp"
-                android:text="어떤 류의 행동을 했나요?\n모두 골라주세요."
+                android:text="직접 입력하기"
                 />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:paddingTop="26dp"
-                android:orientation="vertical"
-                >
-
-                <CheckBox
-                    android:id="@+id/selfHarm"
-                    android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:paddingLeft="35dp"
-                    android:textSize="16sp"
-                    android:textColor="#de000000"
-                    android:text="자해 행동" />
-
-                <CheckBox
-                    android:id="@+id/harm"
-                    android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:paddingLeft="35dp"
-                    android:textSize="16sp"
-                    android:textColor="#de000000"
-                    android:text="타해 행동" />
-
-                <CheckBox
-                    android:id="@+id/destruction"
-                    android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:paddingLeft="35dp"
-                    android:textSize="16sp"
-                    android:textColor="#de000000"
-                    android:text="파괴 행동" />
-
-                <CheckBox
-                    android:id="@+id/breakaway"
-                    android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:paddingLeft="35dp"
-                    android:textSize="16sp"
-                    android:textColor="#de000000"
-                    android:text="이탈 행동" />
-
-                <CheckBox
-                    android:id="@+id/sexual"
-                    android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:paddingLeft="35dp"
-                    android:textSize="16sp"
-                    android:textColor="#de000000"
-                    android:text="성적 행동" />
-
-                <CheckBox
-                    android:id="@+id/etc"
-                    android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:paddingLeft="35dp"
-                    android:textSize="16sp"
-                    android:textColor="#de000000"
-                    android:text="기타" />
-
-            </LinearLayout>
 
         </LinearLayout>
 
-    </ScrollView>
+    </LinearLayout>
 
 </FrameLayout>

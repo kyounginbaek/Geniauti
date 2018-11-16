@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".ProfileFragment">
 
     <!-- TODO: Update blank fragment layout -->
@@ -14,106 +15,410 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <ImageView
-                android:id="@+id/profileImage"
-                android:layout_width="200px"
-                android:layout_height="200px"
-                tools:src="@tools:sample/avatars[0]" />
-
-            <TextView
-                android:id="@+id/username"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/activity_horizontal_margin"
-                android:layout_marginLeft="@dimen/activity_horizontal_margin"
-                android:layout_marginTop="@dimen/activity_vertical_margin"
-                android:text="사용자명"
-                tools:layout_constraintLeft_toStartOf="parent"
-                tools:layout_constraintTop_toBottomOf="@+id/imageView" />
+                android:layout_marginBottom="45dp"
+                android:gravity="center_horizontal"
+                android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/child_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginLeft="16dp"
-                android:layout_marginTop="16dp"
-                android:text="자녀이름"
-                tools:layout_constraintStart_toStartOf="parent"
-                tools:layout_constraintTop_toBottomOf="@+id/username" />
+                <RelativeLayout
+                    android:id="@+id/child_edit"
+                    android:layout_width="102dp"
+                    android:layout_height="102dp"
+                    android:layout_marginTop="62dp"
+                    >
 
-            <TextView
-                android:id="@+id/parent_relation"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginLeft="16dp"
-                android:layout_marginTop="16dp"
-                android:text="자녀와의 관계"
-                tools:layout_constraintStart_toStartOf="parent"
-                tools:layout_constraintTop_toBottomOf="@+id/child_name" />
+                    <ImageView
+                        android:id="@+id/child_image"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        app:srcCompat="@drawable/ic_profile_default"
+                        />
 
-            <Button
+                    <ImageView
+                        android:layout_width="31dp"
+                        android:layout_height="31dp"
+                        android:paddingRight="5dp"
+                        android:paddingBottom="5dp"
+                        android:layout_alignParentBottom="true"
+                        android:layout_alignParentRight="true"
+                        app:srcCompat="@drawable/ic_modification"
+                        />
+
+                </RelativeLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="25sp"
+                    android:textColor="#2e2e39"
+                    android:letterSpacing="0.01"
+                    android:lineSpacingExtra="15sp"
+                    android:gravity="center_horizontal"
+                    android:text="이다솔"
+                    />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="12sp"
+                    android:textColor="#848484"
+                    android:letterSpacing="0.01"
+                    android:lineSpacingExtra="28sp"
+                    android:gravity="center_horizontal"
+                    android:text="우리 아이"
+                    />
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#d9d9d9"/>
+
+            <RelativeLayout
+                android:id="@+id/profile_edit"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:background="?android:attr/selectableItemBackground">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="16dp"
+                    android:textSize="16sp"
+                    android:textColor="#3b3b3b"
+                    android:lineSpacingExtra="8sp"
+                    android:text="내 정보 수정하기"
+                    />
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="16dp"
+                    app:srcCompat="@drawable/ic_chevron_right_black_24dp"/>
+
+            </RelativeLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#d9d9d9"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginTop="20dp"
+                    android:textSize="14sp"
+                    android:textColor="#deababab"
+                    android:lineSpacingExtra="10sp"
+                    android:text="이다솔의 보호자"
+                    />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="72dp"
+                    android:layout_marginLeft="16dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        app:srcCompat="@drawable/ic_profile_default"
+                        />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="17dp"
+                        android:gravity="center_vertical"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="16sp"
+                            android:textColor="#de000000"
+                            android:lineSpacingExtra="8sp"
+                            android:text="장동호"
+                            />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="14sp"
+                            android:textColor="#8b000000"
+                            android:lineSpacingExtra="6sp"
+                            android:text="아빠"
+                            />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="72dp"
+                    android:layout_marginLeft="16dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        app:srcCompat="@drawable/ic_profile_default"
+                        />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="17dp"
+                        android:gravity="center_vertical"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="16sp"
+                            android:textColor="#de000000"
+                            android:lineSpacingExtra="8sp"
+                            android:text="박서영"
+                            />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="14sp"
+                            android:textColor="#8b000000"
+                            android:lineSpacingExtra="6sp"
+                            android:text="엄마"
+                            />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="72dp"
+                    android:layout_marginLeft="16dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        app:srcCompat="@drawable/ic_profile_default"
+                        />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="17dp"
+                        android:gravity="center_vertical"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="16sp"
+                            android:textColor="#de000000"
+                            android:lineSpacingExtra="8sp"
+                            android:text="최기원"
+                            />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="14sp"
+                            android:textColor="#8b000000"
+                            android:lineSpacingExtra="6sp"
+                            android:text="선생님"
+                            />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/parent_add"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:background="?android:attr/selectableItemBackground">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginLeft="16dp"
+                        app:srcCompat="@drawable/ic_add_green_24dp"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="32dp"
+                        android:textSize="16sp"
+                        android:textColor="@color/coolGreen"
+                        android:lineSpacingExtra="8sp"
+                        android:text="보호자 초대하기"
+                        />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#d9d9d9"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginTop="20dp"
+                    android:textSize="14sp"
+                    android:textColor="#deababab"
+                    android:lineSpacingExtra="10sp"
+                    android:text="자주 쓰는 기록 저장하기"
+                    />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="72dp"
+                    android:layout_marginLeft="16dp"
+                    android:gravity="center_vertical"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="16sp"
+                        android:textColor="#de000000"
+                        android:lineSpacingExtra="8sp"
+                        android:text="공원 / 소리 지르기 / 요구"
+                        />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="14sp"
+                        android:textColor="#8b000000"
+                        android:lineSpacingExtra="6sp"
+                        android:text="저장된 기록 1"
+                        />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="72dp"
+                    android:layout_marginLeft="16dp"
+                    android:gravity="center_vertical"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="16sp"
+                        android:textColor="#de000000"
+                        android:lineSpacingExtra="8sp"
+                        android:text="집 / 울기 / 관심"
+                        />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="14sp"
+                        android:textColor="#8b000000"
+                        android:lineSpacingExtra="6sp"
+                        android:text="저장된 기록 2"
+                        />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/bookmark_add"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:background="?android:attr/selectableItemBackground">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginLeft="16dp"
+                        app:srcCompat="@drawable/ic_add_green_24dp"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="32dp"
+                        android:textSize="16sp"
+                        android:textColor="@color/coolGreen"
+                        android:lineSpacingExtra="8sp"
+                        android:text="자주 쓰는 기록 추가하기"
+                        />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#d9d9d9"/>
+
+            <RelativeLayout
                 android:id="@+id/sign_out"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginLeft="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginRight="8dp"
-                android:text="로그아웃"
-                tools:layout_constraintEnd_toEndOf="parent"
-                tools:layout_constraintStart_toStartOf="parent"
-                tools:layout_constraintTop_toBottomOf="@+id/parent_relation" />
+                android:layout_height="48dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:background="?android:attr/selectableItemBackground">
 
-            <Button
-                android:id="@+id/child_register"
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="16dp"
+                    android:textSize="16sp"
+                    android:textColor="#3b3b3b"
+                    android:lineSpacingExtra="8sp"
+                    android:text="로그아웃"
+                    />
+
+            </RelativeLayout>
+
+            <View
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginLeft="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginRight="8dp"
-                android:text="자녀 등록"
-                tools:layout_constraintEnd_toEndOf="parent"
-                tools:layout_constraintStart_toStartOf="parent"
-                tools:layout_constraintTop_toBottomOf="@+id/sign_out" />
-
-            <Button
-                android:id="@+id/upload"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginLeft="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginRight="8dp"
-                android:text="사진 업로드"
-                tools:layout_constraintEnd_toEndOf="parent"
-                tools:layout_constraintStart_toStartOf="parent"
-                tools:layout_constraintTop_toBottomOf="@+id/child_register" />
-
-            <Button
-                android:id="@+id/settings"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginLeft="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginRight="8dp"
-                android:text="옵션"
-                tools:layout_constraintEnd_toEndOf="parent"
-                tools:layout_constraintStart_toStartOf="parent"
-                tools:layout_constraintTop_toBottomOf="@+id/upload" />
-
+                android:layout_marginBottom="12dp"
+                android:layout_height="1dp"
+                android:background="#d9d9d9"/>
 
         </LinearLayout>
+
     </ScrollView>
 
 </FrameLayout>

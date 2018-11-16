@@ -9,9 +9,12 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 
@@ -38,6 +41,7 @@ public class BehaviorFirstFragment extends Fragment {
     private String mParam2;
 
     public String location;
+    private EditText txtLocation;
 
     private LinearLayout locationDialog;
     private LinearLayout locationCancel;
@@ -87,12 +91,7 @@ public class BehaviorFirstFragment extends Fragment {
         mBuilder.setView(mView);
         final AlertDialog dialog = mBuilder.create();
 
-        final RadioGroup radioGroup = (RadioGroup) v.findViewById(R.id.locationGroup);
-        int selectedId = radioGroup.getCheckedRadioButtonId();
-        // find the radiobutton by returned id
-        RadioButton radioButton = (RadioButton) v.findViewById(selectedId);
-
-        location = radioButton.getText().toString();
+        txtLocation = (EditText) mView.findViewById(R.id.txt_location);
 
         locationDialog = (LinearLayout) v.findViewById(R.id.add_location);
         locationDialog.setOnClickListener(new View.OnClickListener() {
@@ -114,7 +113,11 @@ public class BehaviorFirstFragment extends Fragment {
         locationAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if(txtLocation.getText().toString().equals("")){
+                    Toast.makeText(getActivity(), "빈칸을 입력해주세요.", Toast.LENGTH_SHORT).show();
+                } else {
 
+                }
             }
         });
 

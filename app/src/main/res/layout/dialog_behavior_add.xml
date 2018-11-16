@@ -4,6 +4,19 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <ListView
+        android:id="@+id/behavior_listview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:divider="#4c979797">
+
+    </ListView>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#d9d9d9"/>
+
     <LinearLayout
         android:id="@+id/behavior_add"
         android:layout_width="match_parent"

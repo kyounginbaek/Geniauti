@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingTop="70dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".BehaviorThirdFragment">
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -17,26 +18,62 @@
             android:orientation="vertical">
 
             <TextView
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingLeft="16dp"
-                android:paddingRight="16dp"
-                android:layout_marginBottom="110dp"
+                android:layout_marginTop="132dp"
+                android:layout_marginBottom="30dp"
                 android:textSize="20sp"
                 android:textColor="#3b3b3b"
                 android:lineSpacingExtra="8sp"
-                android:text="아이의 문제 행동 강도를\n선택해주세요."
+                android:text="어떤 행동을 보였나요?"
                 />
 
-            <SeekBar
-                android:id="@+id/seekBar"
+            <ImageView
+                android:layout_width="28dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                app:srcCompat="@drawable/ic_voice_recording"/>
+
+            <EditText
+                android:id="@+id/text_input"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingLeft="16dp"
-                android:paddingRight="16dp"
-                style="@style/Widget.AppCompat.SeekBar.Discrete"
-                android:max="5"
-                android:progress="0"/>
+                android:hint="예) 다솔이가 밥을 먹다 말고 울고 소리를 지르며 바닥에서 굴렀다"
+                android:inputType="textMultiLine"
+                android:lineSpacingExtra="8sp"
+                android:paddingTop="20dp"
+                android:scrollbars="vertical"
+                android:textColor="#3b3b3b"
+                android:textSize="16sp"
+                app:backgroundTint="#1e000000" />
+
+            <LinearLayout
+                android:id="@+id/add_text"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginTop="21dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:background="?android:attr/selectableItemBackground">
+
+                <ImageView
+                    android:layout_width="21dp"
+                    android:layout_height="21dp"
+                    android:layout_marginLeft="5dp"
+                    app:srcCompat="@drawable/ic_add_black_24dp"
+                    />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="21dp"
+                    android:paddingLeft="20dp"
+                    android:textSize="16sp"
+                    android:textColor="#de000000"
+                    android:lineSpacingExtra="8sp"
+                    android:text="텍스트로 입력하기"
+                    />
+
+            </LinearLayout>
 
         </LinearLayout>
 

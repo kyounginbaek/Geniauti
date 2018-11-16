@@ -7,45 +7,25 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.TextView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.UserInfo;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
-
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
 
 
 /**
@@ -58,14 +38,14 @@ import java.util.Map;
  */
 public class ProfileFragment extends Fragment {
 
-    private ImageView mProfileImage;
-    private TextView mTextUserName;
-    private TextView mTextChildName;
-    private TextView mTextRelation;
-    private Button mSignOutButton;
-    private Button mChildRegisterButton;
-    private Button mSettingsButton;
-    private Button mUploadButton;
+    private RelativeLayout childEdit;
+    private RelativeLayout profileEdit;
+    private LinearLayout parentAdd;
+    private RelativeLayout mSignOut;
+
+    private EditText txtEmail;
+    private LinearLayout inviteCancel;
+    private LinearLayout parentInvite;
     Bitmap bitmap;
     Uri filePath;
 
@@ -118,8 +98,6 @@ public class ProfileFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_profile, container, false);
         getActivity().setTitle("프로필");
 
-        mProfileImage = (ImageView) v.findViewById(R.id.profileImage);
-
         Thread mThread = new Thread() {
             @Override
             public void run(){
@@ -145,64 +123,68 @@ public class ProfileFragment extends Fragment {
 
         try {
             mThread.join();
-            mProfileImage.setImageBitmap(bitmap);
+//            mProfileImage.setImageBitmap(bitmap);
 
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
-        mTextUserName = (TextView) v.findViewById(R.id.username);
-        mTextChildName = (TextView) v.findViewById(R.id.child_name);
-        mTextRelation = (TextView) v.findViewById(R.id.parent_relation);
-
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user != null) {
-            for (UserInfo profile : user.getProviderData()) {
-                // Id of the provider (ex: google.com)
-                String providerId = profile.getProviderId();
-
-                // UID specific to the provider
-                String uid = profile.getUid();
-
-                // Name, email address, and profile photo Url
-                String name = profile.getDisplayName();
-                mTextUserName.setText("사용자명: "+ name);
-                String email = profile.getEmail();
-                Uri photoUrl = profile.getPhotoUrl();
-            }
-            ;
-        }
-
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        final DocumentReference docRef = db.collection("users").document(user.getUid());
-        docRef.addSnapshotListener(new EventListener<DocumentSnapshot>() {
+        childEdit = (RelativeLayout) v.findViewById(R.id.child_edit);
+        childEdit.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onEvent(@Nullable DocumentSnapshot snapshot,
-                                @Nullable FirebaseFirestoreException e) {
-                if (e != null) {
-                    // Log.w(TAG, "Listen failed.", e);
-                    // return;
-                }
+            public void onClick(View view) {
+                startActivity(new Intent(getActivity().getApplication(), ChildEditActivity.class));
+            }
+        });
 
-                if (snapshot != null && snapshot.exists()) {
-//                    mTextUserName.setText("사용자명: "+ snapshot.get("name"));
-                    if(snapshot.get("childname")=="") {
-                        mTextChildName.setText("자녀명을 등록해주세요.");
-                        mTextRelation.setText("자녀와의 관계를 등록해주세요.");
-                    } else {
-                        mTextChildName.setText("자녀명: "+ snapshot.get("childname"));
-                        mTextRelation.setText("자녀와의 관계: "+ snapshot.get("parentrelation"));
-                    }
-                    // Log.d(TAG, "Current data: " + snapshot.getData());
+        profileEdit = (RelativeLayout) v.findViewById(R.id.profile_edit);
+        profileEdit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(getActivity().getApplication(), ProfileEditActivity.class));
+            }
+        });
+
+        parentAdd = (LinearLayout) v.findViewById(R.id.parent_add);
+        AlertDialog.Builder mBuilder = new AlertDialog.Builder(getContext());
+        View mView = getLayoutInflater().inflate(R.layout.dialog_parent_invite, null);
+        mBuilder.setView(mView);
+        final AlertDialog dialog = mBuilder.create();
+
+        parentAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.show();
+            }
+        });
+
+        txtEmail = (EditText) mView.findViewById(R.id.txt_email);
+
+        inviteCancel = (LinearLayout) mView.findViewById(R.id.invite_cancel);
+        inviteCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
+
+        parentInvite = (LinearLayout) mView.findViewById(R.id.parent_invite);
+        parentInvite.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(txtEmail.getText().toString().equals("")){
+                    Toast.makeText(getActivity(), "빈칸을 입력해주세요.", Toast.LENGTH_SHORT).show();
                 } else {
-                    // Log.d(TAG, "Current data: null");
+
                 }
             }
         });
 
-        mSignOutButton = (Button) v.findViewById(R.id.sign_out);
-        mSignOutButton.setOnClickListener(new View.OnClickListener() {
+        mSignOut = (RelativeLayout) v.findViewById(R.id.sign_out);
+        mSignOut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 FirebaseAuth.getInstance().signOut();
@@ -211,90 +193,6 @@ public class ProfileFragment extends Fragment {
             }
         });
 
-        mChildRegisterButton = (Button) v.findViewById(R.id.child_register);
-        mChildRegisterButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                AlertDialog.Builder mBuilder = new AlertDialog.Builder(getContext());
-                View mView = getLayoutInflater().inflate(R.layout.dialog_child_register, null);
-                final EditText cName = (EditText) mView.findViewById(R.id.child_name);
-                final EditText cRelation = (EditText) mView.findViewById(R.id.child_relation);
-                Button cRegister = (Button) mView.findViewById(R.id.child_register);
-
-                mBuilder.setView(mView);
-                final AlertDialog dialog = mBuilder.create();
-                dialog.show();
-                cRegister.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        if(!cName.getText().toString().isEmpty() && !cRelation.getText().toString().isEmpty()){
-
-                            final FirebaseFirestore db = FirebaseFirestore.getInstance();
-                            final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                            final DocumentReference docRef = db.collection("users").document(user.getUid());
-                            final String cid = db.collection("users").document().getId();
-                            docRef.update("child", cid);
-                            docRef.update("childname", cName.getText().toString());
-                            docRef.update("parentrelation", cRelation.getText().toString())
-                                    .addOnSuccessListener(new OnSuccessListener< Void >() {
-                                        @Override
-                                        public void onSuccess(Void aVoid) {
-                                            // Toast.makeText(MainActivity.this, "Updated Successfully", Toast.LENGTH_SHORT).show();
-                                        }
-                                    });
-
-                            docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                                @Override
-                                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                                    if (task.isSuccessful()) {
-                                        DocumentSnapshot document = task.getResult();
-                                        if (document.exists()) {
-                                            // Create a new user with a first and last name
-                                            Map<String, Object> child_data = new HashMap<>();
-                                            child_data.put("child", cid);
-                                            child_data.put("childname", cName.getText().toString());
-                                            child_data.put("parent", user.getUid());
-                                            child_data.put("parentname", document.get("name"));
-                                            child_data.put("parentrelation", cRelation.getText().toString());
-
-                                            // Add a new document with a generated ID
-                                            db.collection("child").document(cid)
-                                                    .set(child_data)
-                                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                        @Override
-                                                        public void onSuccess(Void aVoid) {
-                                                            // Log.d("DocumentSnapshot added with ID: " + documentReference.getId());
-                                                        }
-                                                    })
-                                                    .addOnFailureListener(new OnFailureListener() {
-                                                        @Override
-                                                        public void onFailure(@NonNull Exception e) {
-                                                            // Log.w("Error adding document", e);
-                                                        }
-                                                    });
-                                            // Log.d(TAG, "DocumentSnapshot data: " + document.getData());
-                                        } else {
-                                            // Log.d(TAG, "No such document");
-                                        }
-                                    } else {
-                                        // Log.d(TAG, "get failed with ", task.getException());
-                                    }
-                                }
-                            });
-
-                            Toast.makeText(getActivity().getApplication(),
-                                    "자녀가 등록되었습니다.",
-                                    Toast.LENGTH_SHORT).show();
-                            dialog.dismiss();
-                        }else{
-                            Toast.makeText(getActivity().getApplication(),
-                                    "빈칸을 입력해주세요.",
-                                    Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
-            }
-        });
 
 //        FirebaseStorage storage = FirebaseStorage.getInstance();
 //        StorageReference storageRef = storage.getReferenceFromUrl("gs://geniauti.appspot.com/");
@@ -327,15 +225,6 @@ public class ProfileFragment extends Fragment {
 //                });
 //            }
 //        });
-
-        mSettingsButton = (Button) v.findViewById(R.id.settings);
-        mSettingsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent mainIntent = new Intent(getActivity().getApplication(),SettingsActivity.class);
-                startActivity(mainIntent);
-            }
-        });
 
         return v;
     }

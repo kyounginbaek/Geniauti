@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="24dp"
+        android:paddingRight="24dp"
+        android:paddingTop="21dp"
+        android:textSize="20sp"
+        android:textColor="#de000000"
+        android:lineSpacingExtra="8sp"
+        android:text="보호자 초대하기"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="24dp"
+        android:paddingRight="24dp"
+        android:paddingTop="12dp"
+        android:textSize="16sp"
+        android:textColor="#8a000000"
+        android:lineSpacingExtra="8sp"
+        android:text="이메일로 이다솔의 새로운 보호자에게 초대장을 보낼 수 있습니다."
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="24dp"
+        android:paddingRight="24dp"
+        android:paddingTop="27dp"
+        android:paddingBottom="42dp">
+
+        <EditText
+            android:id="@+id/txt_email"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:textColor="#de000000"
+            app:backgroundTint="#1e000000"
+            android:lineSpacingExtra="8sp"
+            android:hint="이메일 주소"
+            android:inputType="textMultiLine"
+            android:scrollbars="vertical"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:paddingRight="8dp"
+        android:gravity="right|center_vertical"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:id="@+id/invite_cancel"
+            android:layout_width="75dp"
+            android:layout_height="36dp"
+            android:gravity="center"
+            android:background="?android:attr/selectableItemBackground">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:textColor="#ababab"
+                android:letterSpacing="0.04"
+                android:gravity="center_horizontal"
+                android:text="취소"
+                />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/parent_invite"
+            android:layout_width="75dp"
+            android:layout_height="36dp"
+            android:gravity="center"
+            android:background="?android:attr/selectableItemBackground">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:textColor="@color/coolGreen"
+                android:letterSpacing="0.04"
+                android:gravity="center_horizontal"
+                android:text="초대하기"
+                />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

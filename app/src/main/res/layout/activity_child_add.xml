@@ -86,16 +86,55 @@
                     android:textColor="#de000000"
                     app:backgroundTint="#1e000000"
                     android:lineSpacingExtra="8sp"
-                    android:hint="이름"
+                    android:hint="아이 이름"
                     android:maxLines="1"
                     android:singleLine="true" />
 
             </android.support.design.widget.TextInputLayout>
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="9dp"
+                android:textSize="12sp"
+                android:textColor="#ababab"
+                android:lineSpacingExtra="12sp"
+                android:text="연령 표기 방법"
+                />
+
+            <RadioGroup
+                android:id="@+id/radio_child_age"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:paddingTop="13dp"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:id="@+id/month"
+                    android:text="개월"
+                    android:textSize="16dp"
+                    android:textColor="#de3b3b3b"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="34dp"
+                    android:layout_weight="1"
+                    />
+
+                <RadioButton
+                    android:id="@+id/year"
+                    android:text="세"
+                    android:textSize="16dp"
+                    android:textColor="#de3b3b3b"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="34dp"
+                    android:layout_weight="1" />
+
+            </RadioGroup>
+
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingTop="7dp"
                 >
 
                 <EditText
@@ -113,6 +152,16 @@
 
             </android.support.design.widget.TextInputLayout>
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="9dp"
+                android:textSize="12sp"
+                android:textColor="#ababab"
+                android:lineSpacingExtra="12sp"
+                android:text="아이 성별"
+                />
+
             <RadioGroup
                 android:id="@+id/child_sex"
                 android:layout_width="match_parent"
@@ -122,18 +171,18 @@
 
                 <RadioButton
                     android:id="@+id/boy"
-                    android:text="남자"
+                    android:text="남자아이"
                     android:textSize="16dp"
                     android:textColor="#de3b3b3b"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:paddingLeft="34dp"
                     android:layout_weight="1"
-                    android:checked="true"/>
+                    />
 
                 <RadioButton
                     android:id="@+id/girl"
-                    android:text="여자"
+                    android:text="여자아이"
                     android:textSize="16dp"
                     android:textColor="#de3b3b3b"
                     android:layout_width="0dp"
@@ -143,11 +192,10 @@
 
             </RadioGroup>
 
-
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingTop="7dp"
+                android:paddingTop="35dp"
                 >
 
                 <EditText
@@ -158,7 +206,7 @@
                     android:textColor="#de000000"
                     app:backgroundTint="#1e000000"
                     android:lineSpacingExtra="8sp"
-                    android:hint="관계"
+                    android:hint="아이와의 관계"
                     android:maxLines="1"
                     android:singleLine="true" />
 
@@ -169,6 +217,7 @@
                 style="?android:textAppearanceSmall"
                 android:layout_width="match_parent"
                 android:layout_height="36dp"
+                android:layout_marginBottom="27dp"
                 android:textSize="14sp"
                 android:textColor="#ffffff"
                 android:background="@color/coolGreen"

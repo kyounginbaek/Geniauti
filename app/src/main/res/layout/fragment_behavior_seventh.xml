@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingTop="70dp"
+    tools:context=".BehaviorSeventhFragment">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="14dp"
+                android:textSize="20sp"
+                android:textColor="#3b3b3b"
+                android:lineSpacingExtra="8sp"
+                android:text="아이의 문제 행동 강도를\n선택해주세요."
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="93dp"
+                android:textSize="14sp"
+                android:textColor="#858585"
+                android:text="* 문제 행동 강도는 5점 기준으로 1점일 경우 매우 약함, 5점일 경우 매우 강함을 나타냅니다."
+                />
+
+            <SeekBar
+                android:id="@+id/seekBar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="32dp"
+                android:paddingRight="32dp"
+                style="@style/Widget.AppCompat.SeekBar.Discrete"
+                android:max="5"
+                android:progress="0"/>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</FrameLayout>

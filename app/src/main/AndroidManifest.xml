@@ -6,7 +6,7 @@
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.READ_PROFILE" />
     <!-- <uses-permission android:name="android.permission.READ_CONTACTS" /> -->
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
@@ -22,9 +22,6 @@
             android:name=".MainActivity"
             android:label="@string/title_activity_main"
             android:windowSoftInputMode="adjustPan" />
-        <activity
-            android:name=".SettingsActivity"
-            android:label="@string/title_activity_settings" />
         <activity
             android:name=".SignupActivity"
             android:label="@string/title_activity_signup" />
@@ -43,9 +40,11 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".CaseDetailActivity" />
         <activity android:name=".ChildRegisterActivity" />
-        <activity android:name=".ChildAddActivity">
-
-        </activity>
+        <activity android:name=".ChildAddActivity" />
+        <activity android:name=".ChildEditActivity" />
+        <activity android:name=".ProfileEditActivity" />
+        <activity android:name=".PasswordEditActivity" />
+        <activity android:name=".SettingsActivity"></activity>
     </application>
 
 </manifest>

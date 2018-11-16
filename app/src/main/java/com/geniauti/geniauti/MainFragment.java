@@ -13,13 +13,18 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.github.sundeepk.compactcalendarview.CompactCalendarView;
 import com.github.sundeepk.compactcalendarview.domain.Event;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
@@ -124,6 +129,19 @@ public class MainFragment extends Fragment {
         mBuilder.setView(mView);
         final AlertDialog dialog = mBuilder.create();
 
+        ListView listView = (ListView) mView.findViewById(R.id.behavior_listview);
+        ArrayList<Listviewitem> data = new ArrayList<>();
+        Listviewitem item1 = new Listviewitem("집 / 때리기 / 관심","최근 기록");
+        Listviewitem item2 = new Listviewitem("공원 / 소리 지르기 / 요구","저장된 기록 1");
+        Listviewitem item3 = new Listviewitem("집 / 울기 / 관심","저장된 기록 2");
+
+        data.add(item1);
+        data.add(item2);
+        data.add(item3);
+
+        ListviewAdapter adapter = new ListviewAdapter(getContext(), R.layout.list_behavior, data);
+        listView.setAdapter(adapter);
+
         LinearLayout behavior_add = (LinearLayout) mView.findViewById(R.id.behavior_add);
         behavior_add.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -145,6 +163,50 @@ public class MainFragment extends Fragment {
         });
 
         return v;
+    }
+
+    public class Listviewitem {
+        private String main;
+        private String sub;
+        public String getMain() {return main;}
+        public String getSub() {return sub;}
+        public Listviewitem(String main,String sub) {
+            this.main = main;
+            this.sub = sub;
+        }
+    }
+
+    public class ListviewAdapter extends BaseAdapter {
+        private LayoutInflater inflater;
+        private ArrayList<Listviewitem> data;
+        private int layout;
+        public ListviewAdapter(Context context, int layout, ArrayList<Listviewitem> data){
+            this.inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            this.data = data;
+            this.layout = layout;
+        }
+
+        @Override
+        public int getCount(){return data.size();}
+
+        @Override
+        public String getItem(int position){return data.get(position).getMain();}
+
+        @Override
+        public long getItemId(int position){return position;}
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent){
+            if(convertView == null){
+                convertView = inflater.inflate(layout, parent, false);
+            }
+            Listviewitem listviewitem = data.get(position);
+            TextView main = (TextView) convertView.findViewById(R.id.first_txtview);
+            main.setText(listviewitem.getMain());
+            TextView sub = (TextView)convertView.findViewById(R.id.second_txtview);
+            sub.setText(listviewitem.getSub());
+            return convertView;
+        }
     }
 
     // TODO: Rename method, update argument and hook method into UI event

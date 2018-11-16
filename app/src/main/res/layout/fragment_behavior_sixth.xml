@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingTop="70dp"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:background="#ffffff"
+    tools:context=".BehaviorSixthFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:textColor="#3b3b3b"
+            android:lineSpacingExtra="8sp"
+            android:text="어떤 류의 행동을 했나요?\n모두 골라주세요."
+            />
+
+        <ListView
+            android:id="@+id/checkbox_listview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="26dp"
+            android:divider="#00000000"
+            android:layout_marginBottom="44dp"/>
+
+    </LinearLayout>
+
+</FrameLayout>

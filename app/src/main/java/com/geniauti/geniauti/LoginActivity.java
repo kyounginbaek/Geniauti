@@ -171,6 +171,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      * errors are presented and no actual login attempt is made.
      */
     private void attemptLogin() {
+        mProgressView.setVisibility(View.VISIBLE);
+
         if (mAuthTask != null) {
             return;
         }
@@ -188,6 +190,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         // Check for a valid password, if the user entered one.
         if (TextUtils.isEmpty(password) && !isPasswordValid(password)) {
+            mProgressView.setVisibility(View.GONE);
             mPasswordView.setError("6자리 이상의 비밀번호를 입력해주세요.");
             focusView = mPasswordView;
             cancel = true;
@@ -195,10 +198,12 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         // Check for a valid email address.
         if (TextUtils.isEmpty(email)) {
+            mProgressView.setVisibility(View.GONE);
             mEmailView.setError("이메일 주소를 입력해주세요.");
             focusView = mEmailView;
             cancel = true;
         } else if (!isEmailValid(email)) {
+            mProgressView.setVisibility(View.GONE);
             mEmailView.setError("잘못된 이메일 형식입니다.");
             focusView = mEmailView;
             cancel = true;
@@ -214,7 +219,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
-                                showProgress(true);
+                                mProgressView.setVisibility(View.GONE);
                                 startActivity(new Intent(LoginActivity.this,MainActivity.class));
                                 finish();
                                 // Sign in success, update UI with the signed-in user's information
@@ -222,6 +227,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                                 // FirebaseUser user = mAuth.getCurrentUser();
                                 // updateUI(user);
                             } else {
+                                mProgressView.setVisibility(View.GONE);
                                 FirebaseAuthException e = (FirebaseAuthException )task.getException();
                                 if(e.getErrorCode()=="ERROR_INVALID_EMAIL") {
                                     Toast.makeText(LoginActivity.this, "잘못된 이메일 주소 형식입니다.", Toast.LENGTH_SHORT).show();

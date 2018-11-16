@@ -1,13 +1,8 @@
 package com.geniauti.geniauti;
 
-import android.content.Context;
-import android.content.Intent;
 import android.net.Uri;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
@@ -16,16 +11,12 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
-import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
-import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,7 +29,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.HashMap;
 import java.util.Map;
 
-public class BehaviorActivity extends AppCompatActivity implements BehaviorFirstFragment.OnFragmentInteractionListener, BehaviorSecondFragment.OnFragmentInteractionListener, BehaviorThirdFragment.OnFragmentInteractionListener, BehaviorFourthFragment.OnFragmentInteractionListener {
+public class BehaviorActivity extends AppCompatActivity implements BehaviorFirstFragment.OnFragmentInteractionListener, BehaviorSecondFragment.OnFragmentInteractionListener, BehaviorThirdFragment.OnFragmentInteractionListener, BehaviorFourthFragment.OnFragmentInteractionListener, BehaviorFifthFragment.OnFragmentInteractionListener, BehaviorSixthFragment.OnFragmentInteractionListener, BehaviorSeventhFragment.OnFragmentInteractionListener, BehaviorEighthFragment.OnFragmentInteractionListener {
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -97,7 +88,7 @@ public class BehaviorActivity extends AppCompatActivity implements BehaviorFirst
                     toolbar.setNavigationIcon(getResources().getDrawable(R.drawable.ic_arrow_back_green_24dp));
                 }
 
-                if(position==3) {
+                if(position==7) {
                     fab.setImageResource(R.drawable.ic_check_white_24dp);
                 } else {
                     fab.setImageResource(R.drawable.ic_arrow_forward_white_24dp);
@@ -133,38 +124,62 @@ public class BehaviorActivity extends AppCompatActivity implements BehaviorFirst
                 Fragment secondFragment = getSupportFragmentManager().findFragmentByTag("android:switcher:"+R.id.behavior_container+":"+1);
                 Fragment thirdFragment = getSupportFragmentManager().findFragmentByTag("android:switcher:"+R.id.behavior_container+":"+2);
                 Fragment fourthFragment = getSupportFragmentManager().findFragmentByTag("android:switcher:"+R.id.behavior_container+":"+3);
+                Fragment fifthFragment = getSupportFragmentManager().findFragmentByTag("android:switcher:"+R.id.behavior_container+":"+4);
+                Fragment sixthFragment = getSupportFragmentManager().findFragmentByTag("android:switcher:"+R.id.behavior_container+":"+5);
+                Fragment seventhFragment = getSupportFragmentManager().findFragmentByTag("android:switcher:"+R.id.behavior_container+":"+6);
+                Fragment eighthFragment = getSupportFragmentManager().findFragmentByTag("android:switcher:"+R.id.behavior_container+":"+7);
+
                 BehaviorFirstFragment f1 = (BehaviorFirstFragment) firstFragment;
                 BehaviorSecondFragment f2 = (BehaviorSecondFragment) secondFragment;
                 BehaviorThirdFragment f3 = (BehaviorThirdFragment) thirdFragment;
                 BehaviorFourthFragment f4 = (BehaviorFourthFragment) fourthFragment;
+                BehaviorFifthFragment f5 = (BehaviorFifthFragment) fifthFragment;
+                BehaviorSixthFragment f6 = (BehaviorSixthFragment) sixthFragment;
+                BehaviorSeventhFragment f7 = (BehaviorSeventhFragment) seventhFragment;
+                BehaviorEighthFragment f8 = (BehaviorEighthFragment) eighthFragment;
 
                 if(mViewPager.getCurrentItem()==0) {
                     mViewPager.setCurrentItem(getItem(+1), true);
-                } else if(mViewPager.getCurrentItem()==1) {
-                    if(f2.checkbox_type.toString()=="{}"){
+                } else if(mViewPager.getCurrentItem()==1){
+                    mViewPager.setCurrentItem(getItem(+1), true);
+                } else if(mViewPager.getCurrentItem()==2){
+                    if(f3.textInput.getText().toString().equals("")){
+                        Toast.makeText(BehaviorActivity.this, "빈칸을 입력해주세요.", Toast.LENGTH_SHORT).show();
+                    } else {
+                        mViewPager.setCurrentItem(getItem(+1), true);
+                    }
+                } else if(mViewPager.getCurrentItem()==3){
+                    if(f4.textInput.getText().toString().equals("")){
+                        Toast.makeText(BehaviorActivity.this, "빈칸을 입력해주세요.", Toast.LENGTH_SHORT).show();
+                    } else {
+                        mViewPager.setCurrentItem(getItem(+1), true);
+                    }
+                } else if(mViewPager.getCurrentItem()==4){
+                    if(f5.textInput.getText().toString().equals("")){
+                        Toast.makeText(BehaviorActivity.this, "빈칸을 입력해주세요.", Toast.LENGTH_SHORT).show();
+                    } else {
+                        mViewPager.setCurrentItem(getItem(+1), true);
+                    }
+                } else if(mViewPager.getCurrentItem()==5) {
+                    if(f6.checkbox_type.toString()=="{}"){
                         Toast.makeText(BehaviorActivity.this, "행동을 골라주세요.", Toast.LENGTH_SHORT).show();
                     } else {
                         mViewPager.setCurrentItem(getItem(+1), true);
                     }
-                } else if(mViewPager.getCurrentItem()==2) {
+                } else if(mViewPager.getCurrentItem()==6) {
                     mViewPager.setCurrentItem(getItem(+1), true);
-                } else if(mViewPager.getCurrentItem()==3) {
-                    if(f4.checkbox_reason.toString()=="{}"){
+                } else if(mViewPager.getCurrentItem()==7) {
+                    if(f8.checkbox_reason.toString()=="{}"){
                         Toast.makeText(BehaviorActivity.this, "행동 원인을 골라주세요.", Toast.LENGTH_SHORT).show();
                     } else {
-                        tempBehavior.place = f1.location;
-                        tempBehavior.type = f2.checkbox_type;
-                        tempBehavior.intensity = f3.seekbarValue;
-                        tempBehavior.reason = f4.checkbox_reason;
-
                         final FirebaseFirestore db = FirebaseFirestore.getInstance();
                         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                         Map<String, Object> docData = new HashMap<>();
                         docData.put("uid", user.getUid());
-                        docData.put("place", tempBehavior.place);
-                        docData.put("type", tempBehavior.type);
-                        docData.put("intensity", tempBehavior.intensity);
-                        docData.put("reason", tempBehavior.reason);
+                        docData.put("place", f1.location);
+                        docData.put("type", f6.checkbox_type);
+                        docData.put("intensity", f7.seekbarValue);
+                        docData.put("reason", f8.checkbox_reason);
 
                         db.collection("behaviors").document()
                                 .set(docData)
@@ -258,7 +273,7 @@ public class BehaviorActivity extends AppCompatActivity implements BehaviorFirst
     }
 
     public class PagerAdapter extends FragmentPagerAdapter {
-        int mNumOfTabs = 4;
+        int mNumOfTabs = 8;
 
         public PagerAdapter(FragmentManager fm) {
             super(fm);
@@ -280,6 +295,18 @@ public class BehaviorActivity extends AppCompatActivity implements BehaviorFirst
                 case 3:
                     BehaviorFourthFragment tab4 = new BehaviorFourthFragment();
                     return tab4;
+                case 4:
+                    BehaviorFifthFragment tab5 = new BehaviorFifthFragment();
+                    return tab5;
+                case 5:
+                    BehaviorSixthFragment tab6 = new BehaviorSixthFragment();
+                    return tab6;
+                case 6:
+                    BehaviorSeventhFragment tab7 = new BehaviorSeventhFragment();
+                    return tab7;
+                case 7:
+                    BehaviorEighthFragment tab8 = new BehaviorEighthFragment();
+                    return tab8;
                 default:
                     return null;
             }
@@ -289,6 +316,7 @@ public class BehaviorActivity extends AppCompatActivity implements BehaviorFirst
         public int getCount() {
             return mNumOfTabs;
         }
+
     }
 
     @Override
