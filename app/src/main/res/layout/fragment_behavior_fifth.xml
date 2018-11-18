@@ -24,7 +24,7 @@
                 android:textSize="20sp"
                 android:textColor="#3b3b3b"
                 android:lineSpacingExtra="8sp"
-                android:text="행동 후 아이에게 한 일은\n무엇인가요?"
+                android:text="행동 바로 이전에 일어난 일은\n무엇인가요?"
                 />
 
             <ImageView

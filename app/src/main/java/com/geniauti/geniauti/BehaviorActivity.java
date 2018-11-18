@@ -1,6 +1,8 @@
 package com.geniauti.geniauti;
 
+import android.content.Context;
 import android.net.Uri;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -17,6 +19,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,7 +32,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.HashMap;
 import java.util.Map;
 
-public class BehaviorActivity extends AppCompatActivity implements BehaviorFirstFragment.OnFragmentInteractionListener, BehaviorSecondFragment.OnFragmentInteractionListener, BehaviorThirdFragment.OnFragmentInteractionListener, BehaviorFourthFragment.OnFragmentInteractionListener, BehaviorFifthFragment.OnFragmentInteractionListener, BehaviorSixthFragment.OnFragmentInteractionListener, BehaviorSeventhFragment.OnFragmentInteractionListener, BehaviorEighthFragment.OnFragmentInteractionListener {
+public class BehaviorActivity extends AppCompatActivity implements BehaviorFirstFragment.OnFragmentInteractionListener, BehaviorSecondFragment.OnFragmentInteractionListener, BehaviorThirdFragment.OnFragmentInteractionListener, BehaviorFourthFragment.OnFragmentInteractionListener, BehaviorFifthFragment.OnFragmentInteractionListener, BehaviorSixthFragment.OnFragmentInteractionListener, BehaviorSeventhFragment.OnFragmentInteractionListener, BehaviorEighthFragment.OnFragmentInteractionListener, BehaviorNinthFragment.OnFragmentInteractionListener {
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -46,6 +49,7 @@ public class BehaviorActivity extends AppCompatActivity implements BehaviorFirst
      */
     private CustomViewPager mViewPager;
     public Behavior tempBehavior;
+    public static Parcelable state;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,17 +92,19 @@ public class BehaviorActivity extends AppCompatActivity implements BehaviorFirst
                     toolbar.setNavigationIcon(getResources().getDrawable(R.drawable.ic_arrow_back_green_24dp));
                 }
 
-                if(position==7) {
+                if(position==8) {
                     fab.setImageResource(R.drawable.ic_check_white_24dp);
                 } else {
                     fab.setImageResource(R.drawable.ic_arrow_forward_white_24dp);
                 }
+
             }
 
             @Override
             public void onPageScrollStateChanged(int state)
             {
-
+                ((InputMethodManager)getSystemService(INPUT_METHOD_SERVICE))
+                        .hideSoftInputFromWindow(mViewPager.getWindowToken(), 0);
             }
 
 
@@ -128,6 +134,7 @@ public class BehaviorActivity extends AppCompatActivity implements BehaviorFirst
                 Fragment sixthFragment = getSupportFragmentManager().findFragmentByTag("android:switcher:"+R.id.behavior_container+":"+5);
                 Fragment seventhFragment = getSupportFragmentManager().findFragmentByTag("android:switcher:"+R.id.behavior_container+":"+6);
                 Fragment eighthFragment = getSupportFragmentManager().findFragmentByTag("android:switcher:"+R.id.behavior_container+":"+7);
+                Fragment ninthFragment = getSupportFragmentManager().findFragmentByTag("android:switcher:"+R.id.behavior_container+":"+8);
 
                 BehaviorFirstFragment f1 = (BehaviorFirstFragment) firstFragment;
                 BehaviorSecondFragment f2 = (BehaviorSecondFragment) secondFragment;
@@ -137,14 +144,23 @@ public class BehaviorActivity extends AppCompatActivity implements BehaviorFirst
                 BehaviorSixthFragment f6 = (BehaviorSixthFragment) sixthFragment;
                 BehaviorSeventhFragment f7 = (BehaviorSeventhFragment) seventhFragment;
                 BehaviorEighthFragment f8 = (BehaviorEighthFragment) eighthFragment;
+                BehaviorNinthFragment f9 = (BehaviorNinthFragment) ninthFragment;
 
                 if(mViewPager.getCurrentItem()==0) {
-                    mViewPager.setCurrentItem(getItem(+1), true);
-                } else if(mViewPager.getCurrentItem()==1){
-                    mViewPager.setCurrentItem(getItem(+1), true);
+                    if(f1.date_start.getTime() < f1.date_end.getTime()) {
+                        mViewPager.setCurrentItem(getItem(+1), true);
+                    } else {
+                        Toast.makeText(BehaviorActivity.this, "시작 시간이 종료시간보다 빠르도록 선택해주세요.", Toast.LENGTH_SHORT).show();
+                    }
+                } else if(mViewPager.getCurrentItem()==1) {
+                    if(f2.getResult()==""){
+                        Toast.makeText(BehaviorActivity.this, "장소를 선택해주세요.", Toast.LENGTH_SHORT).show();
+                    } else {
+                        mViewPager.setCurrentItem(getItem(+1), true);
+                    }
                 } else if(mViewPager.getCurrentItem()==2){
-                    if(f3.textInput.getText().toString().equals("")){
-                        Toast.makeText(BehaviorActivity.this, "빈칸을 입력해주세요.", Toast.LENGTH_SHORT).show();
+                    if(f3.getResult()==""){
+                        Toast.makeText(BehaviorActivity.this, "제목을 선택해주세요.", Toast.LENGTH_SHORT).show();
                     } else {
                         mViewPager.setCurrentItem(getItem(+1), true);
                     }
@@ -160,26 +176,43 @@ public class BehaviorActivity extends AppCompatActivity implements BehaviorFirst
                     } else {
                         mViewPager.setCurrentItem(getItem(+1), true);
                     }
-                } else if(mViewPager.getCurrentItem()==5) {
-                    if(f6.checkbox_type.toString()=="{}"){
-                        Toast.makeText(BehaviorActivity.this, "행동을 골라주세요.", Toast.LENGTH_SHORT).show();
+                } else if(mViewPager.getCurrentItem()==5){
+                    if(f6.textInput.getText().toString().equals("")){
+                        Toast.makeText(BehaviorActivity.this, "빈칸을 입력해주세요.", Toast.LENGTH_SHORT).show();
                     } else {
                         mViewPager.setCurrentItem(getItem(+1), true);
                     }
                 } else if(mViewPager.getCurrentItem()==6) {
-                    mViewPager.setCurrentItem(getItem(+1), true);
+                    if(f7.getResult().toString()=="{}"){
+                        Toast.makeText(BehaviorActivity.this, "행동을 선택해주세요.", Toast.LENGTH_SHORT).show();
+                    } else {
+                        mViewPager.setCurrentItem(getItem(+1), true);
+                    }
                 } else if(mViewPager.getCurrentItem()==7) {
-                    if(f8.checkbox_reason.toString()=="{}"){
+
+                    mViewPager.setCurrentItem(getItem(+1), true);
+                } else if(mViewPager.getCurrentItem()==8) {
+                    if(f9.getResult().toString()=="{}"){
                         Toast.makeText(BehaviorActivity.this, "행동 원인을 골라주세요.", Toast.LENGTH_SHORT).show();
                     } else {
                         final FirebaseFirestore db = FirebaseFirestore.getInstance();
                         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                         Map<String, Object> docData = new HashMap<>();
+                        docData.put("start_time", f1.startTimestamp);
+                        docData.put("end_time", f1.endTimestamp);
+                        docData.put("place", f2.getResult());
+                        docData.put("categorization", f3.getResult());
+                        docData.put("current_behavior", f4.textInput.getText().toString());
+                        docData.put("before_behavior", f5.textInput.getText().toString());
+                        docData.put("after_behavior", f6.textInput.getText().toString());
+                        docData.put("type", f7.getResult());
+                        docData.put("intensity", f8.seekbarValue);
+                        docData.put("reason", f9.getResult());
+                        docData.put("created_at", "");
+                        docData.put("updated_at", "");
                         docData.put("uid", user.getUid());
-                        docData.put("place", f1.location);
-                        docData.put("type", f6.checkbox_type);
-                        docData.put("intensity", f7.seekbarValue);
-                        docData.put("reason", f8.checkbox_reason);
+                        docData.put("name", "");
+                        docData.put("cid", "");
 
                         db.collection("behaviors").document()
                                 .set(docData)
@@ -204,65 +237,6 @@ public class BehaviorActivity extends AppCompatActivity implements BehaviorFirst
 
     }
 
-
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_behavior, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-    public static class PlaceholderFragment extends Fragment {
-        /**
-         * The fragment argument representing the section number for this
-         * fragment.
-         */
-        private static final String ARG_SECTION_NUMBER = "section_number";
-
-        public PlaceholderFragment() {
-        }
-
-        /**
-         * Returns a new instance of this fragment for the given section
-         * number.
-         */
-        public static PlaceholderFragment newInstance(int sectionNumber) {
-            PlaceholderFragment fragment = new PlaceholderFragment();
-            Bundle args = new Bundle();
-            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-            fragment.setArguments(args);
-            return fragment;
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_behavior, container, false);
-            TextView textView = (TextView) rootView.findViewById(R.id.section_label);
-            textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
-            return rootView;
-        }
-    }
-
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.
@@ -273,7 +247,7 @@ public class BehaviorActivity extends AppCompatActivity implements BehaviorFirst
     }
 
     public class PagerAdapter extends FragmentPagerAdapter {
-        int mNumOfTabs = 8;
+        int mNumOfTabs = 9;
 
         public PagerAdapter(FragmentManager fm) {
             super(fm);
@@ -307,6 +281,9 @@ public class BehaviorActivity extends AppCompatActivity implements BehaviorFirst
                 case 7:
                     BehaviorEighthFragment tab8 = new BehaviorEighthFragment();
                     return tab8;
+                case 8:
+                    BehaviorNinthFragment tab9 = new BehaviorNinthFragment();
+                    return tab9;
                 default:
                     return null;
             }

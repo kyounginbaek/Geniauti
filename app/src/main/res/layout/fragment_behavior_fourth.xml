@@ -21,10 +21,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="132dp"
+                android:layout_marginBottom="30dp"
                 android:textSize="20sp"
                 android:textColor="#3b3b3b"
                 android:lineSpacingExtra="8sp"
-                android:text="행동 바로 이전에 일어난 일은\n무엇인가요?"
+                android:text="어떤 행동을 보였나요?"
                 />
 
             <ImageView
@@ -37,15 +38,14 @@
                 android:id="@+id/text_input"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingTop="20dp"
-                android:textSize="16sp"
-                android:textColor="#3b3b3b"
-                app:backgroundTint="#1e000000"
-                android:lineSpacingExtra="8sp"
                 android:hint="예) 다솔이가 밥을 먹다 말고 울고 소리를 지르며 바닥에서 굴렀다"
                 android:inputType="textMultiLine"
+                android:lineSpacingExtra="8sp"
+                android:paddingTop="20dp"
                 android:scrollbars="vertical"
-                />
+                android:textColor="#3b3b3b"
+                android:textSize="16sp"
+                app:backgroundTint="#1e000000" />
 
             <LinearLayout
                 android:id="@+id/add_text"

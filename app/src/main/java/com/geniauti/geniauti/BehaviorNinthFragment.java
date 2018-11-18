@@ -22,12 +22,12 @@ import java.util.List;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link BehaviorSeventhFragment.OnFragmentInteractionListener} interface
+ * {@link BehaviorNinthFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link BehaviorSeventhFragment#newInstance} factory method to
+ * Use the {@link BehaviorNinthFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class BehaviorSeventhFragment extends Fragment {
+public class BehaviorNinthFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -37,13 +37,13 @@ public class BehaviorSeventhFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    HashMap<String,Boolean> checkbox_type = new HashMap<String,Boolean>();
-    private BehaviorSeventhFragment.Type[] types ;
-    private ArrayAdapter<BehaviorSeventhFragment.Type> listAdapter ;
+    HashMap<String,Boolean> checkbox_reason = new HashMap<String,Boolean>();
+    private Reason[] reasons ;
+    private ArrayAdapter<Reason> listAdapter ;
 
     private OnFragmentInteractionListener mListener;
 
-    public BehaviorSeventhFragment() {
+    public BehaviorNinthFragment() {
         // Required empty public constructor
     }
 
@@ -53,11 +53,11 @@ public class BehaviorSeventhFragment extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment BehaviorSeventhFragment.
+     * @return A new instance of fragment BehaviorNinthFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static BehaviorSeventhFragment newInstance(String param1, String param2) {
-        BehaviorSeventhFragment fragment = new BehaviorSeventhFragment();
+    public static BehaviorNinthFragment newInstance(String param1, String param2) {
+        BehaviorNinthFragment fragment = new BehaviorNinthFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -77,77 +77,77 @@ public class BehaviorSeventhFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_behavior_seventh, container, false);
+        View v = inflater.inflate(R.layout.fragment_behavior_ninth, container, false);
 
         // Find the ListView resource.
         ListView mainListView = (ListView) v.findViewById( R.id.checkbox_listview );
 
-        // When item is tapped, toggle checked properties of CheckBox and type.
+        // When item is tapped, toggle checked properties of CheckBox and Reason.
         mainListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick( AdapterView<?> parent, View item,
                                      int position, long id) {
-                BehaviorSeventhFragment.Type type = listAdapter.getItem( position );
-                type.toggleChecked();
-                BehaviorSeventhFragment.TypeViewHolder viewHolder = (BehaviorSeventhFragment.TypeViewHolder) item.getTag();
-                viewHolder.getCheckBox().setChecked( type.isChecked() );
+                Reason reason = listAdapter.getItem( position );
+                reason.toggleChecked();
+                ReasonViewHolder viewHolder = (ReasonViewHolder) item.getTag();
+                viewHolder.getCheckBox().setChecked( reason.isChecked() );
             }
         });
 
 
-        // Create and populate types.
-        types = (BehaviorSeventhFragment.Type[]) onRetainCustomNonConfigurationInstance() ;
-        if ( types == null ) {
-            types = new BehaviorSeventhFragment.Type[] {
-                    new BehaviorSeventhFragment.Type("자해 행동", "selfharm"),
-                    new BehaviorSeventhFragment.Type("타해 행동", "harm"),
-                    new BehaviorSeventhFragment.Type("파괴 행동", "destruction"),
-                    new BehaviorSeventhFragment.Type("이탈 행동", "breakaway"),
-                    new BehaviorSeventhFragment.Type("성적 행동", "sexual"),
-                    new BehaviorSeventhFragment.Type("기타", "etc"),
+        // Create and populate reasons.
+        reasons = (Reason[]) onRetainCustomNonConfigurationInstance() ;
+        if ( reasons == null ) {
+            reasons = new Reason[] {
+                    new Reason("자신에게 관심을 갖는 것이 좋아서", "관심"),
+                    new Reason("행동을 통해 얻는 감각이 좋아서", "감각"),
+                    new Reason("타인에게 주목받는 것을 즐겨서", "주목"),
+                    new Reason("원하는 것을 즉각 얻지 못해서", "불만"),
+                    new Reason("시키는 일을 거부하려고", "거부"),
+                    new Reason("하라고 한 일이 힘들어서", "힘듬")
+
             };
         }
-        ArrayList<BehaviorSeventhFragment.Type> typeList = new ArrayList<BehaviorSeventhFragment.Type>();
-        typeList.addAll( Arrays.asList(types) );
+        ArrayList<Reason> reasonList = new ArrayList<Reason>();
+        reasonList.addAll( Arrays.asList(reasons) );
 
         // Set our custom array adapter as the ListView's adapter.
-        listAdapter = new BehaviorSeventhFragment.TypeArrayAdapter(this.getContext(), typeList);
+        listAdapter = new ReasonArrayAdapter(this.getContext(), reasonList);
         mainListView.setAdapter( listAdapter );
+
 
         // Inflate the layout for this fragment
         return v;
     }
 
     public HashMap<String, Boolean> getResult() {
-        checkbox_type.clear();
+        checkbox_reason.clear();
 
         for (int i=0; i < listAdapter.getCount(); i++) {
             if (listAdapter.getItem(i).isChecked()) {
-                checkbox_type.put(listAdapter.getItem(i).type, true);
+                checkbox_reason.put(listAdapter.getItem(i).reason, true);
             }
         }
-        return checkbox_type;
+        return checkbox_reason;
     }
 
     /** Holds checkbox data. */
-    private static class Type {
+    private static class Reason {
         private String name = "" ;
-        private String type = "";
+        private String reason = "";
         private boolean checked = false ;
-        public Type() {}
-        public Type( String name, String type ) {
+        public Reason() {}
+        public Reason( String name, String reason ) {
             this.name = name ;
-            this.type = type;
+            this.reason = reason;
         }
-        public Type( String name, String type , boolean checked ) {
+        public Reason( String name, boolean checked ) {
             this.name = name ;
-            this.type = type;
             this.checked = checked ;
         }
         public String getName() {
             return name;
         }
-        public String getType() { return type; }
         public void setName(String name) {
             this.name = name;
         }
@@ -166,11 +166,11 @@ public class BehaviorSeventhFragment extends Fragment {
     }
 
     /** Holds child views for one row. */
-    private static class TypeViewHolder {
+    private static class ReasonViewHolder {
         private CheckBox checkBox ;
         private TextView textView ;
-        public TypeViewHolder() {}
-        public TypeViewHolder(CheckBox checkBox ) {
+        public ReasonViewHolder() {}
+        public ReasonViewHolder(CheckBox checkBox ) {
             this.checkBox = checkBox ;
 //            this.textView = textView ;
         }
@@ -188,22 +188,22 @@ public class BehaviorSeventhFragment extends Fragment {
         }
     }
 
-    /** Custom adapter for displaying an array of type objects. */
-    private static class TypeArrayAdapter extends ArrayAdapter<BehaviorSeventhFragment.Type> {
+    /** Custom adapter for displaying an array of Reason objects. */
+    private static class ReasonArrayAdapter extends ArrayAdapter<Reason> {
 
         private LayoutInflater inflater;
 
-        public TypeArrayAdapter( Context context, List<BehaviorSeventhFragment.Type> typeList ) {
-//            super( context, R.layout.list_checkbox, R.id.rowTextView, typeList );
-            super( context, R.layout.list_checkbox, typeList );
+        public ReasonArrayAdapter( Context context, List<Reason> reasonList ) {
+//            super( context, R.layout.list_checkbox, R.id.rowTextView, reasonList );
+            super( context, R.layout.list_checkbox, reasonList );
             // Cache the LayoutInflate to avoid asking for a new one each time.
             inflater = LayoutInflater.from(context) ;
         }
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            // type to display
-            BehaviorSeventhFragment.Type type = this.getItem( position );
+            // Reason to display
+            Reason reason = this.getItem( position );
 
             // The child views in each row.
             CheckBox checkBox ;
@@ -218,33 +218,33 @@ public class BehaviorSeventhFragment extends Fragment {
 
                 // Optimization: Tag the row with it's child views, so we don't have to
                 // call findViewById() later when we reuse the row.
-                convertView.setTag( new BehaviorSeventhFragment.TypeViewHolder(checkBox) );
+                convertView.setTag( new ReasonViewHolder(checkBox) );
 
-                // If CheckBox is toggled, update the type it is tagged with.
+                // If CheckBox is toggled, update the reason it is tagged with.
                 checkBox.setOnClickListener( new View.OnClickListener() {
                     public void onClick(View v) {
                         CheckBox cb = (CheckBox) v ;
-                        BehaviorSeventhFragment.Type type = (BehaviorSeventhFragment.Type) cb.getTag();
-                        type.setChecked( cb.isChecked() );
+                        Reason reason = (Reason) cb.getTag();
+                        reason.setChecked( cb.isChecked() );
                     }
                 });
             }
             // Reuse existing row view
             else {
                 // Because we use a ViewHolder, we avoid having to call findViewById().
-                BehaviorSeventhFragment.TypeViewHolder viewHolder = (BehaviorSeventhFragment.TypeViewHolder) convertView.getTag();
+                ReasonViewHolder viewHolder = (ReasonViewHolder) convertView.getTag();
                 checkBox = viewHolder.getCheckBox() ;
 //                textView = viewHolder.getTextView() ;
             }
 
-            // Tag the CheckBox with the type it is displaying, so that we can
-            // access the type in onClick() when the CheckBox is toggled.
-            checkBox.setTag( type );
+            // Tag the CheckBox with the Reason it is displaying, so that we can
+            // access the reason in onClick() when the CheckBox is toggled.
+            checkBox.setTag( reason );
 
-            // Display type data
-            checkBox.setChecked( type.isChecked() );
-            checkBox.setText(type.getName());
-//            textView.setText( type.getName() );
+            // Display reason data
+            checkBox.setChecked( reason.isChecked() );
+            checkBox.setText(reason.getName());
+//            textView.setText( reason.getName() );
 
             return convertView;
         }
@@ -252,8 +252,9 @@ public class BehaviorSeventhFragment extends Fragment {
     }
 
     public Object onRetainCustomNonConfigurationInstance () {
-        return types ;
+        return reasons ;
     }
+
 
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {

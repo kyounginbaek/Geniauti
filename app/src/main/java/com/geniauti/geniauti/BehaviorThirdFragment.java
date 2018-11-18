@@ -5,11 +5,21 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.BaseAdapter;
+import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.RadioButton;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import java.util.ArrayList;
 
 
 /**
@@ -30,10 +40,15 @@ public class BehaviorThirdFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    public TextView textInput;
-    private LinearLayout textDialog;
-    private LinearLayout textCancel;
-    private LinearLayout textAdd;
+    private View v;
+    private BehaviorThirdFragment.GridListAdapter adapter;
+    private ArrayList<String> arrayList;
+    public ListView listView;
+
+    private EditText txtTitle;
+    private LinearLayout titleDialog;
+    private LinearLayout titleCancel;
+    private LinearLayout titleAdd;
 
     private OnFragmentInteractionListener mListener;
 
@@ -72,41 +87,179 @@ public class BehaviorThirdFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View v = inflater.inflate(R.layout.fragment_behavior_third, container, false);
+        if (v != null) {
+            if ((ViewGroup)v.getParent() != null)
+                ((ViewGroup)v.getParent()).removeView(v);
+            return v;
+        }
+        v = inflater.inflate(R.layout.fragment_behavior_third, container, false);
 
-        textInput = (TextView) v.findViewById(R.id.text_input);
+        listView = (ListView) v.findViewById(R.id.radio_listview_second);
+        arrayList = new ArrayList<>();
 
-        AlertDialog.Builder mBuilder = new AlertDialog.Builder(getContext());
-        View mView = getLayoutInflater().inflate(R.layout.dialog_text_add, null);
-        mBuilder.setView(mView);
-        final AlertDialog dialog = mBuilder.create();
+        arrayList.add("울기");
+        arrayList.add("때리기");
+        arrayList.add("떼쓰기");
+        arrayList.add("물건 던지기");
+        arrayList.add("직접 입력하기");
 
-        textDialog = (LinearLayout) v.findViewById(R.id.add_text);
-        textDialog.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                dialog.show();
-            }
-        });
+        adapter = new BehaviorThirdFragment.GridListAdapter(this.getContext(), arrayList, true);
+        listView.setAdapter(adapter);
 
-        textCancel = (LinearLayout) mView.findViewById(R.id.text_cancel);
-        textCancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                dialog.dismiss();
-            }
-        });
-
-        textAdd = (LinearLayout) mView.findViewById(R.id.text_add);
-        textAdd.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-            }
-        });
-
+        // Inflate the layout for this fragment
         return v;
     }
+
+    public String getResult() {
+        int i = adapter.selectedPosition;
+
+        if(i == -1){
+            return "";
+        } else {
+            return adapter.getItem(i).toString();
+        }
+    }
+
+    public class GridListAdapter extends BaseAdapter {
+        private Context context;
+        private ArrayList<String> arrayList;
+        private LayoutInflater inflater;
+        private boolean isListView;
+        private int selectedPosition = -1;
+
+        public GridListAdapter(Context context, ArrayList<String> arrayList, boolean isListView) {
+            this.context = context;
+            this.arrayList = arrayList;
+            this.isListView = isListView;
+            inflater = LayoutInflater.from(context);
+        }
+
+        @Override
+        public int getCount() {
+            return arrayList.size();
+        }
+
+        @Override
+        public Object getItem(int i) {
+            return arrayList.get(i);
+        }
+
+        @Override
+        public long getItemId(int i) {
+            return i;
+        }
+
+        @Override
+        public View getView(final int i, View view, ViewGroup viewGroup) {
+            BehaviorThirdFragment.GridListAdapter.ViewHolder viewHolder;
+
+            if (view == null) {
+                viewHolder = new BehaviorThirdFragment.GridListAdapter.ViewHolder();
+
+                if(i == getCount()-1){
+                    view = inflater.inflate(R.layout.list_addlist, viewGroup, false);
+                    viewHolder.addListText = (TextView) view.findViewById(R.id.add_list_txt);
+                    viewHolder.addListLayout = (LinearLayout) view.findViewById(R.id.add_list_layout);
+                } else {
+                    view = inflater.inflate(R.layout.list_radio, viewGroup, false);
+                    viewHolder.radioButton = (RadioButton) view.findViewById(R.id.rowRadioButton);
+                }
+
+                view.setTag(viewHolder);
+            } else
+                viewHolder = (BehaviorThirdFragment.GridListAdapter.ViewHolder) view.getTag();
+
+            if (i == getCount()-1) {
+                viewHolder.addListText.setText("직접 입력하기");
+                viewHolder.addListLayout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+//                        itemCheckChanged(v);
+
+                        AlertDialog.Builder mBuilder = new AlertDialog.Builder(getContext());
+                        View mView = getLayoutInflater().inflate(R.layout.dialog_title_add, null);
+                        mBuilder.setView(mView);
+                        final AlertDialog dialog = mBuilder.create();
+                        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+
+                        dialog.show();
+
+                        txtTitle = (EditText) mView.findViewById(R.id.txt_title);
+
+                        titleCancel = (LinearLayout) mView.findViewById(R.id.title_cancel);
+                        titleCancel.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                dialog.dismiss();
+                            }
+                        });
+
+                        titleAdd = (LinearLayout) mView.findViewById(R.id.title_add);
+                        titleAdd.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                if(txtTitle.getText().toString().equals("")){
+                                    Toast.makeText(getActivity(), "빈칸을 입력해주세요.", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    adapter.selectedPosition = arrayList.size() - 1;
+                                    arrayList.add(arrayList.size() - 1, txtTitle.getText().toString());
+                                    adapter.notifyDataSetChanged();
+                                    dialog.dismiss();
+                                }
+                            }
+                        });
+                    }
+                });
+            } else {
+                //check the radio button if both position and selectedPosition matches
+                viewHolder.radioButton.setChecked(i == selectedPosition);
+                viewHolder.radioButton.setText(arrayList.get(i));
+
+                //Set the position tag to both radio button and label
+                viewHolder.radioButton.setTag(i);
+
+                viewHolder.radioButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        itemCheckChanged(v);
+                    }
+                });
+            }
+
+            return view;
+        }
+
+        //On selecting any view set the current position to selectedPositon and notify adapter
+        private void itemCheckChanged(View v) {
+            selectedPosition = (Integer) v.getTag();
+            notifyDataSetChanged();
+        }
+
+        private class ViewHolder {
+            private TextView addListText;
+            private LinearLayout addListLayout;
+            private RadioButton radioButton;
+        }
+
+        //Return the selectedPosition item
+//        public String getSelectedItem() {
+//            if (selectedPosition != -1) {
+//                Toast.makeText(context, "Selected Item : " + arrayList.get(selectedPosition), Toast.LENGTH_SHORT).show();
+//                return arrayList.get(selectedPosition);
+//            }
+//            return "";
+//        }
+
+        //Delete the selected position from the arrayList
+//        public void deleteSelectedPosition() {
+//            if (selectedPosition != -1) {
+//                arrayList.remove(selectedPosition);
+//                selectedPosition = -1;//after removing selectedPosition set it back to -1
+//                notifyDataSetChanged();
+//            }
+//        }
+    }
+
 
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {

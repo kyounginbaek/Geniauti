@@ -6,7 +6,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingTop="70dp"
     android:paddingLeft="16dp"
     android:paddingRight="16dp"
     android:background="#ffffff"
@@ -15,51 +14,153 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginTop="112dp"
         android:orientation="vertical">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingBottom="26dp"
             android:textSize="20sp"
             android:textColor="#3b3b3b"
             android:lineSpacingExtra="8sp"
-            android:text="행동이 일어난 장소를\n분류해주세요."
+            android:text="행동이 일어난 시간은\n언제인가요?"
             />
 
-
-        <ListView
-            android:id="@+id/radio_listview_first"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-        </ListView>
         <LinearLayout
-            android:id="@+id/add_location"
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:background="?android:attr/selectableItemBackground">
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingLeft="5dp"
-                app:srcCompat="@drawable/ic_add_black_24dp"
-                />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="41dp"
+            android:orientation="vertical">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingLeft="37dp"
-                android:textSize="16sp"
-                android:textColor="#de000000"
-                android:lineSpacingExtra="8sp"
-                android:text="장소 추가하기"
+                android:textSize="12sp"
+                android:textColor="#ababab"
+                android:lineSpacingExtra="12sp"
+                android:text="행동 일자"
                 />
 
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/txt_start_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="20sp"
+                    android:textColor="#de3b3b3b"
+                    android:lineSpacingExtra="4sp"
+                    android:text="2018-11-14"
+                    android:background="?android:attr/selectableItemBackground"
+                    />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="20sp"
+                    android:textColor="#de3b3b3b"
+                    android:lineSpacingExtra="4sp"
+                    android:text=" ~ "
+                    android:background="?android:attr/selectableItemBackground"
+                    />
+
+                <TextView
+                    android:id="@+id/txt_end_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="20sp"
+                    android:textColor="#de3b3b3b"
+                    android:lineSpacingExtra="4sp"
+                    android:text="2018-11-14"
+                    android:background="?android:attr/selectableItemBackground"
+                    />
+
+            </LinearLayout>
+
         </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="45dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="12sp"
+                android:textColor="#ababab"
+                android:lineSpacingExtra="12sp"
+                android:text="행동 시간"
+                />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/txt_start_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="20sp"
+                    android:textColor="#de3b3b3b"
+                    android:lineSpacingExtra="4sp"
+                    android:text="12:00"
+                    android:background="?android:attr/selectableItemBackground"
+                    />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="20sp"
+                    android:textColor="#de3b3b3b"
+                    android:lineSpacingExtra="4sp"
+                    android:text=" ~ "
+                    android:background="?android:attr/selectableItemBackground"
+                    />
+
+                <TextView
+                    android:id="@+id/txt_end_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="20sp"
+                    android:textColor="#de3b3b3b"
+                    android:lineSpacingExtra="4sp"
+                    android:text="13:00"
+                    android:background="?android:attr/selectableItemBackground"
+                    />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/start_time_button"
+            style="?android:textAppearanceSmall"
+            android:layout_width="match_parent"
+            android:layout_height="36dp"
+            android:textSize="14sp"
+            android:textColor="#ffffff"
+            android:background="@color/coolGreen"
+            android:layout_marginTop="38dp"
+            android:text="시작시간"
+            />
+
+        <Button
+            android:id="@+id/end_time_button"
+            style="?android:textAppearanceSmall"
+            android:layout_width="match_parent"
+            android:layout_height="36dp"
+            android:textSize="14sp"
+            android:textColor="#ffffff"
+            android:background="@color/coolGreen"
+            android:layout_marginTop="19dp"
+            android:text="종료시간"
+            />
 
     </LinearLayout>
 

@@ -1,6 +1,8 @@
 package com.geniauti.geniauti;
 
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -9,17 +11,16 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
+import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.TimePicker;
 
-import com.google.firebase.auth.FirebaseAuth;
-
-import java.util.HashMap;
-import java.util.Map;
+import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
 
 /**
@@ -40,12 +41,15 @@ public class BehaviorFirstFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    public String location;
-    private EditText txtLocation;
+    public Timestamp startTimestamp;
+    public Timestamp endTimestamp;
 
-    private LinearLayout locationDialog;
-    private LinearLayout locationCancel;
-    private LinearLayout locationAdd;
+    public Date date_start;
+    public Date date_end;
+    private TextView startDate;
+    private TextView endDate;
+    private TextView startTime;
+    private TextView endTime;
 
     private OnFragmentInteractionListener mListener;
 
@@ -83,46 +87,163 @@ public class BehaviorFirstFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
+        // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_behavior_first, container, false);
 
-        AlertDialog.Builder mBuilder = new AlertDialog.Builder(getContext());
-        View mView = getLayoutInflater().inflate(R.layout.dialog_location_add, null);
-        mBuilder.setView(mView);
-        final AlertDialog dialog = mBuilder.create();
+        startDate = v.findViewById(R.id.txt_start_date);
+        endDate = v.findViewById(R.id.txt_end_date);
 
-        txtLocation = (EditText) mView.findViewById(R.id.txt_location);
+        startTime = v.findViewById(R.id.txt_start_time);
+        endTime = v.findViewById(R.id.txt_end_time);
 
-        locationDialog = (LinearLayout) v.findViewById(R.id.add_location);
-        locationDialog.setOnClickListener(new View.OnClickListener() {
+        Button pickStartTime = v.findViewById(R.id.start_time_button);
+        pickStartTime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                dialog.show();
+                // Create a new OnDateSetListener instance. This listener will be invoked when user click ok button in DatePickerDialog.
+                DatePickerDialog.OnDateSetListener onDateSetListener = new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker datePicker, int year, int month, int dayOfMonth) {
+                        StringBuffer strBuf = new StringBuffer();
+                        strBuf.append(year);
+                        strBuf.append(".");
+                        strBuf.append(month+1);
+                        strBuf.append(".");
+                        strBuf.append(dayOfMonth);
+
+                        startDate.setText(strBuf.toString());
+
+                        // Create a new OnTimeSetListener instance. This listener will be invoked when user click ok button in TimePickerDialog.
+                        TimePickerDialog.OnTimeSetListener onTimeSetListener = new TimePickerDialog.OnTimeSetListener() {
+                            @Override
+                            public void onTimeSet(TimePicker timePicker, int hour, int minute) {
+                                StringBuffer strBuf = new StringBuffer();
+                                strBuf.append(hour);
+                                strBuf.append(":");
+                                strBuf.append(minute);
+
+                                startTime.setText(strBuf.toString());
+                                getStartDate();
+                            }
+                        };
+
+                        Calendar now = Calendar.getInstance();
+                        int hour = now.get(java.util.Calendar.HOUR_OF_DAY);
+                        int minute = now.get(java.util.Calendar.MINUTE);
+
+                        // Whether show time in 24 hour format or not.
+                        boolean is24Hour = false;
+
+                        TimePickerDialog timePickerDialog = new TimePickerDialog(getActivity(), onTimeSetListener, hour, minute, is24Hour);
+
+                        timePickerDialog.show();
+                    }
+                };
+
+                // Get current year, month and day.
+                Calendar now = Calendar.getInstance();
+                int year = now.get(java.util.Calendar.YEAR);
+                int month = now.get(java.util.Calendar.MONTH);
+                int day = now.get(java.util.Calendar.DAY_OF_MONTH);
+
+                // Create the new DatePickerDialog instance.
+                final DatePickerDialog datePickerDialog = new DatePickerDialog(getActivity(), onDateSetListener, year, month, day);
+
+                // Popup the dialog.
+                datePickerDialog.show();
+
             }
         });
 
-        locationCancel = (LinearLayout) mView.findViewById(R.id.location_cancel);
-        locationCancel.setOnClickListener(new View.OnClickListener() {
+        Button pickEndTime = v.findViewById(R.id.end_time_button);
+        pickEndTime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                dialog.dismiss();
+
+                DatePickerDialog.OnDateSetListener onDateSetListener = new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker datePicker, int year, int month, int dayOfMonth) {
+                        StringBuffer strBuf = new StringBuffer();
+                        strBuf.append(year);
+                        strBuf.append("-");
+                        strBuf.append(month+1);
+                        strBuf.append("-");
+                        strBuf.append(dayOfMonth);
+
+                        endDate.setText(strBuf.toString());
+
+                        // Create a new OnTimeSetListener instance. This listener will be invoked when user click ok button in TimePickerDialog.
+                        TimePickerDialog.OnTimeSetListener onTimeSetListener = new TimePickerDialog.OnTimeSetListener() {
+                            @Override
+                            public void onTimeSet(TimePicker timePicker, int hour, int minute) {
+                                StringBuffer strBuf = new StringBuffer();
+                                strBuf.append(hour);
+                                strBuf.append(":");
+                                strBuf.append(minute);
+
+                                endTime.setText(strBuf.toString());
+                                getEndDate();
+                            }
+                        };
+
+                        Calendar now = Calendar.getInstance();
+                        int hour = now.get(java.util.Calendar.HOUR_OF_DAY);
+                        int minute = now.get(java.util.Calendar.MINUTE);
+
+                        // Whether show time in 24 hour format or not.
+                        boolean is24Hour = false;
+
+                        TimePickerDialog timePickerDialog = new TimePickerDialog(getActivity(), onTimeSetListener, hour, minute, is24Hour);
+
+                        timePickerDialog.show();
+                    }
+                };
+
+                // Get current year, month and day.
+                Calendar now = Calendar.getInstance();
+                int year = now.get(java.util.Calendar.YEAR);
+                int month = now.get(java.util.Calendar.MONTH);
+                int day = now.get(java.util.Calendar.DAY_OF_MONTH);
+
+                // Create the new DatePickerDialog instance.
+                DatePickerDialog datePickerDialog = new DatePickerDialog(getActivity(), onDateSetListener, year, month, day);
+
+                // Popup the dialog.
+                datePickerDialog.show();
+
             }
         });
 
-        locationAdd = (LinearLayout) mView.findViewById(R.id.location_add);
-        locationAdd.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(txtLocation.getText().toString().equals("")){
-                    Toast.makeText(getActivity(), "빈칸을 입력해주세요.", Toast.LENGTH_SHORT).show();
-                } else {
+        getStartDate();
+        getEndDate();
 
-                }
-            }
-        });
-
-        // Inflate the layout for this fragment
         return v;
+    }
+
+    public void getStartDate() {
+        String str_date_start = startDate.getText().toString() + " " + startTime.getText().toString();
+        DateFormat formatter_start = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        try {
+            //The code you are trying to exception handle
+            date_start = formatter_start.parse(str_date_start);
+            startTimestamp = new Timestamp(date_start.getTime());
+        } catch (Exception e) {
+            //The handling for the code
+            e.printStackTrace();
+        }
+    }
+
+    public void getEndDate() {
+        String str_date_end = endDate.getText().toString() + " " + endTime.getText().toString();
+        DateFormat formatter_end = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        try {
+            //The code you are trying to exception handle
+            date_end = formatter_end.parse(str_date_end);
+            endTimestamp = new Timestamp(date_end.getTime());
+        } catch (Exception e) {
+            //The handling for the code
+            e.printStackTrace();
+        }
     }
 
     // TODO: Rename method, update argument and hook method into UI event
