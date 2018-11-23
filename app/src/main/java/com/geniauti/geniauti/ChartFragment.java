@@ -45,6 +45,7 @@ public class ChartFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
+    private View v;
     private OnFragmentInteractionListener mListener;
 
     public ChartFragment() {
@@ -83,8 +84,12 @@ public class ChartFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View v = inflater.inflate(R.layout.fragment_chart, container, false);
-        getActivity().setTitle("차트");
+        if (v != null) {
+            if ((ViewGroup) v.getParent() != null)
+                ((ViewGroup) v.getParent()).removeView(v);
+            return v;
+        }
+        v = inflater.inflate(R.layout.fragment_chart, container, false);
 
         // PieChart
         PieChart chart = (PieChart) v.findViewById(R.id.chart);

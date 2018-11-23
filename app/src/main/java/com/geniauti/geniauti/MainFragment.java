@@ -1,6 +1,9 @@
 package com.geniauti.geniauti;
 
 import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
@@ -13,8 +16,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -22,10 +27,24 @@ import android.widget.Toast;
 
 import com.github.sundeepk.compactcalendarview.CompactCalendarView;
 import com.github.sundeepk.compactcalendarview.domain.Event;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.Timestamp;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
+import java.sql.Time;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 
 
@@ -51,7 +70,14 @@ public class MainFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
+    private View v;
     private OnFragmentInteractionListener mListener;
+
+    private FirebaseUser user;
+    private FirebaseFirestore db;
+    private String cid;
+    private ArrayList<Behavior> cardData;
+    private ListView cardListView;
 
     public MainFragment() {
         // Required empty public constructor
@@ -88,8 +114,12 @@ public class MainFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View v = inflater.inflate(R.layout.fragment_main, container, false);
-        getActivity().setTitle("홈");
+        if (v != null) {
+            if ((ViewGroup) v.getParent() != null)
+                ((ViewGroup) v.getParent()).removeView(v);
+            return v;
+        }
+        v = inflater.inflate(R.layout.fragment_main, container, false);
 
         // final ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         // actionBar.setDisplayHomeAsUpEnabled(false);
@@ -147,8 +177,6 @@ public class MainFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 Intent intent=new Intent(getActivity(),BehaviorActivity.class);
-                Behavior behavior = new Behavior();
-                intent.putExtra("tempBehavior", behavior);
                 startActivity(intent);
                 dialog.dismiss();
             }
@@ -162,7 +190,147 @@ public class MainFragment extends Fragment {
             }
         });
 
+
+        // cardListView
+        cardListView = (ListView) v.findViewById(R.id.behavior_card_listview);
+        cardData = new ArrayList<>();
+
+        user = FirebaseAuth.getInstance().getCurrentUser();
+        db = FirebaseFirestore.getInstance();
+
+        db.collection("childs")
+                .whereGreaterThanOrEqualTo("users."+user.getUid()+".name", "")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                cid = document.getId();
+                            }
+
+                            db.collection("behaviors")
+                                    .whereEqualTo("cid", cid)
+                                    .get()
+                                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                            if (task.isSuccessful()) {
+                                                for (QueryDocumentSnapshot document : task.getResult()) {
+                                                    Behavior item = new Behavior((Date) document.getDate("start_time"), (Date) document.getDate("end_time"), document.get("place").toString(), document.get("categorization").toString(), document.get("current_behavior").toString(), document.get("before_behavior").toString(), document.get("after_behavior").toString(), (HashMap<String, String>) document.get("type"), Integer.parseInt(document.get("intensity").toString()), (HashMap<String, String>) document.get("reason"), document.get("created_at").toString(),  document.get("updated_at").toString(), document.get("uid").toString(), document.get("name").toString(), document.get("cid").toString());
+                                                    cardData.add(item);
+                                                }
+
+                                                final CardListviewAdapter cardAdapter = new CardListviewAdapter(getContext(), R.layout.list_behavior_card, cardData);
+                                                cardListView.setAdapter(cardAdapter);
+
+                                                cardListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                                                    @Override
+                                                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                                                        Intent intent = new Intent(getActivity(), BehaviorDetailActivity.class);
+                                                        intent.putExtra("temp", (Behavior) cardAdapter.getItem(position));
+                                                        startActivity(intent);
+                                                    }
+                                                });
+                                            } else {
+
+                                            }
+                                        }
+                                    });
+                        } else {
+//                                Log.d(TAG, "Error getting documents: ", task.getException());
+                        }
+                    }
+                });
+
         return v;
+    }
+
+    public class CardListviewAdapter extends BaseAdapter {
+
+        private LayoutInflater inflater;
+        private ArrayList<Behavior> data;
+        private int layout;
+
+        public CardListviewAdapter(Context context, int layout, ArrayList<Behavior> data){
+            this.inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            this.data = data;
+            this.layout = layout;
+        }
+
+        @Override
+        public int getCount(){return data.size();}
+
+        @Override
+        public Object getItem(int position){
+            return data.get(position);
+        }
+
+        @Override
+        public long getItemId(int position){return position;}
+
+        @Override
+        public View getView(final int position, View convertView, ViewGroup parent){
+            if(convertView == null){
+                convertView = inflater.inflate(layout, parent, false);
+            }
+
+            Behavior listviewitem = data.get(position);
+
+            LinearLayout card_interest = convertView.findViewById(R.id.card_interest);
+            LinearLayout card_self_stimulation = convertView.findViewById(R.id.card_self_stimulation);
+            LinearLayout card_task_evation = convertView.findViewById(R.id.card_task_evation);
+            LinearLayout card_demand = convertView.findViewById(R.id.card_demand);
+            LinearLayout card_etc = convertView.findViewById(R.id.card_etc);
+
+            TextView txtCategorization = convertView.findViewById(R.id.txt_card_categorization);
+            TextView txtTime = convertView.findViewById(R.id.txt_card_time);
+            TextView txtNameRelationship = convertView.findViewById(R.id.txt_card_name_relationship);
+
+            txtCategorization.setText(listviewitem.categorization);
+            txtTime.setText(listviewitem.start_time.toString() + listviewitem.end_time.toString());
+            txtNameRelationship.setText(listviewitem.name+"()");
+
+            card_interest.setVisibility(View.GONE);
+            card_self_stimulation.setVisibility(View.GONE);
+            card_task_evation.setVisibility(View.GONE);
+            card_demand.setVisibility(View.GONE);
+            card_etc.setVisibility(View.GONE);
+
+            if(listviewitem.reason.get("관심")!=null) {
+                card_interest.setVisibility(View.VISIBLE);
+            }
+            if(listviewitem.reason.get("감각")!=null) {
+                card_self_stimulation.setVisibility(View.VISIBLE);
+            }
+            if(listviewitem.reason.get("주목")!=null) {
+                card_task_evation.setVisibility(View.VISIBLE);
+            }
+            if(listviewitem.reason.get("불만")!=null) {
+                card_demand.setVisibility(View.VISIBLE);
+            }
+            if(listviewitem.reason.get("거부")!=null){
+                card_etc.setVisibility(View.VISIBLE);
+            }
+
+//            if(listviewitem.case_tags.get("harm")!=null) {
+//                tmp_type = tmp_type + "타해 / ";
+//            }
+//            if(listviewitem.case_tags.get("selfHArm")!=null) {
+//                tmp_type = tmp_type + "자해 / ";
+//            }
+//            if(listviewitem.case_tags.get("destruction")!=null) {
+//                tmp_type = tmp_type + "파괴 / ";
+//            }
+//            if(listviewitem.case_tags.get("leave")!=null) {
+//                tmp_type = tmp_type + "이탈 / ";
+//            }
+//            if(listviewitem.case_tags.get("sexual")!=null) {
+//                tmp_type = tmp_type + "성적 / ";
+//            }
+
+            return convertView;
+        }
     }
 
     public class Listviewitem {

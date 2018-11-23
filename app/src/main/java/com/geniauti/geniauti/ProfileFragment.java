@@ -7,6 +7,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
@@ -18,11 +20,16 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 
 import java.io.IOException;
@@ -62,6 +69,8 @@ public class ProfileFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
+    private View v;
+    private TextView childName;
     private OnFragmentInteractionListener mListener;
 
     public ProfileFragment() {
@@ -95,6 +104,7 @@ public class ProfileFragment extends Fragment {
         }
 
         setHasOptionsMenu(true);
+        setRetainInstance(true);
     }
 
     @Override
@@ -122,8 +132,12 @@ public class ProfileFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View v = inflater.inflate(R.layout.fragment_profile, container, false);
-        getActivity().setTitle("프로필");
+        if (v != null) {
+            if ((ViewGroup) v.getParent() != null)
+                ((ViewGroup) v.getParent()).removeView(v);
+            return v;
+        }
+        v = inflater.inflate(R.layout.fragment_profile, container, false);
 
         Thread mThread = new Thread() {
             @Override
@@ -158,6 +172,23 @@ public class ProfileFragment extends Fragment {
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        childName = (TextView) v.findViewById(R.id.profile_child_name);
+        db.collection("childs")
+                .whereGreaterThanOrEqualTo("users."+user.getUid()+".name", "")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                childName.setText(document.getData().get("name").toString());
+                            }
+                        } else {
+//                                Log.d(TAG, "Error getting documents: ", task.getException());
+                        }
+                    }
+                });
 
         childEdit = (RelativeLayout) v.findViewById(R.id.child_edit);
         childEdit.setOnClickListener(new View.OnClickListener() {

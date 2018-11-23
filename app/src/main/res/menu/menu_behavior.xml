@@ -1,0 +1,11 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.geniauti.geniauti.BehaviorDetailActivity">
+    <item
+        android:id="@+id/menu_behavior_edit"
+        android:icon="@drawable/ic_edit_white_24dp"
+        android:title="behavior_edit"
+        app:actionViewClass="android.support.v7.widget.SearchView"
+        app:showAsAction="ifRoom|collapseActionView" />
+</menu>

@@ -20,7 +20,7 @@
             android:minHeight="?attr/actionBarSize"
             app:theme="@style/ThemeOverlay.AppCompat.Dark" />
 
-        <FrameLayout
+        <com.geniauti.geniauti.CustomViewPager
             android:id="@+id/fragment_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

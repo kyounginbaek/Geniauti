@@ -44,7 +44,13 @@
         <activity android:name=".ChildEditActivity" />
         <activity android:name=".ProfileEditActivity" />
         <activity android:name=".PasswordEditActivity" />
-        <activity android:name=".SettingsActivity"></activity>
+        <activity android:name=".SettingsActivity" />
+        <activity
+            android:name=".InvitedActivity"
+            android:label="@string/title_activity_invited"
+            android:theme="@style/AppTheme" />
+        <activity android:name=".BehaviorDetailActivity" />
+        <activity android:name=".RalationshipAddActivity"></activity>
     </application>
 
 </manifest>

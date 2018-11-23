@@ -1,0 +1,443 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".BehaviorDetailActivity">
+
+    <ProgressBar
+        android:id="@+id/behavior_detail_progress"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:layout_centerVertical="true"
+        android:layout_marginBottom="8dp"
+        android:visibility="gone" />
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        >
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/behavior_detail_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/coolGreen"
+            android:minHeight="?attr/actionBarSize"
+            app:theme="@style/ThemeOverlay.AppCompat.Dark" />
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="28dp"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="12sp"
+                        android:textColor="#ababab"
+                        android:lineSpacingExtra="8sp"
+                        android:text="우리 아이의 행동"
+                        />
+
+                    <TextView
+                        android:id="@+id/txt_behavior_categorization"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="20sp"
+                        android:textColor="#de000000"
+                        android:lineSpacingExtra="8sp"
+                        android:text="숟가락으로 머리 치기"
+                        />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp"
+                    android:layout_marginTop="18dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="14sp"
+                        android:textColor="#ababab"
+                        android:lineSpacingExtra="6sp"
+                        android:text="행동 일시"
+                        />
+
+                    <TextView
+                        android:id="@+id/txt_behavior_time"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:textSize="16sp"
+                        android:textColor="#3b3b3b"
+                        android:lineSpacingExtra="8sp"
+                        android:text="2018.07.20      오후 5:10 ~ 5:30"
+                        />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp"
+                    android:layout_marginTop="18dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="14sp"
+                        android:textColor="#ababab"
+                        android:lineSpacingExtra="6sp"
+                        android:text="행동 장소"
+                        />
+
+                    <TextView
+                        android:id="@+id/txt_behavior_place"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:textSize="16sp"
+                        android:textColor="#3b3b3b"
+                        android:lineSpacingExtra="8sp"
+                        android:text="서울대학교 소담마루 식당"
+                        />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp"
+                    android:layout_marginTop="18dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="14sp"
+                        android:textColor="#ababab"
+                        android:lineSpacingExtra="6sp"
+                        android:text="행동 종류"
+                        />
+
+                    <TextView
+                        android:id="@+id/txt_behavior_type"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:textSize="16sp"
+                        android:textColor="#3b3b3b"
+                        android:lineSpacingExtra="8sp"
+                        android:text="타해"
+                        />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="18dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginRight="16dp"
+                        android:textSize="14sp"
+                        android:textColor="#ababab"
+                        android:lineSpacingExtra="6sp"
+                        android:text="행동 원인"
+                        />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingLeft="4dp"
+                        android:paddingRight="16dp"
+                        android:layout_marginTop="11dp"
+                        android:orientation="horizontal">
+
+                        <LinearLayout
+                            android:id="@+id/behavior_interest"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:layout_marginLeft="12dp">
+
+                            <ImageView
+                                android:layout_width="9dp"
+                                android:layout_height="9dp"
+                                android:backgroundTint="#db9a53"
+                                android:background="@drawable/ic_dot"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="4dp"
+                                android:textSize="16sp"
+                                android:textColor="#3b3b3b"
+                                android:letterSpacing="-0.03"
+                                android:gravity="center_horizontal"
+                                android:text="관심"
+                                />
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/behavior_self_stimulation"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:layout_marginLeft="12dp">
+
+                            <ImageView
+                                android:layout_width="9dp"
+                                android:layout_height="9dp"
+                                android:backgroundTint="#3fd3b8"
+                                android:background="@drawable/ic_dot"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="4dp"
+                                android:textSize="16sp"
+                                android:textColor="#3b3b3b"
+                                android:letterSpacing="-0.03"
+                                android:gravity="center_horizontal"
+                                android:text="자기자극"
+                                />
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/behavior_task_evation"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:layout_marginLeft="12dp">
+
+                            <ImageView
+                                android:layout_width="9dp"
+                                android:layout_height="9dp"
+                                android:backgroundTint="#3f73d3"
+                                android:background="@drawable/ic_dot"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="4dp"
+                                android:textSize="16sp"
+                                android:textColor="#3b3b3b"
+                                android:letterSpacing="-0.03"
+                                android:gravity="center_horizontal"
+                                android:text="과제회피"
+                                />
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/behavior_demand"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:layout_marginLeft="12dp">
+
+                            <ImageView
+                                android:layout_width="9dp"
+                                android:layout_height="9dp"
+                                android:backgroundTint="#7b3fd3"
+                                android:background="@drawable/ic_dot"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="4dp"
+                                android:textSize="16sp"
+                                android:textColor="#3b3b3b"
+                                android:letterSpacing="-0.03"
+                                android:gravity="center_horizontal"
+                                android:text="요구"
+                                />
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/behavior_etc"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:layout_marginLeft="12dp">
+
+                            <ImageView
+                                android:layout_width="9dp"
+                                android:layout_height="9dp"
+                                android:backgroundTint="#93c7ff"
+                                android:background="@drawable/ic_dot"/>
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="4dp"
+                                android:textSize="16sp"
+                                android:textColor="#3b3b3b"
+                                android:letterSpacing="-0.03"
+                                android:gravity="center_horizontal"
+                                android:text="기타"
+                                />
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp"
+                    android:layout_marginTop="22dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="14sp"
+                        android:textColor="#ababab"
+                        android:lineSpacingExtra="6sp"
+                        android:text="행동 강도"
+                        />
+
+                    <SeekBar
+                        android:id="@+id/behavior_seekbar"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="19dp"
+                        android:layout_marginRight="19dp"
+                        android:layout_marginTop="34dp"
+                        style="@style/Widget.AppCompat.SeekBar.Discrete"
+                        android:max="5"
+                        android:progress="0"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp"
+                    android:layout_marginTop="34dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="14sp"
+                        android:textColor="#2bc76d"
+                        android:lineSpacingExtra="10sp"
+                        android:text="행동 이전의 상황"
+                        />
+
+                    <TextView
+                        android:id="@+id/txt_behavior_before"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="16sp"
+                        android:textColor="#3b3b3b"
+                        android:lineSpacingExtra="8sp"
+                        android:text="남편 보러 서울대 왔다가 같이 소담마루에서 늦게 저녁 먹었다. 식사 도중 다솔이가 나한테 뭘 말했는데 대답을 못 해줬다."
+                        />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp"
+                    android:layout_marginTop="34dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="14sp"
+                        android:textColor="#2bc76d"
+                        android:lineSpacingExtra="10sp"
+                        android:text="아이의 행동"
+                        />
+
+                    <TextView
+                        android:id="@+id/txt_behavior_current"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="16sp"
+                        android:textColor="#3b3b3b"
+                        android:lineSpacingExtra="8sp"
+                        android:text="다솔이가 밥을 먹다 말고 갑자기 나를 숟가락으로 세 번 정도 아! 네 번인가 하여튼 머리를 쳤다."
+                        />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp"
+                    android:layout_marginTop="34dp"
+                    android:layout_marginBottom="67dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="14sp"
+                        android:textColor="#2bc76d"
+                        android:lineSpacingExtra="10sp"
+                        android:text="행동 후 아이에게 한 일"
+                        />
+
+                    <TextView
+                        android:id="@+id/txt_behavior_after"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="16sp"
+                        android:textColor="#3b3b3b"
+                        android:lineSpacingExtra="8sp"
+                        android:text="공공장소에서 이러면 안 된다고 말하다가 안 돼서 남편이 화장실로 다솔이를 데리고 가서 타일렀더니 갑자기 괜찮아졌다."
+                        />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </ScrollView>
+
+    </LinearLayout>
+
+</android.support.constraint.ConstraintLayout>

@@ -10,7 +10,12 @@ import android.view.ViewGroup;
 import android.widget.ExpandableListView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -18,10 +23,17 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import static com.geniauti.geniauti.SearchFragment.adapterBookmark;
+import static com.geniauti.geniauti.SearchFragment.bookmark;
 
 public class DicFirstFragment extends Fragment {
     private static ExpandableListView expandableListView;
     private static ExpandableListAdapter adapter;
+
+    private FirebaseFirestore db;
+    private FirebaseUser user;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -71,7 +83,9 @@ public class DicFirstFragment extends Fragment {
         final List<Cases> c_interest = new ArrayList<Cases>();
         final List<Cases> c_demand = new ArrayList<Cases>();
 
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db = FirebaseFirestore.getInstance();
+        user = FirebaseAuth.getInstance().getCurrentUser();
+
         db.collection("cases")
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -82,7 +96,7 @@ public class DicFirstFragment extends Fragment {
                                 HashMap<String,String> case_tags = new HashMap<String,String>();
                                 case_tags = (HashMap<String,String>) document.get("case_tags");
 
-                                Cases c = new Cases(document.get("case_title").toString(), document.get("case_backgroundInfo").toString(), document.get("case_behavior").toString(), (List<HashMap<String, String>>) document.get("case_cause"), (List<HashMap<String, String>>) document.get("case_solution"), document.get("case_effect").toString(), (HashMap<String, String>) document.get("case_tags"));
+                                Cases c = new Cases(document.get("case_title").toString(), document.get("case_backgroundInfo").toString(), document.get("case_behavior").toString(), (List<HashMap<String, String>>) document.get("case_cause"), (List<HashMap<String, String>>) document.get("case_solution"), document.get("case_effect").toString(), (HashMap<String, String>) document.get("case_tags"), document.getId());
 
                                 if(case_tags.get("taskEvation")!=null) {
                                     c_taskEvation.add(c);
@@ -165,14 +179,68 @@ public class DicFirstFragment extends Fragment {
 
             @Override
             public boolean onChildClick(ExpandableListView listview, View view,
-                                        int groupPos, int childPos, long id) {
-                Intent intent = new Intent(getActivity(), CaseDetailActivity.class);
-                intent.putExtra("temp", (Cases) adapter.getChild(groupPos, childPos));
-                startActivity(intent);
-//                Toast.makeText(
-//                        getActivity(),
-//                        "You clicked : " + adapter.getChild(groupPos, childPos),
-//                        Toast.LENGTH_SHORT).show();
+                                        final int groupPos, final int childPos, long id) {
+
+
+                db.collection("users").document(user.getUid().toString())
+                        .get()
+                        .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                if (task.isSuccessful()) {
+                                    DocumentSnapshot document = task.getResult();
+                                    if(document.exists()) {
+                                        HashMap<String, HashMap<String, Object>> result = (HashMap<String, HashMap<String, Object>>) document.get("cases");
+                                        boolean bookmark_check = false;
+
+                                        final Cases tmp = (Cases) adapter.getChild(groupPos, childPos);
+                                        // 만약 이미 검색한 기록이 있으면, 바로 이동
+                                        // 만약 검색한 기록이 없으면, 새로 추가
+                                        if(result != null) {
+                                            for(Map.Entry me : result.entrySet()) {
+                                                if(me.getKey().toString().equals(tmp.case_id)) {
+                                                    bookmark_check = true;
+                                                }
+                                            }
+                                        }
+
+                                        if(!bookmark_check) {
+                                            Object docData = tmp.firebase_input_data();
+
+                                            db.collection("users").document(user.getUid())
+                                                    .update("cases."+tmp.case_id, docData)
+                                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                        @Override
+                                                        public void onSuccess(Void aVoid) {
+//                                                           mProgressView.setVisibility(View.GONE);
+                                                            bookmark.add(0, tmp);
+                                                            adapterBookmark.notifyDataSetChanged();
+
+                                                            Intent intent = new Intent(getActivity(), CaseDetailActivity.class);
+                                                            intent.putExtra("temp", tmp);
+                                                            startActivity(intent);
+                                                        }
+                                                    })
+                                                    .addOnFailureListener(new OnFailureListener() {
+                                                        @Override
+                                                        public void onFailure(@NonNull Exception e) {
+//                                                          Log.w(TAG, "Error writing document", e);
+                                                        }
+                                                    });
+                                        } else {
+                                            Intent intent = new Intent(getActivity(), CaseDetailActivity.class);
+                                            intent.putExtra("temp", (Cases) adapter.getChild(groupPos, childPos));
+                                            startActivity(intent);
+                                        }
+                                    } else {
+
+                                    }
+                                } else {
+//                            Log.d(TAG, "Error getting documents: ", task.getException());
+                                }
+                            }
+                        });
+
                 return false;
             }
         });

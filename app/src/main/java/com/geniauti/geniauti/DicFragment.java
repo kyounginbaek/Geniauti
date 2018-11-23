@@ -7,6 +7,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
@@ -28,7 +29,7 @@ import java.util.List;
  * Use the {@link DicFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class DicFragment extends Fragment {
+public class DicFragment extends Fragment implements SearchFragment.OnFragmentInteractionListener {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -38,6 +39,9 @@ public class DicFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
+    private View v;
+    private SearchFragment f;
+    private static FragmentManager fm;
     private OnFragmentInteractionListener mListener;
 
     public DicFragment() {
@@ -69,15 +73,22 @@ public class DicFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+
+        fm = getFragmentManager();
         setHasOptionsMenu(true);
+        setRetainInstance(true);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View v = inflater.inflate(R.layout.fragment_dic, container, false);
-        getActivity().setTitle("사례");
+        if (v != null) {
+            if ((ViewGroup) v.getParent() != null)
+                ((ViewGroup) v.getParent()).removeView(v);
+            return v;
+        }
+        v = inflater.inflate(R.layout.fragment_dic, container, false);
 
         // Setting ViewPager for each Tabs
         ViewPager viewPager = (ViewPager) v.findViewById(R.id.viewpager);
@@ -97,20 +108,64 @@ public class DicFragment extends Fragment {
         SearchView mSearchView = (SearchView) mSearch.getActionView();
         mSearchView.setQueryHint("행동 사례를 검색해주세요.");
 
+        f = (SearchFragment) fm.findFragmentByTag("search");
+        FragmentTransaction ft = fm.beginTransaction();
+        if(f == null) {
+            f = new SearchFragment();
+            ft.add(R.id.dic_fragment, f, "search");
+        }
+
+        ft.hide(f).commit();
+
+        mSearch.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
+            @Override
+            public boolean onMenuItemActionExpand(MenuItem item) {
+                SearchFragment f = (SearchFragment) fm.findFragmentByTag("search");
+                FragmentTransaction ft = fm.beginTransaction();
+                ft.show(f).commit();
+                return true;
+            }
+
+            @Override
+            public boolean onMenuItemActionCollapse(MenuItem item) {
+                SearchFragment f = (SearchFragment) fm.findFragmentByTag("search");
+                FragmentTransaction ft = fm.beginTransaction();
+                ft.hide(f).commit();
+                return true;
+            }
+        });
+
         mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
+
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                // mAdapter.getFilter().filter(newText);
+                if(newText.equals("")){
+                    f.listviewBookmarkShow();
+                } else {
+                    f.listviewAllShow();
+                }
+                SearchFragment.getFilter(newText);
                 return true;
             }
         });
 
         super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    public static void searchFragmentHide() {
+        SearchFragment f = (SearchFragment) fm.findFragmentByTag("search");
+        Fragment currentFragment = fm.findFragmentById(R.id.dic_fragment);
+        FragmentTransaction ft = fm.beginTransaction();
+        if(currentFragment instanceof SearchFragment) {
+            ft.hide(f).commit();
+        } else {
+
+        }
     }
 
     // Add Fragments to Tabs
@@ -187,5 +242,10 @@ public class DicFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+    }
+
+    @Override
+    public void onFragmentInteraction(Uri uri){
+        System.out.println(uri);
     }
 }

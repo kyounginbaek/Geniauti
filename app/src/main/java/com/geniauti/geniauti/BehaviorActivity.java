@@ -23,11 +23,15 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -50,6 +54,12 @@ public class BehaviorActivity extends AppCompatActivity implements BehaviorFirst
     private CustomViewPager mViewPager;
     public Behavior tempBehavior;
     public static Parcelable state;
+
+    private FirebaseFirestore db;
+    private FirebaseUser user;
+    private Map<String, Object> docData;
+    private String username;
+    private String cid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,6 +133,29 @@ public class BehaviorActivity extends AppCompatActivity implements BehaviorFirst
 
         // mViewPager.setCurrentItem(getItem(+1), true);
 
+        db = FirebaseFirestore.getInstance();
+        user = FirebaseAuth.getInstance().getCurrentUser();
+
+        db.collection("childs")
+                .whereGreaterThanOrEqualTo("users."+user.getUid()+".name", "")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                HashMap<String, Object> result = (HashMap<String, Object>) document.get("users");
+                                HashMap<String, Object> result_f = (HashMap<String, Object>) result.get(user.getUid());
+                                username = result_f.get("name").toString();
+                                cid = document.getId();
+                            }
+                        } else {
+//                                Log.d(TAG, "Error getting documents: ", task.getException());
+                        }
+                    }
+                });
+
+
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -195,9 +228,8 @@ public class BehaviorActivity extends AppCompatActivity implements BehaviorFirst
                     if(f9.getResult().toString()=="{}"){
                         Toast.makeText(BehaviorActivity.this, "행동 원인을 골라주세요.", Toast.LENGTH_SHORT).show();
                     } else {
-                        final FirebaseFirestore db = FirebaseFirestore.getInstance();
-                        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                        Map<String, Object> docData = new HashMap<>();
+
+                        docData = new HashMap<>();
                         docData.put("start_time", f1.startTimestamp);
                         docData.put("end_time", f1.endTimestamp);
                         docData.put("place", f2.getResult());
@@ -211,23 +243,21 @@ public class BehaviorActivity extends AppCompatActivity implements BehaviorFirst
                         docData.put("created_at", "");
                         docData.put("updated_at", "");
                         docData.put("uid", user.getUid());
-                        docData.put("name", "");
-                        docData.put("cid", "");
+                        docData.put("name", username);
+                        docData.put("cid", cid);
 
                         db.collection("behaviors").document()
                                 .set(docData)
                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {
-//                                    mProgressView.setVisibility(View.GONE);
+//                                                                  mProgressView.setVisibility(View.GONE);
                                         finish();
-//                                Log.d(TAG, "DocumentSnapshot successfully written!");
                                     }
                                 })
                                 .addOnFailureListener(new OnFailureListener() {
                                     @Override
                                     public void onFailure(@NonNull Exception e) {
-//                                Log.w(TAG, "Error writing document", e);
                                     }
                                 });
                         }
