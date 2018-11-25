@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,8 +41,10 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.sql.Time;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -72,12 +75,27 @@ public class MainFragment extends Fragment {
 
     private View v;
     private OnFragmentInteractionListener mListener;
+    private TextView txtMonth;
+    private ImageView calendarBack;
+    private ImageView calendarForward;
+    private TextView todayDate;
 
     private FirebaseUser user;
     private FirebaseFirestore db;
     private String cid;
+    private String relationship;
     private ArrayList<Behavior> cardData;
+    private ArrayList<Behavior> tmpData;
     private ListView cardListView;
+    private CardListviewAdapter cardAdapter;
+
+    private int color_interest;
+    private int color_self_stimulation;
+    private int color_task_evation;
+    private int color_demand;
+    private int color_etc;
+    private int colorCode;
+    private long timeInMilliseconds;
 
     public MainFragment() {
         // Required empty public constructor
@@ -126,31 +144,50 @@ public class MainFragment extends Fragment {
         // actionBar.setTitle(null);
 
         compactCalendar = (CompactCalendarView) v.findViewById(R.id.compactcalendar_view);
-        compactCalendar.setUseThreeLetterAbbreviation(true);
+        compactCalendar.setCurrentSelectedDayTextColor(Color.parseColor("#ffffff"));
+        compactCalendar.shouldSelectFirstDayOfMonthOnScroll(false);
 
-        //Set an event for Teachers' Professional Day 2016 which is 21st of October
+        txtMonth = (TextView) v.findViewById(R.id.txt_month);
+        calendarBack = (ImageView) v.findViewById(R.id.calendar_back);
+        calendarForward = (ImageView) v.findViewById(R.id.calendar_forward);
 
-        Event ev1 = new Event(Color.GREEN, 1540490079000L, "Teachers' Professional Day");
-        compactCalendar.addEvent(ev1);
+        calendarBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                compactCalendar.scrollLeft();
+            }
+        });
 
-        Event ev2 = new Event(Color.RED, 1540490079000L, "Teachers' Professional Day");
-        compactCalendar.addEvent(ev2);
+        calendarForward.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                compactCalendar.scrollRight();
+            }
+        });
+
+        color_interest = Color.parseColor("#db9a53");
+        color_self_stimulation = Color.parseColor("#3fd3b8");
+        color_task_evation = Color.parseColor("#3f73d3");
+        color_demand = Color.parseColor("#7b3fd3");
+        color_etc = Color.parseColor("#93c7ff");
+
 
         compactCalendar.setListener(new CompactCalendarView.CompactCalendarViewListener() {
             @Override
             public void onDayClick(Date dateClicked) {
                 Context context = getContext();
 
-                if (dateClicked.toString().compareTo("Fri Oct 21 00:00:00 AST 2016") == 0) {
-                    // Toast.makeText(context, "Teachers' Professional Day", Toast.LENGTH_SHORT).show();
-                }else {
-                    // Toast.makeText(context, "No Events Planned for that day", Toast.LENGTH_SHORT).show();
-                }
+                Log.e("확인", dateClicked.toString());
+//                if (dateClicked.toString().compareTo("Fri Oct 21 00:00:00 AST 2016") == 0) {
+//                    Toast.makeText(context, "Teachers' Professional Day", Toast.LENGTH_SHORT).show();
+//                }else {
+//                    Toast.makeText(context, "No Events Planned for that day", Toast.LENGTH_SHORT).show();
+//                }
             }
 
             @Override
             public void onMonthScroll(Date firstDayOfNewMonth) {
-                // actionBar.setTitle(dateFormatMonth.format(firstDayOfNewMonth));
+                txtMonth.setText(dateFormatMonth.format(firstDayOfNewMonth));
             }
         });
 
@@ -194,6 +231,7 @@ public class MainFragment extends Fragment {
         // cardListView
         cardListView = (ListView) v.findViewById(R.id.behavior_card_listview);
         cardData = new ArrayList<>();
+        tmpData = new ArrayList<>();
 
         user = FirebaseAuth.getInstance().getCurrentUser();
         db = FirebaseFirestore.getInstance();
@@ -207,6 +245,8 @@ public class MainFragment extends Fragment {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 cid = document.getId();
+                                HashMap<String, Object> result = (HashMap<String, Object>) document.get("users."+user.getUid());
+                                relationship = result.get("relationship").toString();
                             }
 
                             db.collection("behaviors")
@@ -217,11 +257,41 @@ public class MainFragment extends Fragment {
                                         public void onComplete(@NonNull Task<QuerySnapshot> task) {
                                             if (task.isSuccessful()) {
                                                 for (QueryDocumentSnapshot document : task.getResult()) {
-                                                    Behavior item = new Behavior((Date) document.getDate("start_time"), (Date) document.getDate("end_time"), document.get("place").toString(), document.get("categorization").toString(), document.get("current_behavior").toString(), document.get("before_behavior").toString(), document.get("after_behavior").toString(), (HashMap<String, String>) document.get("type"), Integer.parseInt(document.get("intensity").toString()), (HashMap<String, String>) document.get("reason"), document.get("created_at").toString(),  document.get("updated_at").toString(), document.get("uid").toString(), document.get("name").toString(), document.get("cid").toString());
+                                                    HashMap<String, Object> reason = (HashMap<String, Object>) document.get("reason");
+                                                    HashMap.Entry<String,Object> entry = reason.entrySet().iterator().next();
+
+                                                    // Color Code
+                                                    switch(entry.getKey()) {
+                                                        case "관심":
+                                                            colorCode = color_interest;
+                                                            break;
+                                                        case "감각":
+                                                            colorCode = color_self_stimulation;
+                                                            break;
+                                                        case "주목":
+                                                            colorCode = color_task_evation;
+                                                            break;
+                                                        case "불만":
+                                                            colorCode = color_demand;
+                                                            break;
+                                                        case "힘듬":
+                                                            colorCode = color_etc;
+                                                            break;
+                                                    }
+
+                                                    // Date
+                                                    timeInMilliseconds = document.getDate("start_time").getTime();
+
+                                                    Event ev = new Event(colorCode, timeInMilliseconds, "");
+                                                    compactCalendar.addEvent(ev);
+
+                                                    Behavior item = new Behavior((Date) document.getDate("start_time"), (Date) document.getDate("end_time"), document.get("place").toString(), document.get("categorization").toString(), document.get("current_behavior").toString(), document.get("before_behavior").toString(), document.get("after_behavior").toString(), (HashMap<String, String>) document.get("type"), Integer.parseInt(document.get("intensity").toString()), (HashMap<String, String>) document.get("reason"), document.get("created_at").toString(),  document.get("updated_at").toString(), document.get("uid").toString(), document.get("name").toString(), document.get("cid").toString(), relationship);
                                                     cardData.add(item);
                                                 }
 
-                                                final CardListviewAdapter cardAdapter = new CardListviewAdapter(getContext(), R.layout.list_behavior_card, cardData);
+                                                tmpData.addAll(cardData);
+
+                                                cardAdapter = new CardListviewAdapter(getContext(), R.layout.list_behavior_card, cardData);
                                                 cardListView.setAdapter(cardAdapter);
 
                                                 cardListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -243,7 +313,68 @@ public class MainFragment extends Fragment {
                     }
                 });
 
+        // Today List View
+        todayDate = (TextView) v.findViewById(R.id.txt_today);
+        Calendar cal = Calendar.getInstance();
+        int date = cal.get(Calendar.DATE);
+        int dayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
+        String korDayOfWeek = "";
+
+        switch(dayOfWeek) {
+            case 1:
+                korDayOfWeek = "일요일";
+                break;
+            case 2:
+                korDayOfWeek = "월요일";
+                break;
+            case 3:
+                korDayOfWeek = "화요일";
+                break;
+            case 4:
+                korDayOfWeek = "수요일";
+                break;
+            case 5:
+                korDayOfWeek = "목요일";
+                break;
+            case 6:
+                korDayOfWeek = "금요일";
+                break;
+            case 7:
+                korDayOfWeek = "토요일";
+                break;
+        }
+
+        todayDate.setText(String.valueOf(date)+" "+korDayOfWeek);
+//        getFilter();
+
         return v;
+    }
+
+    public void getFilter(String charText) {
+
+        // 문자 입력시마다 리스트를 지우고 새로 뿌려준다.
+        cardData.clear();
+
+        // 문자 입력이 없을때는 모든 데이터를 보여준다.
+        if (charText.length() == 0) {
+            cardData.addAll(tmpData);
+        }
+        // 문자 입력을 할때..
+        else
+        {
+            // 리스트의 모든 데이터를 검색한다.
+            for(int i = 0;i < tmpData.size(); i++)
+            {
+                // Data 비교 후 해당 날짜 검사
+//                if (tmpData.get(i).case_title.toLowerCase().contains(charText))
+//                {
+//                    // 검색된 데이터를 리스트에 추가한다.
+//                    cardData.add(tmpData.get(i));
+//                }
+            }
+        }
+        // 리스트 데이터가 변경되었으므로 아답터를 갱신하여 검색된 데이터를 화면에 보여준다.
+        cardAdapter.notifyDataSetChanged();
     }
 
     public class CardListviewAdapter extends BaseAdapter {
@@ -288,8 +419,8 @@ public class MainFragment extends Fragment {
             TextView txtNameRelationship = convertView.findViewById(R.id.txt_card_name_relationship);
 
             txtCategorization.setText(listviewitem.categorization);
-            txtTime.setText(listviewitem.start_time.toString() + listviewitem.end_time.toString());
-            txtNameRelationship.setText(listviewitem.name+"()");
+            txtTime.setText(listviewitem.start_time.toString().substring(11,16) +" ~ "+ listviewitem.end_time.toString().substring(11,16));
+            txtNameRelationship.setText(listviewitem.name+"("+listviewitem.relationship+")");
 
             card_interest.setVisibility(View.GONE);
             card_self_stimulation.setVisibility(View.GONE);

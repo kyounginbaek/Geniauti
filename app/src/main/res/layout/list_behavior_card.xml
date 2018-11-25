@@ -9,8 +9,10 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="98dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
         android:gravity="center_vertical"
-        android:background="#ffffff"
+        android:background="@drawable/ic_behavior_card"
         android:orientation="vertical">
 
         <LinearLayout

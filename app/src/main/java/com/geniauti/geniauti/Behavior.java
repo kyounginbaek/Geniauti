@@ -9,7 +9,7 @@ import java.util.List;
 
 public class Behavior implements Serializable {
 
-    public Behavior(Date start_time, Date end_time, String place, String categorization, String current_behavior, String before_behavior, String after_behavior, HashMap<String, String> type, int intensity, HashMap<String, String> reason, String created_at, String updated_at, String uid, String name, String cid) {
+    public Behavior(Date start_time, Date end_time, String place, String categorization, String current_behavior, String before_behavior, String after_behavior, HashMap<String, String> type, int intensity, HashMap<String, String> reason, String created_at, String updated_at, String uid, String name, String cid, String relationship) {
         this.start_time = start_time;
         this.end_time = end_time;
         this.place = place;
@@ -25,6 +25,7 @@ public class Behavior implements Serializable {
         this.uid = uid;
         this.name = name;
         this.cid = cid;
+        this.relationship = relationship;
     }
 
     public Date start_time;
@@ -42,5 +43,6 @@ public class Behavior implements Serializable {
     public String uid;
     public String name;
     public String cid;
+    public String relationship;
 
 }

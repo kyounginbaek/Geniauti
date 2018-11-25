@@ -30,6 +30,8 @@ public class ProfileEditActivity extends AppCompatActivity {
     private EditText profileEmail;
     private RelativeLayout passwordEdit;
 
+    private View mProgressView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,6 +69,7 @@ public class ProfileEditActivity extends AppCompatActivity {
                                 HashMap<String, String> result_f = (HashMap<String, String>) result.get(user.getUid());
                                 profileName.setText(result_f.get("name"));
                             }
+                            mProgressView.setVisibility(View.GONE);
                         } else {
 //                                Log.d(TAG, "Error getting documents: ", task.getException());
                         }
@@ -80,6 +83,9 @@ public class ProfileEditActivity extends AppCompatActivity {
                 startActivity(new Intent(ProfileEditActivity.this, PasswordEditActivity.class));
             }
         });
+
+        mProgressView = findViewById(R.id.profile_edit_progress);
+        mProgressView.setVisibility(View.VISIBLE);
     }
 
     @Override
