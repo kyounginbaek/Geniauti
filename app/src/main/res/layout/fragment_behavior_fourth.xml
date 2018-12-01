@@ -37,7 +37,7 @@
                 app:rb_color="#defdeb"
                 app:rb_radius="10dp"
                 app:rb_rippleAmount="4"
-                app:rb_duration="2000"
+                app:rb_duration="1500"
                 app:rb_scale="6">
 
                 <ImageView
@@ -53,7 +53,7 @@
                 android:id="@+id/text_input"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="예) 다솔이가 밥을 먹다 말고 울고 소리를 지르며 바닥에서 굴렀다"
+                android:hint="예) 다솔이가 밥을 먹다 말고 울었다."
                 android:inputType="textMultiLine"
                 android:lineSpacingExtra="8sp"
                 android:paddingTop="20dp"

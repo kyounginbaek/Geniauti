@@ -151,12 +151,19 @@ public class BehaviorFirstFragment extends Fragment {
                         AM_PM_Start = "";
                         if(hour < 12) {
                             AM_PM_Start = "오전";
-                            strBufStart.append("0"+hour);
+                            if(hour < 10) {
+                                strBufStart.append("0"+hour);
+                            } else {
+                                strBufStart.append(hour);
+                            }
                         } else {
                             AM_PM_Start = "오후";
-                            strBufStart.append(hour-12);
+                            if(hour-12 < 10){
+                                strBufStart.append("0"+(hour-12));
+                            } else {
+                                strBufStart.append(hour-12);
+                            }
                         }
-
                         strBufStart.append(":");
                         if(minute < 10) {
                             strBufStart.append("0"+minute);

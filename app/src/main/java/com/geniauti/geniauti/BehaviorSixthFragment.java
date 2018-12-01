@@ -169,7 +169,7 @@ public class BehaviorSixthFragment extends Fragment {
             }
 
             rippleBackground.stopRippleAnimation();
-            Toast.makeText(getContext(), "에러가 발생하였습니다. : " + message,Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "다시 시도해주세요.",Toast.LENGTH_SHORT).show();
         }
 
         @Override

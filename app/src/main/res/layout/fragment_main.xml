@@ -17,7 +17,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:background="@drawable/ic_behavior_card"
+            android:background="@drawable/behavior_card"
             >
 
             <RelativeLayout

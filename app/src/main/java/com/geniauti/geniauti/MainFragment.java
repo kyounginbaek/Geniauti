@@ -1,5 +1,7 @@
 package com.geniauti.geniauti;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Handler;
@@ -21,6 +23,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
@@ -109,6 +113,8 @@ public class MainFragment extends Fragment {
     private int color_etc;
     private int colorCode;
     private long timeInMilliseconds;
+
+    private Animation animShow, animHide;
 
     public MainFragment() {
         // Required empty public constructor
@@ -391,7 +397,7 @@ public class MainFragment extends Fragment {
 
     public int foundIndex(ArrayList<Behavior> behavior, Date date) {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy.MM.dd. EEE");
-        for (int i = 0; i < behavior.size()-1; i++) {
+        for (int i = 0; i < behavior.size(); i++) {
             if(formatter.format(behavior.get(i).start_time).equals(formatter.format(date))){
                 return i;
             }
