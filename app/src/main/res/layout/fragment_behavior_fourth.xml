@@ -28,11 +28,26 @@
                 android:text="어떤 행동을 보였나요?"
                 />
 
-            <ImageView
-                android:layout_width="28dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                app:srcCompat="@drawable/ic_voice_recording"/>
+            <com.skyfishjy.library.RippleBackground
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/fourth_ripple"
+                app:rb_color="#defdeb"
+                app:rb_radius="10dp"
+                app:rb_rippleAmount="4"
+                app:rb_duration="2000"
+                app:rb_scale="6">
+
+                <ImageView
+                    android:id="@+id/fourth_voice_recognition"
+                    android:layout_width="28dp"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    app:srcCompat="@drawable/ic_voice_recording"/>
+
+            </com.skyfishjy.library.RippleBackground>
 
             <EditText
                 android:id="@+id/text_input"
@@ -45,35 +60,8 @@
                 android:scrollbars="vertical"
                 android:textColor="#3b3b3b"
                 android:textSize="16sp"
-                app:backgroundTint="#1e000000" />
-
-            <LinearLayout
-                android:id="@+id/add_text"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:layout_marginTop="21dp"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:background="?android:attr/selectableItemBackground">
-
-                <ImageView
-                    android:layout_width="21dp"
-                    android:layout_height="21dp"
-                    android:layout_marginLeft="5dp"
-                    app:srcCompat="@drawable/ic_add_black_24dp"
-                    />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="21dp"
-                    android:paddingLeft="20dp"
-                    android:textSize="16sp"
-                    android:textColor="#de000000"
-                    android:lineSpacingExtra="8sp"
-                    android:text="텍스트로 입력하기"
-                    />
-
-            </LinearLayout>
+                android:backgroundTint="@drawable/focus_tint_list"
+                />
 
         </LinearLayout>
 

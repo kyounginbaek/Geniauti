@@ -67,6 +67,11 @@ public class ChildAddActivity extends AppCompatActivity {
         {
             public void onCheckedChanged(RadioGroup group, int checkedId)
             {
+                if(checkedId == R.id.radio_btn_month) {
+                    mChildAge.setHint("아이 나이(개월)");
+                } else {
+                    mChildAge.setHint("아이 나이(세)");
+                }
                 radioYear.setError(null);
             }
         });
@@ -80,6 +85,7 @@ public class ChildAddActivity extends AppCompatActivity {
                 radioGirl.setError(null);
             }
         });
+
         radioGirl = (RadioButton) findViewById(R.id.radio_btn_girl);
         mChildRelation = (TextView) findViewById(R.id.txt_child_relation);
 
@@ -90,7 +96,7 @@ public class ChildAddActivity extends AppCompatActivity {
         mChildAddButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                mProgressView.setVisibility(View.VISIBLE);
+                mProgressView.setVisibility(View.VISIBLE);
 
                 // Reset errors.
                 mChildName.setError(null);
@@ -114,17 +120,17 @@ public class ChildAddActivity extends AppCompatActivity {
                     cancel = true;
                 }
 
-                if((int) radioGroupAge.getCheckedRadioButtonId() <= 0) {
-                    radioYear.setError("연령 표기 방법을 선택해주세요.");
-                    focusView = radioYear;
-                    cancel = true;
-                }
+//                if((int) radioGroupAge.getCheckedRadioButtonId() <= 0) {
+//                    radioYear.setError("연령 표기 방법을 선택해주세요.");
+//                    focusView = radioYear;
+//                    cancel = true;
+//                }
 
-                if((int) radioGroupSex.getCheckedRadioButtonId() <= 0) {
-                    radioGirl.setError("아이 성별을 선택해주세요.");
-                    focusView = radioGirl;
-                    cancel = true;
-                }
+//                if((int) radioGroupSex.getCheckedRadioButtonId() <= 0) {
+//                    radioGirl.setError("아이 성별을 선택해주세요.");
+//                    focusView = radioGirl;
+//                    cancel = true;
+//                }
 
                 if(TextUtils.isEmpty(mChildRelation.getText().toString())) {
                     mChildRelation.setError("이메일 주소를 입력해주세요.");
@@ -171,10 +177,26 @@ public class ChildAddActivity extends AppCompatActivity {
                             .addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void aVoid) {
-                                    mProgressView.setVisibility(View.GONE);
-                                    Intent intent=new Intent(ChildAddActivity.this,MainActivity.class);
-                                    startActivity(intent);
-                                    finish();
+
+                                    Map<String, Object> userData = new HashMap<>();
+                                    userData.put("name", user.getDisplayName());
+
+                                    db.collection("users").document(user.getUid())
+                                            .set(userData)
+                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                @Override
+                                                public void onSuccess(Void aVoid) {
+                                                    mProgressView.setVisibility(View.GONE);
+                                                    Intent intent=new Intent(ChildAddActivity.this,MainActivity.class);
+                                                    startActivity(intent);
+                                                    finish();
+                                                }
+                                            })
+                                            .addOnFailureListener(new OnFailureListener() {
+                                                @Override
+                                                public void onFailure(@NonNull Exception e) {
+                                                }
+                                            });
 //                                Log.d(TAG, "DocumentSnapshot successfully written!");
                                 }
                             })

@@ -43,7 +43,7 @@
             android:layout_height="wrap_content"
             android:textSize="16sp"
             android:textColor="#de000000"
-            app:backgroundTint="#1e000000"
+            android:backgroundTint="@drawable/focus_tint_list"
             android:lineSpacingExtra="8sp"
             android:hint="예) 바닥에서 굴렀다"
             android:inputType="textMultiLine"

@@ -8,6 +8,7 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
@@ -22,12 +23,8 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements MainFragment.OnFragmentInteractionListener, DicFragment.OnFragmentInteractionListener, ChartFragment.OnFragmentInteractionListener, ProfileFragment.OnFragmentInteractionListener {
 
-    private CustomViewPager viewPager;
-
-    MainFragment mainFragment;
-    DicFragment dicFragment;
-    ChartFragment chartFragment;
-    ProfileFragment profileFragment;
+    public static CustomViewPager viewPager;
+    public static ViewPagerAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,40 +77,49 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnFr
     }
 
     private void setupViewPager(ViewPager viewPager) {
-        ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        mainFragment = new MainFragment();
-        dicFragment = new DicFragment();
-        chartFragment = new ChartFragment();
-        profileFragment = new ProfileFragment();
-
-        adapter.addFragment(mainFragment);
-        adapter.addFragment(dicFragment);
-        adapter.addFragment(chartFragment);
-        adapter.addFragment(profileFragment);
+        adapter = new ViewPagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(adapter);
         viewPager.setOffscreenPageLimit(3);
     }
 
-    public class ViewPagerAdapter extends FragmentPagerAdapter {
-        private final List<Fragment> mFragmentList = new ArrayList<>();
+    public class ViewPagerAdapter extends FragmentStatePagerAdapter {
 
         public ViewPagerAdapter(FragmentManager manager) {
             super(manager);
         }
         @Override
         public Fragment getItem(int position) {
-            return mFragmentList.get(position);
+            switch (position) {
+                case 0:
+                    MainFragment tab1 = new MainFragment();
+                    return tab1;
+                case 1:
+                    DicFragment tab2 = new DicFragment();
+                    return tab2;
+                case 2:
+                    ChartFragment tab3 = new ChartFragment();
+                    return tab3;
+                case 3:
+                    ProfileFragment tab4 = new ProfileFragment();
+                    return tab4;
+                default:
+                    return null;
+            }
+        }
+
+        public int getItemPosition(Object object) {
+            return POSITION_NONE;
         }
 
         @Override
         public int getCount() {
-            return mFragmentList.size();
+            return 4;
         }
 
-        public void addFragment(Fragment fragment) {
-            mFragmentList.add(fragment);
-        }
+    }
 
+    public static void refresh() {
+        adapter.notifyDataSetChanged();
     }
 
     @Override

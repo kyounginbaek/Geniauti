@@ -27,7 +27,7 @@
             />
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="41dp"
             android:orientation="vertical">
@@ -41,49 +41,24 @@
                 android:text="행동 일자"
                 />
 
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/txt_start_date"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="20sp"
-                    android:textColor="#de3b3b3b"
-                    android:lineSpacingExtra="4sp"
-                    android:text="2018-11-14"
-                    android:background="?android:attr/selectableItemBackground"
-                    />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="20sp"
-                    android:textColor="#de3b3b3b"
-                    android:lineSpacingExtra="4sp"
-                    android:text=" ~ "
-                    android:background="?android:attr/selectableItemBackground"
-                    />
-
-                <TextView
-                    android:id="@+id/txt_end_date"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="20sp"
-                    android:textColor="#de3b3b3b"
-                    android:lineSpacingExtra="4sp"
-                    android:text="2018-11-14"
-                    android:background="?android:attr/selectableItemBackground"
-                    />
-
-            </LinearLayout>
+            <Button
+                android:id="@+id/start_date_button"
+                style="?android:textAppearanceSmall"
+                android:layout_width="match_parent"
+                android:layout_height="36dp"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/ic_behavior_card"
+                android:textSize="15sp"
+                android:textColor="#3b3b3b"
+                android:letterSpacing="0.04"
+                android:text="2018.11.14"
+                android:foreground="?attr/selectableItemBackground"
+                />
 
         </LinearLayout>
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="45dp"
             android:orientation="vertical">
@@ -97,70 +72,21 @@
                 android:text="행동 시간"
                 />
 
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/txt_start_time"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="20sp"
-                    android:textColor="#de3b3b3b"
-                    android:lineSpacingExtra="4sp"
-                    android:text="12:00"
-                    android:background="?android:attr/selectableItemBackground"
-                    />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="20sp"
-                    android:textColor="#de3b3b3b"
-                    android:lineSpacingExtra="4sp"
-                    android:text=" ~ "
-                    android:background="?android:attr/selectableItemBackground"
-                    />
-
-                <TextView
-                    android:id="@+id/txt_end_time"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="20sp"
-                    android:textColor="#de3b3b3b"
-                    android:lineSpacingExtra="4sp"
-                    android:text="13:00"
-                    android:background="?android:attr/selectableItemBackground"
-                    />
-
-            </LinearLayout>
+            <Button
+                android:id="@+id/start_end_time_button"
+                style="?android:textAppearanceSmall"
+                android:layout_width="match_parent"
+                android:layout_height="36dp"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/ic_behavior_card"
+                android:textSize="15sp"
+                android:textColor="#3b3b3b"
+                android:letterSpacing="0.04"
+                android:text="12:00 PM - 01:00 PM"
+                android:foreground="?attr/selectableItemBackground"
+                />
 
         </LinearLayout>
-
-        <Button
-            android:id="@+id/start_time_button"
-            style="?android:textAppearanceSmall"
-            android:layout_width="match_parent"
-            android:layout_height="36dp"
-            android:textSize="14sp"
-            android:textColor="#ffffff"
-            android:background="@color/coolGreen"
-            android:layout_marginTop="38dp"
-            android:text="시작시간"
-            />
-
-        <Button
-            android:id="@+id/end_time_button"
-            style="?android:textAppearanceSmall"
-            android:layout_width="match_parent"
-            android:layout_height="36dp"
-            android:textSize="14sp"
-            android:textColor="#ffffff"
-            android:background="@color/coolGreen"
-            android:layout_marginTop="19dp"
-            android:text="종료시간"
-            />
 
     </LinearLayout>
 

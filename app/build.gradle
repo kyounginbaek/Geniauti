@@ -39,7 +39,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-database:16.0.3'
     implementation 'com.google.firebase:firebase-storage:16.0.2'
     //
-    implementation 'com.github.sundeepk:compact-calendar-view:3.0.0'
+    implementation 'com.skyfishjy.ripplebackground:library:1.0.1'
     //
     implementation 'com.github.PhilJay:MPAndroidChart:v3.0.3'
     implementation 'com.android.support:multidex:1.0.3'

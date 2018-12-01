@@ -1,6 +1,7 @@
 package com.geniauti.geniauti;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
@@ -33,7 +34,11 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class BehaviorActivity extends AppCompatActivity implements BehaviorFirstFragment.OnFragmentInteractionListener, BehaviorSecondFragment.OnFragmentInteractionListener, BehaviorThirdFragment.OnFragmentInteractionListener, BehaviorFourthFragment.OnFragmentInteractionListener, BehaviorFifthFragment.OnFragmentInteractionListener, BehaviorSixthFragment.OnFragmentInteractionListener, BehaviorSeventhFragment.OnFragmentInteractionListener, BehaviorEighthFragment.OnFragmentInteractionListener, BehaviorNinthFragment.OnFragmentInteractionListener {
@@ -180,10 +185,20 @@ public class BehaviorActivity extends AppCompatActivity implements BehaviorFirst
                 BehaviorNinthFragment f9 = (BehaviorNinthFragment) ninthFragment;
 
                 if(mViewPager.getCurrentItem()==0) {
-                    if(f1.date_start.getTime() < f1.date_end.getTime()) {
-                        mViewPager.setCurrentItem(getItem(+1), true);
-                    } else {
-                        Toast.makeText(BehaviorActivity.this, "시작 시간이 종료시간보다 빠르도록 선택해주세요.", Toast.LENGTH_SHORT).show();
+                    SimpleDateFormat formatter = new SimpleDateFormat("aa hh:mm");
+                    try {
+                        Date hour_start = formatter.parse(f1.hour_start);
+                        Date hour_end = formatter.parse(f1.hour_end);
+
+                        if(hour_start.compareTo(hour_end) < 0) {
+                            mViewPager.setCurrentItem(getItem(+1), true);
+                        } else {
+                            Toast.makeText(BehaviorActivity.this, "시작 시간이 종료시간보다 빠르도록 선택해주세요.", Toast.LENGTH_SHORT).show();
+                        }
+
+                    } catch (java.text.ParseException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
                     }
                 } else if(mViewPager.getCurrentItem()==1) {
                     if(f2.getResult()==""){
@@ -228,38 +243,48 @@ public class BehaviorActivity extends AppCompatActivity implements BehaviorFirst
                     if(f9.getResult().toString()=="{}"){
                         Toast.makeText(BehaviorActivity.this, "행동 원인을 골라주세요.", Toast.LENGTH_SHORT).show();
                     } else {
+                        SimpleDateFormat formatter = new SimpleDateFormat("yyyy.MM.dd. aa hh:mm");
+                        try{
+                            Date date_start = formatter.parse(f1.date_start + " " + f1.hour_start);
+                            Date date_end = formatter.parse(f1.date_start + " " + f1.hour_end);
 
-                        docData = new HashMap<>();
-                        docData.put("start_time", f1.startTimestamp);
-                        docData.put("end_time", f1.endTimestamp);
-                        docData.put("place", f2.getResult());
-                        docData.put("categorization", f3.getResult());
-                        docData.put("current_behavior", f4.textInput.getText().toString());
-                        docData.put("before_behavior", f5.textInput.getText().toString());
-                        docData.put("after_behavior", f6.textInput.getText().toString());
-                        docData.put("type", f7.getResult());
-                        docData.put("intensity", f8.seekbarValue);
-                        docData.put("reason", f9.getResult());
-                        docData.put("created_at", "");
-                        docData.put("updated_at", "");
-                        docData.put("uid", user.getUid());
-                        docData.put("name", username);
-                        docData.put("cid", cid);
+                            docData = new HashMap<>();
+                            docData.put("start_time", date_start);
+                            docData.put("end_time", date_end);
+                            docData.put("place", f2.getResult());
+                            docData.put("categorization", f3.getResult());
+                            docData.put("current_behavior", f4.textInput.getText().toString());
+                            docData.put("before_behavior", f5.textInput.getText().toString());
+                            docData.put("after_behavior", f6.textInput.getText().toString());
+                            docData.put("type", f7.getResult());
+                            docData.put("intensity", f8.seekbarValue);
+                            docData.put("reason", f9.getResult());
+                            docData.put("created_at", "");
+                            docData.put("updated_at", "");
+                            docData.put("uid", user.getUid());
+                            docData.put("name", username);
+                            docData.put("cid", cid);
 
-                        db.collection("behaviors").document()
-                                .set(docData)
-                                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
+                            db.collection("behaviors").document()
+                                    .set(docData)
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
 //                                                                  mProgressView.setVisibility(View.GONE);
-                                        finish();
-                                    }
-                                })
-                                .addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                    }
-                                });
+
+                                            MainActivity.refresh();
+                                            finish();
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                        }
+                                    });
+                        } catch (java.text.ParseException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
                         }
                     }
             }

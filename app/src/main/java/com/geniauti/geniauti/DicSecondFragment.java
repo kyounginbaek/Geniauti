@@ -13,6 +13,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -47,6 +48,9 @@ public class DicSecondFragment extends Fragment {
 
         // Setting group indicator null for custom indicator
         expandableListView.setGroupIndicator(null);
+
+        db = FirebaseFirestore.getInstance();
+        user = FirebaseAuth.getInstance().getCurrentUser();
 
         setItems();
         setListener();
@@ -186,8 +190,7 @@ public class DicSecondFragment extends Fragment {
             public boolean onChildClick(ExpandableListView listview, View view,
                                         final int groupPos, final int childPos, long id) {
 
-
-                db.collection("users").document(user.getUid().toString())
+                db.collection("users").document(user.getUid())
                         .get()
                         .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                             @Override

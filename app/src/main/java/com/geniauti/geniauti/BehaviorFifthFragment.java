@@ -1,16 +1,29 @@
 package com.geniauti.geniauti;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.speech.RecognitionListener;
+import android.speech.RecognizerIntent;
+import android.speech.SpeechRecognizer;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.skyfishjy.library.RippleBackground;
+
+import java.util.ArrayList;
 
 
 /**
@@ -32,9 +45,12 @@ public class BehaviorFifthFragment extends Fragment {
     private String mParam2;
 
     public TextView textInput;
-    private LinearLayout textDialog;
-    private LinearLayout textCancel;
-    private LinearLayout textAdd;
+    private ImageView voiceRecognition;
+
+    Intent intent;
+    SpeechRecognizer mRecognizer;
+    final int PERMISSION = 1;
+    private RippleBackground rippleBackground;
 
     private OnFragmentInteractionListener mListener;
 
@@ -78,37 +94,117 @@ public class BehaviorFifthFragment extends Fragment {
 
         textInput = (TextView) v.findViewById(R.id.text_input);
 
-        AlertDialog.Builder mBuilder = new AlertDialog.Builder(getContext());
-        View mView = getLayoutInflater().inflate(R.layout.dialog_text_add, null);
-        mBuilder.setView(mView);
-        final AlertDialog dialog = mBuilder.create();
+        if ( Build.VERSION.SDK_INT >= 23 ){
+            // 퍼미션 체크
+            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.INTERNET,
+                    Manifest.permission.RECORD_AUDIO},PERMISSION);
+        }
 
-        textDialog = (LinearLayout) v.findViewById(R.id.add_text);
-        textDialog.setOnClickListener(new View.OnClickListener() {
+        intent=new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE,getActivity().getPackageName());
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE,"ko-KR");
+        intent.putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true);
+
+        voiceRecognition = (ImageView) v.findViewById(R.id.fifth_voice_recognition);
+        rippleBackground = (RippleBackground) v.findViewById(R.id.fifth_ripple);
+        voiceRecognition.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                dialog.show();
-            }
-        });
-
-        textCancel = (LinearLayout) mView.findViewById(R.id.text_cancel);
-        textCancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                dialog.dismiss();
-            }
-        });
-
-        textAdd = (LinearLayout) mView.findViewById(R.id.text_add);
-        textAdd.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
+                mRecognizer=SpeechRecognizer.createSpeechRecognizer(getContext());
+                mRecognizer.setRecognitionListener(listener);
+                mRecognizer.startListening(intent);
             }
         });
 
         return v;
     }
+
+    private RecognitionListener listener = new RecognitionListener() {
+        @Override
+        public void onReadyForSpeech(Bundle params) {
+            rippleBackground.startRippleAnimation();
+        }
+
+        @Override
+        public void onBeginningOfSpeech() {}
+
+        @Override
+        public void onRmsChanged(float rmsdB) {}
+
+        @Override
+        public void onBufferReceived(byte[] buffer) {}
+
+        @Override
+        public void onEndOfSpeech() {
+            rippleBackground.stopRippleAnimation();
+        }
+
+        @Override
+        public void onError(int error) {
+            String message;
+
+            switch (error) {
+                case SpeechRecognizer.ERROR_AUDIO:
+                    message = "오디오 에러";
+                    break;
+                case SpeechRecognizer.ERROR_CLIENT:
+                    message = "클라이언트 에러";
+                    break;
+                case SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS:
+                    message = "퍼미션 없음";
+                    break;
+                case SpeechRecognizer.ERROR_NETWORK:
+                    message = "네트워크 에러";
+                    break;
+                case SpeechRecognizer.ERROR_NETWORK_TIMEOUT:
+                    message = "네트웍 타임아웃";
+                    break;
+                case SpeechRecognizer.ERROR_NO_MATCH:
+                    message = "음성 미확인";
+                    break;
+                case SpeechRecognizer.ERROR_RECOGNIZER_BUSY:
+                    message = "RECOGNIZER가 바쁨";
+                    break;
+                case SpeechRecognizer.ERROR_SERVER:
+                    message = "서버가 이상함";
+                    break;
+                case SpeechRecognizer.ERROR_SPEECH_TIMEOUT:
+                    message = "말하는 시간초과";
+                    break;
+                default:
+                    message = "알 수 없는 오류임";
+                    break;
+            }
+
+            rippleBackground.stopRippleAnimation();
+            Toast.makeText(getContext(), "에러가 발생하였습니다. : " + message,Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        public void onResults(Bundle results) {
+//            // 말을 하면 ArrayList에 단어를 넣고 textView에 단어를 이어줍니다.
+//            ArrayList<String> matches =
+//                    results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
+//
+//            for(int i = 0; i < matches.size() ; i++){
+//                textInput.setText(matches.get(i));
+//            }
+        }
+
+        @Override
+        public void onPartialResults(Bundle partialResults) {
+            // 말을 하면 ArrayList에 단어를 넣고 textView에 단어를 이어줍니다.
+            ArrayList<String> matches =
+                    partialResults.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
+
+            for(int i = 0; i < matches.size() ; i++){
+                textInput.setText(matches.get(i));
+            }
+        }
+
+        @Override
+        public void onEvent(int eventType, Bundle params) {}
+    };
 
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {

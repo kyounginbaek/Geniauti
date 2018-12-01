@@ -7,9 +7,14 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
+
+import java.text.SimpleDateFormat;
+import java.util.Iterator;
+import java.util.Map;
 
 public class BehaviorDetailActivity extends AppCompatActivity {
 
@@ -37,6 +42,28 @@ public class BehaviorDetailActivity extends AppCompatActivity {
         LinearLayout behavior_demand = findViewById(R.id.behavior_demand);
         LinearLayout behavior_etc = findViewById(R.id.behavior_etc);
 
+        behavior_interest.setVisibility(View.GONE);
+        behavior_self_stimulation.setVisibility(View.GONE);
+        behavior_task_evation.setVisibility(View.GONE);
+        behavior_demand.setVisibility(View.GONE);
+        behavior_etc.setVisibility(View.GONE);
+
+        if(selectedBehavior.reason.get("관심")!=null) {
+            behavior_interest.setVisibility(View.VISIBLE);
+        }
+        if(selectedBehavior.reason.get("자기자극")!=null) {
+            behavior_self_stimulation.setVisibility(View.VISIBLE);
+        }
+        if(selectedBehavior.reason.get("과제회피")!=null) {
+            behavior_task_evation.setVisibility(View.VISIBLE);
+        }
+        if(selectedBehavior.reason.get("요구")!=null) {
+            behavior_demand.setVisibility(View.VISIBLE);
+        }
+        if(selectedBehavior.reason.get("기타")!=null){
+            behavior_etc.setVisibility(View.VISIBLE);
+        }
+
         TextView behavior_categorization = findViewById(R.id.txt_behavior_categorization);
         TextView behavior_time = findViewById(R.id.txt_behavior_time);
         TextView behavior_place = findViewById(R.id.txt_behavior_place);
@@ -47,10 +74,41 @@ public class BehaviorDetailActivity extends AppCompatActivity {
         TextView behavior_after = findViewById(R.id.txt_behavior_after);
 
         behavior_categorization.setText(selectedBehavior.categorization);
-        behavior_time.setText(selectedBehavior.start_time.toString()+selectedBehavior.end_time.toString());
+
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy.MM.dd. aa hh:mm");
+
+        behavior_time.setText(formatter.format(selectedBehavior.start_time)+" ~ "+formatter.format(selectedBehavior.end_time).substring(12,20));
         behavior_place.setText(selectedBehavior.place);
-//        behavior_type.setText();
-//        SeekBar
+
+        String tmp_type = "";
+        Iterator it = selectedBehavior.type.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry pair = (Map.Entry)it.next();
+            switch(pair.getKey().toString()) {
+                case "selfHarm":
+                    tmp_type = tmp_type + "자해, ";
+                    break;
+                case "harm":
+                    tmp_type = tmp_type + "타패, ";
+                    break;
+                case "destruction":
+                    tmp_type = tmp_type + "파괴, ";
+                    break;
+                case "breakaway":
+                    tmp_type = tmp_type + "이탈, ";
+                    break;
+                case "sexual":
+                    tmp_type = tmp_type + "성적, ";
+                    break;
+                case "etc":
+                    tmp_type = tmp_type + "기타, ";
+                    break;
+            }
+            it.remove(); // avoids a ConcurrentModificationException
+        }
+        behavior_type.setText(tmp_type.substring(0, tmp_type.length()-2));
+
+        behavior_intensity.setProgress(selectedBehavior.intensity);
         behavior_befor.setText(selectedBehavior.before_behavior);
         behavior_current.setText(selectedBehavior.current_behavior);
         behavior_after.setText(selectedBehavior.after_behavior);

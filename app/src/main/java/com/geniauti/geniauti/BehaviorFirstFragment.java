@@ -41,15 +41,13 @@ public class BehaviorFirstFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    public Timestamp startTimestamp;
-    public Timestamp endTimestamp;
+    public String hour_start;
+    public String hour_end;
+    public String date_start;
+    private Button dateBtn ;
+    private Button hourBtn;
 
-    public Date date_start;
-    public Date date_end;
-    private TextView startDate;
-    private TextView endDate;
-    private TextView startTime;
-    private TextView endTime;
+    private String AM_PM_Start;
 
     private OnFragmentInteractionListener mListener;
 
@@ -90,14 +88,24 @@ public class BehaviorFirstFragment extends Fragment {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_behavior_first, container, false);
 
-        startDate = v.findViewById(R.id.txt_start_date);
-        endDate = v.findViewById(R.id.txt_end_date);
+        SimpleDateFormat formatterDate = new SimpleDateFormat("yyyy.MM.dd.");
+        SimpleDateFormat formatterHour = new SimpleDateFormat("aa hh:mm");
 
-        startTime = v.findViewById(R.id.txt_start_time);
-        endTime = v.findViewById(R.id.txt_end_time);
+        final long ONE_MINUTE_IN_MILLIS = 60000; //millisecs
+        Date dateToday = new Date();
+        date_start = formatterDate.format(dateToday);
+        long curTimeInMs = dateToday.getTime();
+        Date afterAddingMins = new Date(curTimeInMs + (5 * ONE_MINUTE_IN_MILLIS));
 
-        Button pickStartTime = v.findViewById(R.id.start_time_button);
-        pickStartTime.setOnClickListener(new View.OnClickListener() {
+        dateBtn = (Button) v.findViewById(R.id.start_date_button);
+        dateBtn.setText(date_start);
+
+        hourBtn = (Button) v.findViewById(R.id.start_end_time_button);
+        hour_start = formatterHour.format(dateToday);
+        hour_end = formatterHour.format(afterAddingMins);
+        hourBtn.setText(hour_start+" ~ "+hour_end);
+
+        dateBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 // Create a new OnDateSetListener instance. This listener will be invoked when user click ok button in DatePickerDialog.
@@ -110,33 +118,10 @@ public class BehaviorFirstFragment extends Fragment {
                         strBuf.append(month+1);
                         strBuf.append(".");
                         strBuf.append(dayOfMonth);
+                        strBuf.append(".");
 
-                        startDate.setText(strBuf.toString());
-
-                        // Create a new OnTimeSetListener instance. This listener will be invoked when user click ok button in TimePickerDialog.
-                        TimePickerDialog.OnTimeSetListener onTimeSetListener = new TimePickerDialog.OnTimeSetListener() {
-                            @Override
-                            public void onTimeSet(TimePicker timePicker, int hour, int minute) {
-                                StringBuffer strBuf = new StringBuffer();
-                                strBuf.append(hour);
-                                strBuf.append(":");
-                                strBuf.append(minute);
-
-                                startTime.setText(strBuf.toString());
-                                getStartDate();
-                            }
-                        };
-
-                        Calendar now = Calendar.getInstance();
-                        int hour = now.get(java.util.Calendar.HOUR_OF_DAY);
-                        int minute = now.get(java.util.Calendar.MINUTE);
-
-                        // Whether show time in 24 hour format or not.
-                        boolean is24Hour = false;
-
-                        TimePickerDialog timePickerDialog = new TimePickerDialog(getActivity(), onTimeSetListener, hour, minute, is24Hour);
-
-                        timePickerDialog.show();
+                        date_start = strBuf.toString();
+                        dateBtn.setText(date_start);
                     }
                 };
 
@@ -155,95 +140,96 @@ public class BehaviorFirstFragment extends Fragment {
             }
         });
 
-        Button pickEndTime = v.findViewById(R.id.end_time_button);
-        pickEndTime.setOnClickListener(new View.OnClickListener() {
+        hourBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                DatePickerDialog.OnDateSetListener onDateSetListener = new DatePickerDialog.OnDateSetListener() {
+                // Create a new OnTimeSetListener instance. This listener will be invoked when user click ok button in TimePickerDialog.
+                TimePickerDialog.OnTimeSetListener onTimeSetListener = new TimePickerDialog.OnTimeSetListener() {
                     @Override
-                    public void onDateSet(DatePicker datePicker, int year, int month, int dayOfMonth) {
-                        StringBuffer strBuf = new StringBuffer();
-                        strBuf.append(year);
-                        strBuf.append("-");
-                        strBuf.append(month+1);
-                        strBuf.append("-");
-                        strBuf.append(dayOfMonth);
+                    public void onTimeSet(TimePicker timePicker, int hour, int minute) {
+                        final StringBuffer strBufStart = new StringBuffer();
+                        AM_PM_Start = "";
+                        if(hour < 12) {
+                            AM_PM_Start = "오전";
+                            strBufStart.append("0"+hour);
+                        } else {
+                            AM_PM_Start = "오후";
+                            strBufStart.append(hour-12);
+                        }
 
-                        endDate.setText(strBuf.toString());
+                        strBufStart.append(":");
+                        if(minute < 10) {
+                            strBufStart.append("0"+minute);
+                        } else {
+                            strBufStart.append(minute);
+                        }
 
                         // Create a new OnTimeSetListener instance. This listener will be invoked when user click ok button in TimePickerDialog.
                         TimePickerDialog.OnTimeSetListener onTimeSetListener = new TimePickerDialog.OnTimeSetListener() {
                             @Override
                             public void onTimeSet(TimePicker timePicker, int hour, int minute) {
-                                StringBuffer strBuf = new StringBuffer();
-                                strBuf.append(hour);
-                                strBuf.append(":");
-                                strBuf.append(minute);
+                                StringBuffer strBufEnd = new StringBuffer();
+                                String AM_PM_End = "";
+                                if(hour < 12) {
+                                    AM_PM_End = "오전";
+                                    if(hour < 10) {
+                                        strBufEnd.append("0"+hour);
+                                    } else {
+                                        strBufEnd.append(hour);
+                                    }
+                                } else {
+                                    AM_PM_End = "오후";
+                                    if(hour-12 < 10){
+                                        strBufEnd.append("0"+(hour-12));
+                                    } else {
+                                        strBufEnd.append(hour-12);
+                                    }
+                                }
+                                strBufEnd.append(":");
+                                if(minute < 10){
+                                    strBufEnd.append("0"+minute);
+                                } else {
+                                    strBufEnd.append(minute);
+                                }
 
-                                endTime.setText(strBuf.toString());
-                                getEndDate();
+                                hour_start = AM_PM_Start + " " + strBufStart.toString();
+                                hour_end = AM_PM_End + " " + strBufEnd.toString();
+                                hourBtn.setText(AM_PM_Start + " " + strBufStart+" ~ "+ AM_PM_End + " " + strBufEnd);
                             }
                         };
 
                         Calendar now = Calendar.getInstance();
-                        int hour = now.get(java.util.Calendar.HOUR_OF_DAY);
-                        int minute = now.get(java.util.Calendar.MINUTE);
+                        int endHour = now.get(java.util.Calendar.HOUR_OF_DAY);
+                        int endMinute = now.get(java.util.Calendar.MINUTE);
 
                         // Whether show time in 24 hour format or not.
                         boolean is24Hour = false;
 
-                        TimePickerDialog timePickerDialog = new TimePickerDialog(getActivity(), onTimeSetListener, hour, minute, is24Hour);
+                        TimePickerDialog timePickerDialog = new TimePickerDialog(getActivity(), onTimeSetListener, endHour, endMinute, is24Hour);
 
+                        timePickerDialog.setTitle("행동 종료 시간");
                         timePickerDialog.show();
                     }
                 };
 
-                // Get current year, month and day.
                 Calendar now = Calendar.getInstance();
-                int year = now.get(java.util.Calendar.YEAR);
-                int month = now.get(java.util.Calendar.MONTH);
-                int day = now.get(java.util.Calendar.DAY_OF_MONTH);
+                int startHour = now.get(java.util.Calendar.HOUR_OF_DAY);
+                int startMinute = now.get(java.util.Calendar.MINUTE);
 
-                // Create the new DatePickerDialog instance.
-                DatePickerDialog datePickerDialog = new DatePickerDialog(getActivity(), onDateSetListener, year, month, day);
+                // Whether show time in 24 hour format or not.
+                boolean is24Hour = false;
 
-                // Popup the dialog.
-                datePickerDialog.show();
+                TimePickerDialog timePickerDialog = new TimePickerDialog(getActivity(), onTimeSetListener, startHour, startMinute, is24Hour);
 
+                timePickerDialog.setTitle("행동 시작 시간");
+                timePickerDialog.show();
             }
         });
 
-        getStartDate();
-        getEndDate();
+//        getStartDate();
+//        getEndDate();
 
         return v;
-    }
-
-    public void getStartDate() {
-        String str_date_start = startDate.getText().toString() + " " + startTime.getText().toString();
-        DateFormat formatter_start = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-        try {
-            //The code you are trying to exception handle
-            date_start = formatter_start.parse(str_date_start);
-            startTimestamp = new Timestamp(date_start.getTime());
-        } catch (Exception e) {
-            //The handling for the code
-            e.printStackTrace();
-        }
-    }
-
-    public void getEndDate() {
-        String str_date_end = endDate.getText().toString() + " " + endTime.getText().toString();
-        DateFormat formatter_end = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-        try {
-            //The code you are trying to exception handle
-            date_end = formatter_end.parse(str_date_end);
-            endTimestamp = new Timestamp(date_end.getTime());
-        } catch (Exception e) {
-            //The handling for the code
-            e.printStackTrace();
-        }
     }
 
     // TODO: Rename method, update argument and hook method into UI event

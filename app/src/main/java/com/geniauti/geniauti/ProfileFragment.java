@@ -57,6 +57,7 @@ public class ProfileFragment extends Fragment {
     private EditText txtEmail;
     private LinearLayout inviteCancel;
     private LinearLayout parentInvite;
+    private LinearLayout bookmarkAdd;
     Bitmap bitmap;
     Uri filePath;
 
@@ -71,6 +72,7 @@ public class ProfileFragment extends Fragment {
 
     private View v;
     private TextView childName;
+    private TextView childParent;
     private OnFragmentInteractionListener mListener;
 
     public ProfileFragment() {
@@ -174,6 +176,7 @@ public class ProfileFragment extends Fragment {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         childName = (TextView) v.findViewById(R.id.profile_child_name);
+        childParent = (TextView) v.findViewById(R.id.txt_child_parent);
         db.collection("childs")
                 .whereGreaterThanOrEqualTo("users."+user.getUid()+".name", "")
                 .get()
@@ -183,6 +186,7 @@ public class ProfileFragment extends Fragment {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 childName.setText(document.getData().get("name").toString());
+                                childParent.setText(document.getData().get("name").toString()+"의 보호자");
                             }
                         } else {
 //                                Log.d(TAG, "Error getting documents: ", task.getException());
@@ -238,6 +242,14 @@ public class ProfileFragment extends Fragment {
                 } else {
 
                 }
+            }
+        });
+
+        bookmarkAdd = (LinearLayout) v.findViewById(R.id.bookmark_add);
+        bookmarkAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(getActivity().getApplication(), BehaviorActivity.class));
             }
         });
 

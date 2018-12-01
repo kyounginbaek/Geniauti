@@ -13,6 +13,7 @@
         android:orientation="vertical">
 
         <LinearLayout
+            android:id="@+id/calendar_layout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
@@ -58,7 +59,7 @@
 
             </RelativeLayout>
 
-            <com.github.sundeepk.compactcalendarview.CompactCalendarView
+            <com.geniauti.geniauti.compactcalendarview.CompactCalendarView
                 android:id="@+id/compactcalendar_view"
                 android:layout_width="match_parent"
                 android:layout_height="250dp"
@@ -73,35 +74,19 @@
 
         </LinearLayout>
 
-        <LinearLayout
+
+        <ListView
+            android:id="@+id/behavior_card_listview"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:paddingBottom="26dp"
+            android:clipToPadding="false"
+            android:scrollbarStyle="outsideOverlay"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:divider="#4cf3f3f3">
 
-            <TextView
-                android:id="@+id/txt_today"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp"
-                android:layout_marginTop="32dp"
-                android:layout_marginBottom="16dp"
-                android:textSize="18sp"
-                android:textColor="@color/coolGreen"
-                android:letterSpacing="-0.03"
-                android:text="13 화요일"
-                />
-
-            <ListView
-                android:id="@+id/behavior_card_listview"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:divider="#4cf3f3f3">
-
-            </ListView>
-
-        </LinearLayout>
-
+        </ListView>
 
     </LinearLayout>
 

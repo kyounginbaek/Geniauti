@@ -319,14 +319,14 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginRight="16dp"
                     android:layout_marginTop="22dp"
                     android:orientation="vertical">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginRight="16dp"
                         android:textSize="14sp"
                         android:textColor="#ababab"
                         android:lineSpacingExtra="6sp"
@@ -337,12 +337,76 @@
                         android:id="@+id/behavior_seekbar"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="19dp"
-                        android:layout_marginRight="19dp"
+                        android:layout_marginLeft="32dp"
+                        android:layout_marginRight="32dp"
                         android:layout_marginTop="34dp"
                         style="@style/Widget.AppCompat.SeekBar.Discrete"
-                        android:max="5"
+                        android:max="4"
                         android:progress="0"/>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="32dp"
+                        android:layout_marginRight="32dp"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="12sp"
+                            android:textColor="#ababab"
+                            android:lineSpacingExtra="12sp"
+                            android:text="매우 약함"
+                            android:layout_weight="1"
+                            android:gravity="left"
+                            />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="12sp"
+                            android:textColor="#ababab"
+                            android:lineSpacingExtra="12sp"
+                            android:text="약함"
+                            android:layout_weight="1"
+                            android:gravity="left"
+                            />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="12sp"
+                            android:textColor="#ababab"
+                            android:lineSpacingExtra="12sp"
+                            android:text="보통"
+                            android:layout_weight="1"
+                            android:gravity="center_horizontal"
+                            />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="12sp"
+                            android:textColor="#ababab"
+                            android:lineSpacingExtra="12sp"
+                            android:text="강함"
+                            android:layout_weight="1"
+                            android:gravity="right"
+                            />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="12sp"
+                            android:textColor="#ababab"
+                            android:lineSpacingExtra="12sp"
+                            android:text="매우 강함"
+                            android:layout_weight="1"
+                            android:gravity="right"
+                            />
+
+                    </LinearLayout>
 
                 </LinearLayout>
 

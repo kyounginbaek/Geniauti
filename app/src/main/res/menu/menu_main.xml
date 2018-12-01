@@ -3,8 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.geniauti.geniauti.BehaviorDetailActivity">
     <item
-        android:id="@+id/menu_behavior_edit"
-        android:icon="@drawable/ic_edit_white_24dp"
-        android:title="behavior_edit"
-        app:showAsAction="ifRoom|collapseActionView" />
+        android:id="@+id/menu_main_calendar"
+        android:icon="@drawable/ic_calendar"
+        android:title="menu_calendar"
+        app:showAsAction="ifRoom|withText"
+        />
 </menu>

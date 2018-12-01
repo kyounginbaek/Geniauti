@@ -13,8 +13,12 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -26,8 +30,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.github.sundeepk.compactcalendarview.CompactCalendarView;
-import com.github.sundeepk.compactcalendarview.domain.Event;
+import com.geniauti.geniauti.compactcalendarview.CompactCalendarView;
+import com.geniauti.geniauti.compactcalendarview.domain.Event;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -40,11 +44,16 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import org.w3c.dom.Text;
+
 import java.sql.Time;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -73,6 +82,10 @@ public class MainFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
+    private Calendar cal = Calendar.getInstance();
+
+    private boolean calendarShow = true;
+    private LinearLayout calendarLayout;
     private View v;
     private OnFragmentInteractionListener mListener;
     private TextView txtMonth;
@@ -126,6 +139,34 @@ public class MainFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+
+        setHasOptionsMenu(true);
+        setRetainInstance(true);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_main, menu);
+
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        int id = item.getItemId();
+
+        if (id == R.id.menu_main_calendar) {
+            if(!calendarShow) {
+                calendarLayout.setVisibility(View.VISIBLE);
+                calendarShow = true;
+            } else {
+                calendarLayout.setVisibility(View.GONE);
+                calendarShow = false;
+            }
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -139,6 +180,8 @@ public class MainFragment extends Fragment {
         }
         v = inflater.inflate(R.layout.fragment_main, container, false);
 
+        calendarLayout = (LinearLayout) v.findViewById(R.id.calendar_layout);
+
         // final ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         // actionBar.setDisplayHomeAsUpEnabled(false);
         // actionBar.setTitle(null);
@@ -146,8 +189,8 @@ public class MainFragment extends Fragment {
         compactCalendar = (CompactCalendarView) v.findViewById(R.id.compactcalendar_view);
         compactCalendar.setCurrentSelectedDayTextColor(Color.parseColor("#ffffff"));
         compactCalendar.shouldSelectFirstDayOfMonthOnScroll(false);
+        compactCalendar.shouldDrawIndicatorsBelowSelectedDays(true);
 
-        txtMonth = (TextView) v.findViewById(R.id.txt_month);
         calendarBack = (ImageView) v.findViewById(R.id.calendar_back);
         calendarForward = (ImageView) v.findViewById(R.id.calendar_forward);
 
@@ -171,18 +214,22 @@ public class MainFragment extends Fragment {
         color_demand = Color.parseColor("#7b3fd3");
         color_etc = Color.parseColor("#93c7ff");
 
-
         compactCalendar.setListener(new CompactCalendarView.CompactCalendarViewListener() {
             @Override
             public void onDayClick(Date dateClicked) {
                 Context context = getContext();
 
-                Log.e("확인", dateClicked.toString());
-//                if (dateClicked.toString().compareTo("Fri Oct 21 00:00:00 AST 2016") == 0) {
-//                    Toast.makeText(context, "Teachers' Professional Day", Toast.LENGTH_SHORT).show();
-//                }else {
-//                    Toast.makeText(context, "No Events Planned for that day", Toast.LENGTH_SHORT).show();
-//                }
+                int position = foundIndex(cardData, dateClicked);
+                if(position == -1) {
+
+                } else {
+                    // Scroll to Position
+                    int duration = 250;  //miliseconds
+                    int offset = 0;      //fromListTop
+
+                    cardListView.smoothScrollToPositionFromTop(position,offset,duration);
+                }
+
             }
 
             @Override
@@ -197,16 +244,16 @@ public class MainFragment extends Fragment {
         final AlertDialog dialog = mBuilder.create();
 
         ListView listView = (ListView) mView.findViewById(R.id.behavior_listview);
-        ArrayList<Listviewitem> data = new ArrayList<>();
-        Listviewitem item1 = new Listviewitem("집 / 때리기 / 관심","최근 기록");
-        Listviewitem item2 = new Listviewitem("공원 / 소리 지르기 / 요구","저장된 기록 1");
-        Listviewitem item3 = new Listviewitem("집 / 울기 / 관심","저장된 기록 2");
+        ArrayList<Listviewitem> bookmarkData = new ArrayList<>();
+//        Listviewitem item1 = new Listviewitem("집 / 때리기 / 관심","최근 기록");
+//        Listviewitem item2 = new Listviewitem("공원 / 소리 지르기 / 요구","저장된 기록 1");
+//        Listviewitem item3 = new Listviewitem("집 / 울기 / 관심","저장된 기록 2");
 
-        data.add(item1);
-        data.add(item2);
-        data.add(item3);
+//        data.add(item1);
+//        data.add(item2);
+//        data.add(item3);
 
-        ListviewAdapter adapter = new ListviewAdapter(getContext(), R.layout.list_behavior, data);
+        ListviewAdapter adapter = new ListviewAdapter(getContext(), R.layout.list_behavior, bookmarkData);
         listView.setAdapter(adapter);
 
         LinearLayout behavior_add = (LinearLayout) mView.findViewById(R.id.behavior_add);
@@ -265,16 +312,16 @@ public class MainFragment extends Fragment {
                                                         case "관심":
                                                             colorCode = color_interest;
                                                             break;
-                                                        case "감각":
+                                                        case "자기자극":
                                                             colorCode = color_self_stimulation;
                                                             break;
-                                                        case "주목":
+                                                        case "과제회피":
                                                             colorCode = color_task_evation;
                                                             break;
-                                                        case "불만":
+                                                        case "요구":
                                                             colorCode = color_demand;
                                                             break;
-                                                        case "힘듬":
+                                                        case "기타":
                                                             colorCode = color_etc;
                                                             break;
                                                     }
@@ -289,19 +336,12 @@ public class MainFragment extends Fragment {
                                                     cardData.add(item);
                                                 }
 
+                                                Collections.sort(cardData, new BehaviorComparator());
                                                 tmpData.addAll(cardData);
 
                                                 cardAdapter = new CardListviewAdapter(getContext(), R.layout.list_behavior_card, cardData);
                                                 cardListView.setAdapter(cardAdapter);
 
-                                                cardListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                                                    @Override
-                                                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                                                        Intent intent = new Intent(getActivity(), BehaviorDetailActivity.class);
-                                                        intent.putExtra("temp", (Behavior) cardAdapter.getItem(position));
-                                                        startActivity(intent);
-                                                    }
-                                                });
                                             } else {
 
                                             }
@@ -314,11 +354,13 @@ public class MainFragment extends Fragment {
                 });
 
         // Today List View
-        todayDate = (TextView) v.findViewById(R.id.txt_today);
-        Calendar cal = Calendar.getInstance();
         int date = cal.get(Calendar.DATE);
+        int month = cal.get(Calendar.MONTH);
         int dayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
         String korDayOfWeek = "";
+
+        txtMonth = (TextView) v.findViewById(R.id.txt_month);
+        txtMonth.setText(String.valueOf(month+1)+"월-"+cal.get(Calendar.YEAR));
 
         switch(dayOfWeek) {
             case 1:
@@ -344,37 +386,27 @@ public class MainFragment extends Fragment {
                 break;
         }
 
-        todayDate.setText(String.valueOf(date)+" "+korDayOfWeek);
-//        getFilter();
-
         return v;
     }
 
-    public void getFilter(String charText) {
-
-        // 문자 입력시마다 리스트를 지우고 새로 뿌려준다.
-        cardData.clear();
-
-        // 문자 입력이 없을때는 모든 데이터를 보여준다.
-        if (charText.length() == 0) {
-            cardData.addAll(tmpData);
-        }
-        // 문자 입력을 할때..
-        else
-        {
-            // 리스트의 모든 데이터를 검색한다.
-            for(int i = 0;i < tmpData.size(); i++)
-            {
-                // Data 비교 후 해당 날짜 검사
-//                if (tmpData.get(i).case_title.toLowerCase().contains(charText))
-//                {
-//                    // 검색된 데이터를 리스트에 추가한다.
-//                    cardData.add(tmpData.get(i));
-//                }
+    public int foundIndex(ArrayList<Behavior> behavior, Date date) {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy.MM.dd. EEE");
+        for (int i = 0; i < behavior.size()-1; i++) {
+            if(formatter.format(behavior.get(i).start_time).equals(formatter.format(date))){
+                return i;
             }
         }
-        // 리스트 데이터가 변경되었으므로 아답터를 갱신하여 검색된 데이터를 화면에 보여준다.
-        cardAdapter.notifyDataSetChanged();
+        return -1;
+    }
+
+    public class BehaviorComparator implements Comparator<Behavior> {
+        public int compare(Behavior left, Behavior right) {
+            if(left.start_time.before(right.start_time)) {
+                return 1;
+            } else {
+                return -1;
+            }
+        }
     }
 
     public class CardListviewAdapter extends BaseAdapter {
@@ -408,6 +440,40 @@ public class MainFragment extends Fragment {
 
             Behavior listviewitem = data.get(position);
 
+            String date_compare = "";
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy.MM.dd. EEE");
+            Date dateToday = new Date();
+            if(position!=0) {
+                Behavior tmp_listviewitem = data.get(position-1);
+                date_compare = formatter.format(tmp_listviewitem.start_time);
+            }
+
+            LinearLayout layout_date = convertView.findViewById(R.id.layout_date);
+            TextView txt_date = convertView.findViewById(R.id.txt_date);
+            if(formatter.format(listviewitem.start_time).equals(date_compare)) {
+                layout_date.setVisibility(View.GONE);
+            } else {
+                layout_date.setVisibility(View.VISIBLE);
+                if(formatter.format(listviewitem.start_time).equals(formatter.format(dateToday))){
+                    txt_date.setTextColor(Color.parseColor("#2dc76d"));
+                } else {
+                    txt_date.setTextColor(Color.parseColor("#3b3b3b"));
+                }
+
+                String date_format = formatter.format(listviewitem.start_time);
+                txt_date.setText(date_format+"요일");
+            }
+
+            LinearLayout layoutCard = convertView.findViewById(R.id.layout_card);
+            layoutCard.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(getActivity(), BehaviorDetailActivity.class);
+                    intent.putExtra("temp", (Behavior) cardAdapter.getItem(position));
+                    startActivity(intent);
+                }
+            });
+
             LinearLayout card_interest = convertView.findViewById(R.id.card_interest);
             LinearLayout card_self_stimulation = convertView.findViewById(R.id.card_self_stimulation);
             LinearLayout card_task_evation = convertView.findViewById(R.id.card_task_evation);
@@ -419,7 +485,9 @@ public class MainFragment extends Fragment {
             TextView txtNameRelationship = convertView.findViewById(R.id.txt_card_name_relationship);
 
             txtCategorization.setText(listviewitem.categorization);
-            txtTime.setText(listviewitem.start_time.toString().substring(11,16) +" ~ "+ listviewitem.end_time.toString().substring(11,16));
+
+            SimpleDateFormat formatterHour = new SimpleDateFormat("aa hh:mm");
+            txtTime.setText(formatterHour.format(listviewitem.start_time) +" ~ "+ formatterHour.format(listviewitem.end_time));
             txtNameRelationship.setText(listviewitem.name+"("+listviewitem.relationship+")");
 
             card_interest.setVisibility(View.GONE);
@@ -431,16 +499,16 @@ public class MainFragment extends Fragment {
             if(listviewitem.reason.get("관심")!=null) {
                 card_interest.setVisibility(View.VISIBLE);
             }
-            if(listviewitem.reason.get("감각")!=null) {
+            if(listviewitem.reason.get("자기자극")!=null) {
                 card_self_stimulation.setVisibility(View.VISIBLE);
             }
-            if(listviewitem.reason.get("주목")!=null) {
+            if(listviewitem.reason.get("과제회피")!=null) {
                 card_task_evation.setVisibility(View.VISIBLE);
             }
-            if(listviewitem.reason.get("불만")!=null) {
+            if(listviewitem.reason.get("요구")!=null) {
                 card_demand.setVisibility(View.VISIBLE);
             }
-            if(listviewitem.reason.get("거부")!=null){
+            if(listviewitem.reason.get("기타")!=null){
                 card_etc.setVisibility(View.VISIBLE);
             }
 

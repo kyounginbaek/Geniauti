@@ -181,8 +181,7 @@ public class DicFirstFragment extends Fragment {
             public boolean onChildClick(ExpandableListView listview, View view,
                                         final int groupPos, final int childPos, long id) {
 
-
-                db.collection("users").document(user.getUid().toString())
+                db.collection("users").document(user.getUid())
                         .get()
                         .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                             @Override

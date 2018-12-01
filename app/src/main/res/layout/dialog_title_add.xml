@@ -31,7 +31,7 @@
             android:layout_height="wrap_content"
             android:textSize="16sp"
             android:textColor="#de000000"
-            app:backgroundTint="#1e000000"
+            android:backgroundTint="@drawable/focus_tint_list"
             android:lineSpacingExtra="8sp"
             android:hint="제목을 입력해주세요."
             android:maxLines="1"

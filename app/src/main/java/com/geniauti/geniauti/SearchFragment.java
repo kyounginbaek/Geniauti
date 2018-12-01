@@ -120,7 +120,7 @@ public class SearchFragment extends Fragment {
         user = FirebaseAuth.getInstance().getCurrentUser();
         db = FirebaseFirestore.getInstance();
 
-        // bookmark
+        // Get User's Bookmark Data
         db.collection("users").document(user.getUid().toString())
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -159,7 +159,7 @@ public class SearchFragment extends Fragment {
             }
         });
 
-        // all
+        // Get All Cases Data
         db.collection("cases")
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -344,7 +344,7 @@ public class SearchFragment extends Fragment {
                 tmp_reason = tmp_reason + "요구 / ";
             }
 
-            case_tag_reason.setText(tmp_reason);
+            case_tag_reason.setText(tmp_reason.substring(0, tmp_reason.length()-2));
 
             if(listviewitem.case_tags.get("harm")!=null) {
                 tmp_type = tmp_type + "타해 / ";
@@ -362,7 +362,7 @@ public class SearchFragment extends Fragment {
                 tmp_type = tmp_type + "성적 / ";
             }
 
-            case_tag_type.setText(tmp_type);
+            case_tag_type.setText(tmp_type.substring(0,tmp_type.length()-2));
 
             ImageView bookmark_delete = (ImageView) convertView.findViewById(R.id.bookmark_delete);
 
