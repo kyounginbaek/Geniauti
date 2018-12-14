@@ -3,6 +3,7 @@ package com.geniauti.geniauti;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
@@ -30,6 +31,7 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -73,7 +75,12 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private View mProgressView;
     private View mLoginFormView;
 
-    private FirebaseAuth mAuth;;
+    private EditText passwordFindEmail;
+    private LinearLayout passwordFindCancel;
+    private LinearLayout passwordFindSubmit;
+    private String txtEmail;
+
+    private FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,6 +111,70 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             @Override
             public void onClick(View view) {
                 attemptLogin();
+            }
+        });
+
+        TextView passwordFind = (TextView) findViewById(R.id.txt_password_find);
+        passwordFind.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog.Builder mBuilder = new AlertDialog.Builder(LoginActivity.this);
+                View mView = getLayoutInflater().inflate(R.layout.dialog_password_find, null);
+                mBuilder.setView(mView);
+                final AlertDialog dialog = mBuilder.create();
+                dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+
+                dialog.show();
+
+                passwordFindEmail = (EditText) mView.findViewById(R.id.txt_password_find_email);
+
+                passwordFindCancel = (LinearLayout) mView.findViewById(R.id.txt_password_find_cancel);
+                passwordFindCancel.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        dialog.dismiss();
+                    }
+                });
+
+                passwordFindSubmit = (LinearLayout) mView.findViewById(R.id.txt_password_find_submit);
+                passwordFindSubmit.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        passwordFindEmail.setError(null);
+                        boolean cancel = false;
+                        View focusView = null;
+
+                        txtEmail = passwordFindEmail.getText().toString();
+
+                        if(TextUtils.isEmpty(txtEmail)){
+                            passwordFindEmail.setError("이메일 주소를 입력해주세요.");
+                            focusView = passwordFindEmail;
+                            cancel = true;
+                        } else {
+                            if (!isEmailValid(txtEmail)) {
+                                passwordFindEmail.setError("잘못된 이메일 형식입니다.");
+                                focusView = passwordFindEmail;
+                                cancel = true;
+                            }
+                        }
+
+                        if(cancel){
+
+                        } else {
+                            mAuth.sendPasswordResetEmail(txtEmail)
+                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            if (task.isSuccessful()) {
+                                                dialog.dismiss();
+                                                Toast toast = Toast.makeText(LoginActivity.this, "입력해주신 이메일 주소로 비밀번호 변경 링크를 보내드렸습니다.", Toast.LENGTH_SHORT);
+                                                toast.show();
+                                            }
+                                        }
+                                    });
+                        }
+                    }
+                });
             }
         });
 
@@ -230,14 +301,13 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                                 mProgressView.setVisibility(View.GONE);
                                 FirebaseAuthException e = (FirebaseAuthException )task.getException();
                                 if(e.getErrorCode()=="ERROR_INVALID_EMAIL") {
-                                    Toast.makeText(LoginActivity.this, "잘못된 이메일 주소 형식입니다.", Toast.LENGTH_SHORT).show();
+                                    mEmailView.setError("잘못된 이메일 형식입니다.");
                                     return;
                                 } else if(e.getErrorCode()=="ERROR_USER_NOT_FOUND") {
                                     Toast.makeText(LoginActivity.this, "가입되지 않은 이메일 주소입니다.", Toast.LENGTH_SHORT).show();
                                     return;
                                 } else if(e.getErrorCode()=="ERROR_WRONG_PASSWORD") {
-                                    Toast.makeText(LoginActivity.this, "비밀번호를 다시 한번 확인해주세요.", Toast.LENGTH_SHORT).show();
-                                    return;
+                                    mPasswordView.setError("비밀번호를 다시 한번 확인해주세요.");
                                 } else {
                                     Toast.makeText(LoginActivity.this, "오류가 발생했습니다.", Toast.LENGTH_SHORT).show();
                                     return;

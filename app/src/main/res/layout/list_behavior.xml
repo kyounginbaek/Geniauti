@@ -14,7 +14,7 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/first_txtview"
+            android:id="@+id/behavior_list_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="16sp"
@@ -24,7 +24,7 @@
             />
 
         <TextView
-            android:id="@+id/second_txtview"
+            android:id="@+id/behavior_list_sub"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="14sp"

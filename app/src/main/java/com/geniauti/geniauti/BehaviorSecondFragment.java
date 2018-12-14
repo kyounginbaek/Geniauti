@@ -217,8 +217,21 @@ public class BehaviorSecondFragment extends Fragment {
                         locationAdd.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                if(txtLocation.getText().toString().equals("")){
+                                boolean cancel = false;
+                                String location = txtLocation.getText().toString().trim();
+
+                                if(location.equals("집") || location.equals("마트") || location.equals("식당") || location.equals("학교")) {
+                                    Toast.makeText(getActivity(), "이미 등록되어 있는 장소입니다.", Toast.LENGTH_SHORT).show();
+                                    cancel = true;
+                                }
+
+                                if(location.equals("")) {
                                     Toast.makeText(getActivity(), "빈칸을 입력해주세요.", Toast.LENGTH_SHORT).show();
+                                    cancel = true;
+                                }
+
+                                if(cancel){
+
                                 } else {
                                     adapter.selectedPosition = arrayList.size() - 1;
                                     arrayList.add(arrayList.size() - 1, txtLocation.getText().toString());

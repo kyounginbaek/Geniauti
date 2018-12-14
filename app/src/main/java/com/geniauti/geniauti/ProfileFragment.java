@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
@@ -19,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -27,7 +29,10 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -37,6 +42,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 
 
 /**
@@ -74,6 +80,11 @@ public class ProfileFragment extends Fragment {
     private TextView childName;
     private TextView childParent;
     private OnFragmentInteractionListener mListener;
+
+    private ListView parentListView;
+    private ListView bookmarkListView;
+    private ArrayList<Parent> parentData;
+    private ArrayList<Bookmark> bookmarkData;
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -177,19 +188,21 @@ public class ProfileFragment extends Fragment {
 
         childName = (TextView) v.findViewById(R.id.profile_child_name);
         childParent = (TextView) v.findViewById(R.id.txt_child_parent);
+
         db.collection("childs")
                 .whereGreaterThanOrEqualTo("users."+user.getUid()+".name", "")
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                childName.setText(document.getData().get("name").toString());
-                                childParent.setText(document.getData().get("name").toString()+"의 보호자");
-                            }
-                        } else {
-//                                Log.d(TAG, "Error getting documents: ", task.getException());
+                    public void onEvent(@Nullable QuerySnapshot value,
+                                        @Nullable FirebaseFirestoreException e) {
+                        if (e != null) {
+//                            Log.w(TAG, "Listen failed.", e);
+                            return;
+                        }
+
+                        for (QueryDocumentSnapshot doc : value) {
+                            childName.setText(doc.getData().get("name").toString());
+                            childParent.setText(doc.getData().get("name").toString()+"의 보호자");
                         }
                     }
                 });
@@ -201,6 +214,13 @@ public class ProfileFragment extends Fragment {
                 startActivity(new Intent(getActivity().getApplication(), ChildEditActivity.class));
             }
         });
+
+
+        parentListView = (ListView) v.findViewById(R.id.parent_listview);
+        parentData = new ArrayList<>();
+
+        bookmarkListView = (ListView) v.findViewById(R.id.bookmark_listview);
+        bookmarkData = new ArrayList<>();
 
         profileEdit = (RelativeLayout) v.findViewById(R.id.profile_edit);
         profileEdit.setOnClickListener(new View.OnClickListener() {
@@ -298,6 +318,30 @@ public class ProfileFragment extends Fragment {
 
         return v;
     }
+
+    public class Parent {
+        public Parent(String name, String profile_pic, String relationship, String uid) {
+            this.name = name;
+            this.profile_pic = profile_pic;
+            this.relationship = relationship;
+            this.uid = uid;
+        }
+        private String name;
+        private String profile_pic;
+        private String relationship;
+        private String uid;
+    }
+
+    public class Bookmark {
+        public Bookmark(String main,String sub) {
+            this.main = main;
+            this.sub = sub;
+        }
+        private String main;
+        private String sub;
+    }
+
+
 
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {

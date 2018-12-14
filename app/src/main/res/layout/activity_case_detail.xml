@@ -50,21 +50,23 @@
                     android:paddingTop="18dp">
 
                     <TextView
+                        android:id="@+id/case_reasons"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:lineSpacingExtra="8sp"
                         android:textColor="#ababab"
                         android:textSize="12sp"
-                        android:text="·행동 원인 &gt; 관심 사례 / 감각 추구 사례" />
+                        android:text="행동 원인 &gt; 관심 / 감각 추구" />
 
                     <TextView
+                        android:id="@+id/case_types"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:lineSpacingExtra="8sp"
                         android:paddingTop="8dp"
                         android:textColor="#ababab"
                         android:textSize="12sp"
-                        android:text="·행동 종류 &gt; 관심 사례 / 감각 추구 사례" />
+                        android:text="행동 종류 &gt; 관심 / 감각 추구" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -79,7 +81,7 @@
                         android:layout_height="wrap_content"
                         android:lineSpacingExtra="8sp"
                         android:textColor="#de000000"
-                        android:textSize="20sp"
+                        android:textSize="22sp"
                         tools:text="손가락 빨고 물건 입에 넣기" />
 
                     <TextView
@@ -112,7 +114,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:paddingTop="6dp"
-                        android:textSize="16sp"
+                        android:textSize="18sp"
                         android:textColor="#858585"
                         android:lineSpacingExtra="12sp"
                         android:text="어떤 문제 행동을 보였나요?"
@@ -125,7 +127,7 @@
                         android:paddingTop="16dp"
                         android:lineSpacingExtra="10sp"
                         android:textColor="#3b3b3b"
-                        android:textSize="14sp"
+                        android:textSize="16sp"
                         tools:text="자꾸 손가락을 빨았어요. 다른 활동을 하다가도 잠깐씩 손가락을 빨았어요. 밤에 잠이 들 때까지 손가락을 빠는데, 엄마는 이 소리가 신경이 많이 쓰였어요. 특히 바깥놀이 할 때 위생적인 문제로 걱정이 됩니다." />
 
                 </LinearLayout>
@@ -150,7 +152,7 @@
                         android:paddingTop="6dp"
                         android:lineSpacingExtra="12sp"
                         android:textColor="#858585"
-                        android:textSize="16sp"
+                        android:textSize="18sp"
                         android:text="왜 그런 행동을 할까요?" />
 
                     <LinearLayout
@@ -175,7 +177,7 @@
                             android:paddingTop="10dp"
                             android:lineSpacingExtra="10sp"
                             android:textColor="#3b3b3b"
-                            android:textSize="14sp"
+                            android:textSize="16sp"
                             tools:text="손가락 빠는 게 기분이 좋아서 그랬어요." />
                     </LinearLayout>
 
@@ -201,7 +203,7 @@
                             android:paddingTop="10dp"
                             android:lineSpacingExtra="10sp"
                             android:textColor="#3b3b3b"
-                            android:textSize="14sp"
+                            android:textSize="16sp"
                             tools:text="주위 어른들의 관심을 얻고자 했어요." />
 
                     </LinearLayout>
@@ -228,7 +230,7 @@
                         android:paddingTop="6dp"
                         android:lineSpacingExtra="12sp"
                         android:textColor="#858585"
-                        android:textSize="16sp"
+                        android:textSize="18sp"
                         android:text="어떻게 대처했을까요?" />
 
                     <LinearLayout
@@ -253,7 +255,7 @@
                             android:paddingTop="10dp"
                             android:lineSpacingExtra="10sp"
                             android:textColor="#3b3b3b"
-                            android:textSize="14sp"
+                            android:textSize="16sp"
                             tools:text="‘빠는 동작’을 아이가 좋아한다고 생각했어요. 그래서 ‘막대 사탕 빨기’를 다른 대체 행동으로 시도하였으나 큰 효과를 보지 못했어요. ‘공갈 젖꼭지 빨기’를 두번째로 시도했으나 이것도 큰 효과가 없었어요." />
                     </LinearLayout>
 
@@ -279,7 +281,7 @@
                             android:paddingTop="10dp"
                             android:lineSpacingExtra="10sp"
                             android:textColor="#3b3b3b"
-                            android:textSize="14sp"
+                            android:textSize="16sp"
                             tools:text="손가락 빨기가 일어나지 못하도록 손에 다른 물건을 쥐고 있게 했어요. 아이의 손 크기에 맞는 블록, 장난감 등을 쥐고 있게 했어요. 이렇게 ‘차별 행동’으로 손가락 빠는 행동을 줄이려 했어요." />
 
                     </LinearLayout>
@@ -306,7 +308,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:paddingTop="10dp"
-                        android:textSize="14sp"
+                        android:textSize="16sp"
                         android:textColor="#3b3b3b"
                         android:lineSpacingExtra="10sp"
                         tools:text="곰 세 마리, 주먹 쥐고 손을 펴서, 씨앗 등의 노래에 맞춰 손으로 율동을 했어요. 이렇게 손가락 율동을 함으로써 손가락 빨기 행동을 줄이려고 했어요."
@@ -333,7 +335,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:paddingTop="6dp"
-                        android:textSize="16sp"
+                        android:textSize="18sp"
                         android:textColor="#858585"
                         android:lineSpacingExtra="12sp"
                         android:text="결과는 어땠나요?"
@@ -345,7 +347,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:paddingTop="16dp"
-                        android:textSize="14sp"
+                        android:textSize="16sp"
                         android:textColor="#3b3b3b"
                         android:lineSpacingExtra="10sp"
                         tools:text="20% 정도 문제 행동이 감소했습니다. 하지만 만족할만큼 문제 행동을 감소시키지는 못했어요. 그렇지만 아이가 자라면서 점차 감각 추구 행동이 줄고, 다른 일상적 행동들로 변화할 것을 기대하고 있어요."

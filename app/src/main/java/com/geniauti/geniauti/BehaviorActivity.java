@@ -63,7 +63,6 @@ public class BehaviorActivity extends AppCompatActivity implements BehaviorFirst
     private FirebaseFirestore db;
     private FirebaseUser user;
     private Map<String, Object> docData;
-    private String username;
     private String cid;
 
     @Override
@@ -149,9 +148,6 @@ public class BehaviorActivity extends AppCompatActivity implements BehaviorFirst
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : task.getResult()) {
-                                HashMap<String, Object> result = (HashMap<String, Object>) document.get("users");
-                                HashMap<String, Object> result_f = (HashMap<String, Object>) result.get(user.getUid());
-                                username = result_f.get("name").toString();
                                 cid = document.getId();
                             }
                         } else {
@@ -243,7 +239,7 @@ public class BehaviorActivity extends AppCompatActivity implements BehaviorFirst
                     if(f9.getResult().toString()=="{}"){
                         Toast.makeText(BehaviorActivity.this, "행동 원인을 골라주세요.", Toast.LENGTH_SHORT).show();
                     } else {
-                        SimpleDateFormat formatter = new SimpleDateFormat("yyyy.MM.dd. aa hh:mm");
+                        SimpleDateFormat formatter = new SimpleDateFormat("yyyy년 MM월 dd일 aa hh:mm");
                         try{
                             Date date_start = formatter.parse(f1.date_start + " " + f1.hour_start);
                             Date date_end = formatter.parse(f1.date_start + " " + f1.hour_end);
@@ -257,12 +253,12 @@ public class BehaviorActivity extends AppCompatActivity implements BehaviorFirst
                             docData.put("before_behavior", f5.textInput.getText().toString());
                             docData.put("after_behavior", f6.textInput.getText().toString());
                             docData.put("type", f7.getResult());
-                            docData.put("intensity", f8.seekbarValue);
+                            docData.put("intensity", f8.seekbarValue+1);
                             docData.put("reason", f9.getResult());
                             docData.put("created_at", "");
                             docData.put("updated_at", "");
                             docData.put("uid", user.getUid());
-                            docData.put("name", username);
+                            docData.put("name", user.getDisplayName());
                             docData.put("cid", cid);
 
                             db.collection("behaviors").document()
@@ -271,9 +267,10 @@ public class BehaviorActivity extends AppCompatActivity implements BehaviorFirst
                                         @Override
                                         public void onSuccess(Void aVoid) {
 //                                                                  mProgressView.setVisibility(View.GONE);
-
                                             MainActivity.refresh();
                                             finish();
+                                            Toast toast = Toast.makeText(BehaviorActivity.this, "행동 생성이 완료되었습니다.", Toast.LENGTH_SHORT);
+                                            toast.show();
                                         }
                                     })
                                     .addOnFailureListener(new OnFailureListener() {
@@ -289,6 +286,17 @@ public class BehaviorActivity extends AppCompatActivity implements BehaviorFirst
                     }
             }
         });
+
+    }
+
+    @Override
+    public void onBackPressed() {
+
+        if(mViewPager.getCurrentItem()==0) {
+            finish();
+        } else {
+            mViewPager.setCurrentItem(getItem(-1), true);
+        }
 
     }
 

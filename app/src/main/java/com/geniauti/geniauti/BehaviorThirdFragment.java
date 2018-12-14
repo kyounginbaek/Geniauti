@@ -198,8 +198,21 @@ public class BehaviorThirdFragment extends Fragment {
                         titleAdd.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                if(txtTitle.getText().toString().equals("")){
+                                boolean cancel = false;
+                                String title = txtTitle.getText().toString().trim();
+
+                                if(title.equals("울기") || title.equals("때리기") || title.equals("떼쓰기") || title.equals("물건 던지기")) {
+                                    Toast.makeText(getActivity(), "이미 등록되어 있는 장소입니다.", Toast.LENGTH_SHORT).show();
+                                    cancel = true;
+                                }
+
+                                if(title.equals("")) {
                                     Toast.makeText(getActivity(), "빈칸을 입력해주세요.", Toast.LENGTH_SHORT).show();
+                                    cancel = true;
+                                }
+
+                                if(cancel){
+
                                 } else {
                                     adapter.selectedPosition = arrayList.size() - 1;
                                     arrayList.add(arrayList.size() - 1, txtTitle.getText().toString());

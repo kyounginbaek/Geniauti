@@ -3,4 +3,33 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="72dp"
+        android:layout_marginLeft="16dp"
+        android:gravity="center_vertical"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/list_bookmark_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:textColor="#de000000"
+            android:lineSpacingExtra="8sp"
+            android:text="공원 / 소리 지르기 / 요구"
+            />
+
+        <TextView
+            android:id="@+id/list_bookmark_sub"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:textColor="#8b000000"
+            android:lineSpacingExtra="6sp"
+            android:text="저장된 기록 1"
+            />
+
+    </LinearLayout>
+
 </LinearLayout>

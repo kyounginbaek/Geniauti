@@ -88,7 +88,7 @@ public class BehaviorFirstFragment extends Fragment {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_behavior_first, container, false);
 
-        SimpleDateFormat formatterDate = new SimpleDateFormat("yyyy.MM.dd.");
+        SimpleDateFormat formatterDate = new SimpleDateFormat("yyyy년 MM월 dd일");
         SimpleDateFormat formatterHour = new SimpleDateFormat("aa hh:mm");
 
         final long ONE_MINUTE_IN_MILLIS = 60000; //millisecs
@@ -114,11 +114,11 @@ public class BehaviorFirstFragment extends Fragment {
                     public void onDateSet(DatePicker datePicker, int year, int month, int dayOfMonth) {
                         StringBuffer strBuf = new StringBuffer();
                         strBuf.append(year);
-                        strBuf.append(".");
+                        strBuf.append("년 ");
                         strBuf.append(month+1);
-                        strBuf.append(".");
+                        strBuf.append("월 ");
                         strBuf.append(dayOfMonth);
-                        strBuf.append(".");
+                        strBuf.append("일");
 
                         date_start = strBuf.toString();
                         dateBtn.setText(date_start);

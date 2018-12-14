@@ -3,23 +3,37 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".ChartFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <LinearLayout
+    <android.support.design.widget.CoordinatorLayout
+        android:id="@+id/main_content"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
-        <com.github.mikephil.charting.charts.PieChart
-            android:id="@+id/chart"
+        <android.support.design.widget.AppBarLayout
+            android:id="@+id/appbar"
             android:layout_width="match_parent"
-            android:layout_height="600px" />
+            android:layout_height="wrap_content"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
-        <com.github.mikephil.charting.charts.LineChart
-            android:id="@+id/linechart"
+            <android.support.design.widget.TabLayout
+                android:id="@+id/chart_result_tabs"
+                android:background="#ffffff"
+                app:tabTextColor="#cbc9d5"
+                app:tabSelectedTextColor="@color/coolGreen"
+                app:tabIndicatorColor="@color/coolGreen"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:tabMode="fixed"/>
+        </android.support.design.widget.AppBarLayout>
+
+        <com.geniauti.geniauti.CustomViewPager
+            android:id="@+id/chart_viewpager"
             android:layout_width="match_parent"
-            android:layout_height="600px" />
+            android:layout_height="match_parent"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
-    </LinearLayout>
+    </android.support.design.widget.CoordinatorLayout>
+
 </FrameLayout>

@@ -75,7 +75,7 @@ import java.util.Locale;
 public class MainFragment extends Fragment {
 
     CompactCalendarView compactCalendar;
-    private SimpleDateFormat dateFormatMonth = new SimpleDateFormat("MMMM- yyyy", Locale.getDefault());
+    private SimpleDateFormat dateFormatMonth = new SimpleDateFormat("yyyy년 MM월", Locale.getDefault());
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -338,7 +338,7 @@ public class MainFragment extends Fragment {
                                                     Event ev = new Event(colorCode, timeInMilliseconds, "");
                                                     compactCalendar.addEvent(ev);
 
-                                                    Behavior item = new Behavior((Date) document.getDate("start_time"), (Date) document.getDate("end_time"), document.get("place").toString(), document.get("categorization").toString(), document.get("current_behavior").toString(), document.get("before_behavior").toString(), document.get("after_behavior").toString(), (HashMap<String, String>) document.get("type"), Integer.parseInt(document.get("intensity").toString()), (HashMap<String, String>) document.get("reason"), document.get("created_at").toString(),  document.get("updated_at").toString(), document.get("uid").toString(), document.get("name").toString(), document.get("cid").toString(), relationship);
+                                                    Behavior item = new Behavior((Date) document.getDate("start_time"), (Date) document.getDate("end_time"), document.get("place").toString(), document.get("categorization").toString(), document.get("current_behavior").toString(), document.get("before_behavior").toString(), document.get("after_behavior").toString(), (HashMap<String, Object>) document.get("type"), Integer.parseInt(document.get("intensity").toString()), (HashMap<String, Object>) document.get("reason"), document.get("created_at").toString(),  document.get("updated_at").toString(), document.get("uid").toString(), document.get("name").toString(), document.get("cid").toString(), relationship);
                                                     cardData.add(item);
                                                 }
 
@@ -366,7 +366,7 @@ public class MainFragment extends Fragment {
         String korDayOfWeek = "";
 
         txtMonth = (TextView) v.findViewById(R.id.txt_month);
-        txtMonth.setText(String.valueOf(month+1)+"월-"+cal.get(Calendar.YEAR));
+        txtMonth.setText(cal.get(Calendar.YEAR) +"년 " + String.valueOf(month+1)+"월");
 
         switch(dayOfWeek) {
             case 1:
@@ -396,7 +396,7 @@ public class MainFragment extends Fragment {
     }
 
     public int foundIndex(ArrayList<Behavior> behavior, Date date) {
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy.MM.dd. EEE");
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy년 MM월 dd일 EEE");
         for (int i = 0; i < behavior.size(); i++) {
             if(formatter.format(behavior.get(i).start_time).equals(formatter.format(date))){
                 return i;
@@ -447,7 +447,7 @@ public class MainFragment extends Fragment {
             Behavior listviewitem = data.get(position);
 
             String date_compare = "";
-            SimpleDateFormat formatter = new SimpleDateFormat("yyyy.MM.dd. EEE");
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy년 MM월 dd일 EEE");
             Date dateToday = new Date();
             if(position!=0) {
                 Behavior tmp_listviewitem = data.get(position-1);
@@ -574,9 +574,9 @@ public class MainFragment extends Fragment {
                 convertView = inflater.inflate(layout, parent, false);
             }
             Listviewitem listviewitem = data.get(position);
-            TextView main = (TextView) convertView.findViewById(R.id.first_txtview);
+            TextView main = (TextView) convertView.findViewById(R.id.list_bookmark_title);
             main.setText(listviewitem.getMain());
-            TextView sub = (TextView)convertView.findViewById(R.id.second_txtview);
+            TextView sub = (TextView)convertView.findViewById(R.id.list_bookmark_sub);
             sub.setText(listviewitem.getSub());
             return convertView;
         }

@@ -28,6 +28,7 @@ public class CaseDetailActivity extends AppCompatActivity {
 
     private View mProgressView;
 
+    private TextView caseReasons, caseTypes;
     private TextView caseTitle;
     private TextView caseBackgroundInfo;
     private TextView caseBehavior;
@@ -55,6 +56,8 @@ public class CaseDetailActivity extends AppCompatActivity {
 
         mProgressView = findViewById(R.id.case_detail_progress);
 
+        caseReasons = findViewById(R.id.case_reasons);
+        caseTypes = findViewById(R.id.case_types);
         caseTitle = findViewById(R.id.case_title);
         caseBackgroundInfo = findViewById(R.id.case_backgroundInfo);
         caseBehavior = findViewById(R.id.case_behavior);
@@ -71,6 +74,42 @@ public class CaseDetailActivity extends AppCompatActivity {
         caseEffect = findViewById(R.id.case_effect);
 
         Cases selectedCase = (Cases) getIntent().getSerializableExtra("temp");
+
+        String tmp_reason = "행동 원인 > ";
+        String tmp_type = "행동 종류 > ";
+
+        if(selectedCase.case_tags.get("taskEvation")!=null) {
+            tmp_reason = tmp_reason + "과제 회피 / ";
+        }
+        if(selectedCase.case_tags.get("selfStimulation")!=null) {
+            tmp_reason = tmp_reason + "자기 자극 / ";
+        }
+        if(selectedCase.case_tags.get("interest")!=null) {
+            tmp_reason = tmp_reason + "관심 / ";
+        }
+        if(selectedCase.case_tags.get("demand")!=null) {
+            tmp_reason = tmp_reason + "요구 / ";
+        }
+
+        caseReasons.setText(tmp_reason.substring(0, tmp_reason.length()-2));
+
+        if(selectedCase.case_tags.get("harm")!=null) {
+            tmp_type = tmp_type + "타해 / ";
+        }
+        if(selectedCase.case_tags.get("selfHArm")!=null) {
+            tmp_type = tmp_type + "자해 / ";
+        }
+        if(selectedCase.case_tags.get("destruction")!=null) {
+            tmp_type = tmp_type + "파괴 / ";
+        }
+        if(selectedCase.case_tags.get("leave")!=null) {
+            tmp_type = tmp_type + "이탈 / ";
+        }
+        if(selectedCase.case_tags.get("sexual")!=null) {
+            tmp_type = tmp_type + "성적 / ";
+        }
+
+        caseTypes.setText(tmp_type.substring(0, tmp_type.length()-2));
 
         caseTitle.setText(selectedCase.case_title);
         caseBackgroundInfo.setText(selectedCase.case_backgroundInfo);

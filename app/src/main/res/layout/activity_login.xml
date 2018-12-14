@@ -34,7 +34,7 @@
 
             <ImageView
                 android:layout_width="131dp"
-                android:layout_height="20dp"
+                android:layout_height="27dp"
                 android:scaleType="fitStart"
                 android:src="@drawable/geniauti_logo" />
 
@@ -87,7 +87,7 @@
                 style="?android:textAppearanceSmall"
                 android:layout_width="match_parent"
                 android:layout_height="36dp"
-                android:textSize="14sp"
+                android:textSize="16sp"
                 android:textColor="#ffffff"
                 android:background="@color/coolGreen"
                 android:layout_marginTop="38dp"
@@ -101,6 +101,7 @@
                 android:paddingTop="20dp">
 
                 <TextView
+                    android:id="@+id/txt_password_find"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"

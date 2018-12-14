@@ -198,7 +198,7 @@ public class BehaviorFifthFragment extends Fragment {
                     partialResults.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
 
             for(int i = 0; i < matches.size() ; i++){
-                textInput.setText(matches.get(i));
+                textInput.append(matches.get(i));
             }
         }
 

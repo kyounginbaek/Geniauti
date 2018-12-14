@@ -1,22 +1,27 @@
 package com.geniauti.geniauti;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
 import java.util.Iterator;
 import java.util.Map;
 
 public class BehaviorDetailActivity extends AppCompatActivity {
+
+    private Behavior selectedBehavior;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,7 +39,7 @@ public class BehaviorDetailActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
 
-        Behavior selectedBehavior = (Behavior) getIntent().getSerializableExtra("temp");
+        selectedBehavior = (Behavior) getIntent().getSerializableExtra("temp");
 
         LinearLayout behavior_interest = findViewById(R.id.behavior_interest);
         LinearLayout behavior_self_stimulation = findViewById(R.id.behavior_self_stimulation);
@@ -69,15 +74,27 @@ public class BehaviorDetailActivity extends AppCompatActivity {
         TextView behavior_place = findViewById(R.id.txt_behavior_place);
         TextView behavior_type = findViewById(R.id.txt_behavior_type);
         SeekBar behavior_intensity = findViewById(R.id.behavior_seekbar);
-        TextView behavior_befor = findViewById(R.id.txt_behavior_before);
+        behavior_intensity.setOnTouchListener(new View.OnTouchListener(){
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                return true;
+            }
+        });
+        TextView intensityOne = (TextView) findViewById(R.id.txt_behavior_detail_intensity_one);
+        TextView intensityTwo = (TextView) findViewById(R.id.txt_behavior_detail_intensity_two);
+        TextView intensityThree = (TextView) findViewById(R.id.txt_behavior_detail_intensity_three);
+        TextView intensityFour = (TextView) findViewById(R.id.txt_behavior_detail_intensity_four);
+        TextView intensityFive = (TextView) findViewById(R.id.txt_behavior_detail_intensity_five);
+
+        TextView behavior_before = findViewById(R.id.txt_behavior_before);
         TextView behavior_current = findViewById(R.id.txt_behavior_current);
         TextView behavior_after = findViewById(R.id.txt_behavior_after);
 
         behavior_categorization.setText(selectedBehavior.categorization);
 
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy.MM.dd. aa hh:mm");
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy년 MM월 dd일 aa hh:mm");
 
-        behavior_time.setText(formatter.format(selectedBehavior.start_time)+" ~ "+formatter.format(selectedBehavior.end_time).substring(12,20));
+        behavior_time.setText(formatter.format(selectedBehavior.start_time)+" ~ "+formatter.format(selectedBehavior.end_time).substring(14,22));
         behavior_place.setText(selectedBehavior.place);
 
         String tmp_type = "";
@@ -85,11 +102,11 @@ public class BehaviorDetailActivity extends AppCompatActivity {
         while (it.hasNext()) {
             Map.Entry pair = (Map.Entry)it.next();
             switch(pair.getKey().toString()) {
-                case "selfHarm":
+                case "selfharm":
                     tmp_type = tmp_type + "자해, ";
                     break;
                 case "harm":
-                    tmp_type = tmp_type + "타패, ";
+                    tmp_type = tmp_type + "타해, ";
                     break;
                 case "destruction":
                     tmp_type = tmp_type + "파괴, ";
@@ -108,8 +125,26 @@ public class BehaviorDetailActivity extends AppCompatActivity {
         }
         behavior_type.setText(tmp_type.substring(0, tmp_type.length()-2));
 
-        behavior_intensity.setProgress(selectedBehavior.intensity);
-        behavior_befor.setText(selectedBehavior.before_behavior);
+        behavior_intensity.setProgress(selectedBehavior.intensity-1);
+        switch(selectedBehavior.intensity){
+            case 1:
+                intensityOne.setTextColor(Color.parseColor("#2dc76d"));
+                break;
+            case 2:
+                intensityTwo.setTextColor(Color.parseColor("#2dc76d"));
+                break;
+            case 3:
+                intensityThree.setTextColor(Color.parseColor("#2dc76d"));
+                break;
+            case 4:
+                intensityFour.setTextColor(Color.parseColor("#2dc76d"));
+                break;
+            case 5:
+                intensityFive.setTextColor(Color.parseColor("#2dc76d"));
+                break;
+        }
+
+        behavior_before.setText(selectedBehavior.before_behavior);
         behavior_current.setText(selectedBehavior.current_behavior);
         behavior_after.setText(selectedBehavior.after_behavior);
 
@@ -127,12 +162,19 @@ public class BehaviorDetailActivity extends AppCompatActivity {
 
         int id = item.getItemId();
 
-        if (id == R.id.menu_behavior_edit) {
-//            Intent intent = new Intent(this.getContext(), SettingsActivity.class);
-//            this.startActivity(intent);
-            return true;
-        } else if(id == android.R.id.home) {
+        if (id == android.R.id.home) {
             finish();
+        } else if(id == R.id.action_bookmark){
+
+        } else if(id == R.id.action_edit) {
+
+        } else if(id == R.id.action_delete) {
+
+
+            MainActivity.refresh();
+            finish();
+            Toast toast = Toast.makeText(BehaviorDetailActivity.this, "행동이 삭제되었습니다.", Toast.LENGTH_SHORT);
+            toast.show();
         }
 
         return super.onOptionsItemSelected(item);

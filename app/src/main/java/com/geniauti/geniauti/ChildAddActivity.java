@@ -24,10 +24,14 @@ import com.google.firebase.auth.UserInfo;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+
+import static java.lang.Integer.parseInt;
 
 public class ChildAddActivity extends AppCompatActivity {
 
@@ -40,6 +44,10 @@ public class ChildAddActivity extends AppCompatActivity {
     private RadioGroup radioGroupSex;
     private RadioButton radioGirl;
     private TextView mChildRelation;
+
+    private int childAge;
+    private RadioButton radioBtnSex;
+    private String cid;
 
     private FirebaseFirestore db;
     private FirebaseUser user;
@@ -133,7 +141,7 @@ public class ChildAddActivity extends AppCompatActivity {
 //                }
 
                 if(TextUtils.isEmpty(mChildRelation.getText().toString())) {
-                    mChildRelation.setError("이메일 주소를 입력해주세요.");
+                    mChildRelation.setError("아이와의 관계를 입력해주세요.");
                     focusView = mChildRelation;
                     cancel = true;
                 }
@@ -147,7 +155,7 @@ public class ChildAddActivity extends AppCompatActivity {
                     // find the radiobutton by returned id
                     RadioButton radioBtnAge = (RadioButton) findViewById(selectedAge);
 
-                    int childAge = Integer.parseInt(mChildAge.getText().toString());
+                    childAge = Integer.parseInt(mChildAge.getText().toString());
 
                     if(radioBtnAge.getText().equals("세")) {
                         childAge = Integer.parseInt(mChildAge.getText().toString()) * 12;
@@ -155,7 +163,7 @@ public class ChildAddActivity extends AppCompatActivity {
 
                     int selectedSex = radioGroupSex.getCheckedRadioButtonId();
                     // find the radiobutton by returned id
-                    RadioButton radioBtnSex = (RadioButton) findViewById(selectedSex);
+                    radioBtnSex = (RadioButton) findViewById(selectedSex);
 
                     Map<String, Object> nestedNestedData = new HashMap<>();
                     nestedNestedData.put("name", user.getDisplayName());
@@ -178,23 +186,52 @@ public class ChildAddActivity extends AppCompatActivity {
                                 @Override
                                 public void onSuccess(Void aVoid) {
 
-                                    Map<String, Object> userData = new HashMap<>();
-                                    userData.put("name", user.getDisplayName());
+                                    db.collection("childs")
+                                            .whereGreaterThanOrEqualTo("users."+user.getUid()+".name", "")
+                                            .get()
+                                            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                                @Override
+                                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                                    if (task.isSuccessful()) {
+                                                        for (QueryDocumentSnapshot document : task.getResult()) {
+                                                            cid = document.getId();
 
-                                    db.collection("users").document(user.getUid())
-                                            .set(userData)
-                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                @Override
-                                                public void onSuccess(Void aVoid) {
-                                                    mProgressView.setVisibility(View.GONE);
-                                                    Intent intent=new Intent(ChildAddActivity.this,MainActivity.class);
-                                                    startActivity(intent);
-                                                    finish();
-                                                }
-                                            })
-                                            .addOnFailureListener(new OnFailureListener() {
-                                                @Override
-                                                public void onFailure(@NonNull Exception e) {
+                                                            Map<String, Object> childNestedData = new HashMap<>();
+                                                            childNestedData.put("name", mChildName.getText().toString());
+                                                            childNestedData.put("profile_pic", "");
+                                                            childNestedData.put("age", childAge);
+                                                            childNestedData.put("sex", radioBtnSex.getText().toString().substring(0,2));
+
+                                                            Map<String, Object> nestedData = new HashMap<>();
+                                                            nestedData.put(cid, childNestedData);
+
+                                                            Map<String, Object> userData = new HashMap<>();
+                                                            userData.put("name", user.getDisplayName());
+                                                            userData.put("profile_pic", "");
+                                                            userData.put("childs", nestedData);
+                                                            userData.put("relationship", mChildRelation.getText().toString());
+
+                                                            db.collection("users").document(user.getUid())
+                                                                    .set(userData)
+                                                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                        @Override
+                                                                        public void onSuccess(Void aVoid) {
+                                                                            mProgressView.setVisibility(View.GONE);
+                                                                            Intent intent=new Intent(ChildAddActivity.this,MainActivity.class);
+                                                                            startActivity(intent);
+                                                                            finish();
+                                                                        }
+                                                                    })
+                                                                    .addOnFailureListener(new OnFailureListener() {
+                                                                        @Override
+                                                                        public void onFailure(@NonNull Exception e) {
+                                                                        }
+                                                                    });
+
+                                                        }
+                                                    } else {
+//                                Log.d(TAG, "Error getting documents: ", task.getException());
+                                                    }
                                                 }
                                             });
 //                                Log.d(TAG, "DocumentSnapshot successfully written!");

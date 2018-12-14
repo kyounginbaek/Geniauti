@@ -22,6 +22,8 @@
                 android:layout_marginTop="84dp"
                 android:textSize="24sp"
                 android:textColor="#3b3b3b"
+                android:textStyle="bold"
+                android:lineSpacingExtra="4dp"
                 android:letterSpacing="-0.02"
                 tools:text="이다솔과의 관계를\n입력해주세요"
                 />
@@ -43,7 +45,8 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="25sp"
+                    android:layout_marginTop="4dp"
+                    android:textSize="22sp"
                     android:textColor="#2e2e39"
                     android:letterSpacing="0.01"
                     android:lineSpacingExtra="15sp"
@@ -54,7 +57,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="12sp"
+                    android:textSize="14sp"
                     android:textColor="#848484"
                     android:letterSpacing="0.01"
                     android:lineSpacingExtra="28sp"
@@ -96,7 +99,7 @@
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
                 android:layout_marginTop="30dp"
-                android:textSize="14sp"
+                android:textSize="16sp"
                 android:textColor="#ffffff"
                 android:background="@color/coolGreen"
                 android:text="로그인"

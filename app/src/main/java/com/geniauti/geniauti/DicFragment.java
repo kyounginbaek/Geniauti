@@ -91,10 +91,10 @@ public class DicFragment extends Fragment implements SearchFragment.OnFragmentIn
         v = inflater.inflate(R.layout.fragment_dic, container, false);
 
         // Setting ViewPager for each Tabs
-        ViewPager viewPager = (ViewPager) v.findViewById(R.id.viewpager);
+        ViewPager viewPager = (ViewPager) v.findViewById(R.id.dic_viewpager);
         setupViewPager(viewPager);
         // Set Tabs inside Toolbar
-        TabLayout tabs = (TabLayout) v.findViewById(R.id.result_tabs);
+        TabLayout tabs = (TabLayout) v.findViewById(R.id.dic_result_tabs);
         tabs.setupWithViewPager(viewPager);
 
         return v;

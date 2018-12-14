@@ -4,7 +4,12 @@ import android.content.Context;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,7 +40,7 @@ import java.util.List;
  * Use the {@link ChartFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ChartFragment extends Fragment {
+public class ChartFragment extends Fragment implements ChartDayFragment.OnFragmentInteractionListener, ChartWeekFragment.OnFragmentInteractionListener, ChartMonthFragment.OnFragmentInteractionListener, ChartYearFragment.OnFragmentInteractionListener {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -47,6 +52,8 @@ public class ChartFragment extends Fragment {
 
     private View v;
     private OnFragmentInteractionListener mListener;
+    public static CustomViewPager viewPager;
+    public static ChartFragment.ViewPagerAdapter adapter;
 
     public ChartFragment() {
         // Required empty public constructor
@@ -91,110 +98,67 @@ public class ChartFragment extends Fragment {
         }
         v = inflater.inflate(R.layout.fragment_chart, container, false);
 
-        // PieChart
-        PieChart chart = (PieChart) v.findViewById(R.id.chart);
-        chart.setUsePercentValues(true);
-        chart.getDescription().setEnabled(false);
-        chart.setExtraOffsets(20.f, 0.f, 20.f, 0.f);
-        chart.setDragDecelerationFrictionCoef(0.95f);
 
-        chart.setTransparentCircleColor(Color.WHITE);
-        chart.setTransparentCircleAlpha(110);
+        // Setting ViewPager for each Tabs
+        viewPager = (CustomViewPager) v.findViewById(R.id.chart_viewpager);
+        setupViewPager(viewPager);
 
-        Legend l = chart.getLegend();
-        l.setVerticalAlignment(Legend.LegendVerticalAlignment.TOP);
-        l.setHorizontalAlignment(Legend.LegendHorizontalAlignment.RIGHT);
-        l.setOrientation(Legend.LegendOrientation.VERTICAL);
-        l.setDrawInside(false);
-        l.setEnabled(false);
+        // Set Tabs inside Toolbar
+        TabLayout tabs = (TabLayout) v.findViewById(R.id.chart_result_tabs);
 
-        List<PieEntry> entries = new ArrayList<>();
 
-        entries.add(new PieEntry(18f, "Green"));
-        entries.add(new PieEntry(26f, "Yellow"));
-        entries.add(new PieEntry(24f, "Red"));
-        entries.add(new PieEntry(30f, "Blue"));
-
-        PieDataSet set = new PieDataSet(entries, "Election Results");
-        set.setSliceSpace(3f);
-        set.setSelectionShift(5f);
-        set.setYValuePosition(PieDataSet.ValuePosition.OUTSIDE_SLICE);
-
-        ArrayList<Integer> colors = new ArrayList<>();
-
-        for (int c : ColorTemplate.VORDIPLOM_COLORS)
-            colors.add(c);
-
-        for (int c : ColorTemplate.JOYFUL_COLORS)
-            colors.add(c);
-
-        for (int c : ColorTemplate.COLORFUL_COLORS)
-            colors.add(c);
-
-        for (int c : ColorTemplate.LIBERTY_COLORS)
-            colors.add(c);
-
-        for (int c : ColorTemplate.PASTEL_COLORS)
-            colors.add(c);
-
-        colors.add(ColorTemplate.getHoloBlue());
-
-        set.setColors(colors);
-
-        PieData data = new PieData(set);
-        data.setValueTextSize(11f);
-        data.setValueFormatter(new PercentFormatter());
-        data.setValueTextColor(Color.BLACK);
-        chart.setData(data);
-        chart.invalidate(); // refresh
-
-        // LineChart
-        LineChart lineChart = v.findViewById(R.id.linechart);
-        // lineChart.setOnChartGestureListener(getActivity());
-        // lineChart.setOnChartValueSelectedListener(getActivity());
-
-        lineChart.setDragEnabled(true);
-        lineChart.setScaleEnabled(false);
-        lineChart.getDescription().setEnabled(false);
-        lineChart.setDrawGridBackground(false);
-
-        XAxis x = lineChart.getXAxis();
-        x.setEnabled(false);
-
-        lineChart.getLegend().setEnabled(false);
-        lineChart.invalidate();
-
-        YAxis y = lineChart.getAxisLeft();
-        y.setLabelCount(6, false);
-        y.setPosition(YAxis.YAxisLabelPosition.INSIDE_CHART);
-        y.setEnabled(false);
-
-        lineChart.getAxisRight().setEnabled(false);
-
-        List<Entry> yValues = new ArrayList<>();
-        yValues.add(new Entry(0, 60f));
-        yValues.add(new Entry(1, 50f));
-        yValues.add(new Entry(2, 70f));
-        yValues.add(new Entry(3, 30f));
-        yValues.add(new Entry(4, 40f));
-        yValues.add(new Entry(5, 60f));
-        yValues.add(new Entry(6, 70f));
-
-        LineDataSet set1 = new LineDataSet(yValues, "Data Set 1");
-        set1.setCircleRadius(4f);
-        set1.setCircleColor(Color.WHITE);
-        set1.setCircleColorHole(Color.GREEN);
-        set1.setColor(Color.GREEN);
-        set1.setFillColor(Color.GREEN);
-        set1.setFillAlpha(100);
-        set1.setDrawFilled(true);
-
-        LineData linedata = new LineData(set1);
-        linedata.setValueTextSize(11f);
-
-        lineChart.setData(linedata);
+        tabs.setupWithViewPager(viewPager);
 
         return v;
+    }
+
+    private void setupViewPager(ViewPager viewPager) {
+        adapter = new ChartFragment.ViewPagerAdapter(getFragmentManager());
+        viewPager.setAdapter(adapter);
+        viewPager.setOffscreenPageLimit(3);
+    }
+
+    public class ViewPagerAdapter extends FragmentStatePagerAdapter {
+
+        private String[] tabTitles = new String[]{"일", "주", "월", "년"};
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return tabTitles[position];
+        }
+
+        public ViewPagerAdapter(FragmentManager manager) {
+            super(manager);
+        }
+        @Override
+        public Fragment getItem(int position) {
+            switch (position) {
+                case 0:
+                    ChartDayFragment tab1 = new ChartDayFragment();
+                    return tab1;
+                case 1:
+                    ChartWeekFragment tab2 = new ChartWeekFragment();
+                    return tab2;
+                case 2:
+                    ChartMonthFragment tab3 = new ChartMonthFragment();
+                    return tab3;
+                case 3:
+                    ChartYearFragment tab4 = new ChartYearFragment();
+                    return tab4;
+                default:
+                    return null;
+            }
+        }
+
+        public int getItemPosition(Object object) {
+            return POSITION_NONE;
+        }
+
+        @Override
+        public int getCount() {
+            return 4;
+        }
+
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -235,4 +199,10 @@ public class ChartFragment extends Fragment {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
+
+    @Override
+    public void onFragmentInteraction(Uri uri){
+        System.out.println(uri);
+    }
+
 }

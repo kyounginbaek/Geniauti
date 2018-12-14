@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnFr
 
         Toolbar mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
-        getSupportActionBar().setTitle("달력");
+        getSupportActionBar().setTitle("행동 조회");
 
         viewPager = (CustomViewPager) findViewById(R.id.fragment_container);
 
@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnFr
                     case R.id.navigation_main:
                         DicFragment.searchFragmentHide();
                         viewPager.setCurrentItem(0);
-                        getSupportActionBar().setTitle("달력");
+                        getSupportActionBar().setTitle("행동 조회");
                         break;
 
                     case R.id.navigation_dic:
@@ -87,6 +87,7 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnFr
         public ViewPagerAdapter(FragmentManager manager) {
             super(manager);
         }
+
         @Override
         public Fragment getItem(int position) {
             switch (position) {

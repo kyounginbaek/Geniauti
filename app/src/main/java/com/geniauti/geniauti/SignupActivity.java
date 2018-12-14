@@ -284,10 +284,10 @@ public class SignupActivity extends AppCompatActivity implements LoaderCallbacks
                                     FirebaseAuthException e = (FirebaseAuthException )task.getException();
 
                                     if(e.getErrorCode()=="ERROR_INVALID_EMAIL") {
-                                        Toast.makeText(SignupActivity.this, "잘못된 이메일 주소 형식입니다.", Toast.LENGTH_SHORT).show();
+                                        mEmailView.setError("잘못된 이메일 형식입니다.");
                                         return;
                                     } else if(e.getErrorCode()=="ERROR_EMAIL_ALREADY_IN_USE") {
-                                        Toast.makeText(SignupActivity.this, "이미 가입된 이메일 주소입니다.", Toast.LENGTH_SHORT).show();
+                                        mEmailView.setError("이미 가입된 이메일 주소입니다.");
                                         return;
                                     } else {
                                         Toast.makeText(SignupActivity.this, "오류가 발생했습니다.", Toast.LENGTH_SHORT).show();
@@ -323,7 +323,7 @@ public class SignupActivity extends AppCompatActivity implements LoaderCallbacks
 
             } else {
                 mProgressView.setVisibility(View.GONE);
-                Toast.makeText(getApplicationContext(),"비밀번호와 비밀번호 확인이 일치하지 않습니다.",Toast.LENGTH_SHORT).show();
+                mPasswordCheckView.setError("비밀번호와 비밀번호 확인이 일치하지 않습니다.\"");
             }
 
             // Show a progress spinner, and kick off a background task to

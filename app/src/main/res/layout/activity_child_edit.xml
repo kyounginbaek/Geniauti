@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
     tools:context=".ChildEditActivity">
 
     <ProgressBar
-        android:id="@+id/child_add_progress"
+        android:id="@+id/child_edit_progress"
         style="?android:attr/progressBarStyleLarge"
         android:layout_width="wrap_content"
         android:layout_height="fill_parent"
@@ -75,44 +77,38 @@
 
                 </LinearLayout>
 
-                <android.support.design.widget.TextInputLayout
+                <EditText
+                    android:id="@+id/edit_child_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:paddingTop="32dp">
-
-                    <EditText
-                        android:id="@+id/txt_child_name"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textSize="16sp"
-                        android:textColor="#de000000"
-                        app:backgroundTint="#1e000000"
-                        android:lineSpacingExtra="8sp"
-                        android:hint="아이 이름"
-                        android:maxLines="1"
-                        android:singleLine="true" />
-
-                </android.support.design.widget.TextInputLayout>
+                    android:paddingTop="32dp"
+                    android:textSize="16sp"
+                    android:textColor="#de000000"
+                    app:backgroundTint="#1e000000"
+                    android:lineSpacingExtra="8sp"
+                    android:hint="아이 이름"
+                    android:maxLines="1"
+                    android:singleLine="true" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="9dp"
-                    android:textSize="12sp"
+                    android:textSize="13sp"
                     android:textColor="#ababab"
                     android:lineSpacingExtra="12sp"
                     android:text="연령 표기 방법"
                     />
 
                 <RadioGroup
-                    android:id="@+id/radio_child_age"
+                    android:id="@+id/edit_radio_child_age"
                     android:layout_width="match_parent"
                     android:layout_height="56dp"
                     android:paddingTop="13dp"
                     android:orientation="horizontal">
 
                     <RadioButton
-                        android:id="@+id/month"
+                        android:id="@+id/edit_radio_btn_month"
                         android:text="개월"
                         android:textSize="16dp"
                         android:textColor="#de3b3b3b"
@@ -123,7 +119,7 @@
                         />
 
                     <RadioButton
-                        android:id="@+id/year"
+                        android:id="@+id/edit_radio_btn_year"
                         android:text="세"
                         android:textSize="16dp"
                         android:textColor="#de3b3b3b"
@@ -134,45 +130,38 @@
 
                 </RadioGroup>
 
-                <android.support.design.widget.TextInputLayout
+                <EditText
+                    android:id="@+id/edit_child_age"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    >
-
-                    <EditText
-                        android:id="@+id/txt_child_age"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textSize="16sp"
-                        android:textColor="#de000000"
-                        app:backgroundTint="#1e000000"
-                        android:lineSpacingExtra="8sp"
-                        android:hint="나이"
-                        android:maxLines="1"
-                        android:singleLine="true"
-                        android:inputType="number"/>
-
-                </android.support.design.widget.TextInputLayout>
+                    android:textSize="16sp"
+                    android:textColor="#de000000"
+                    app:backgroundTint="#1e000000"
+                    android:lineSpacingExtra="8sp"
+                    android:hint="아이 나이(개월)"
+                    android:maxLines="1"
+                    android:singleLine="true"
+                    android:inputType="number"/>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="9dp"
-                    android:textSize="12sp"
+                    android:textSize="13sp"
                     android:textColor="#ababab"
                     android:lineSpacingExtra="12sp"
                     android:text="아이 성별"
                     />
 
                 <RadioGroup
-                    android:id="@+id/child_sex"
+                    android:id="@+id/edit_radio_child_sex"
                     android:layout_width="match_parent"
                     android:layout_height="56dp"
                     android:paddingTop="13dp"
                     android:orientation="horizontal">
 
                     <RadioButton
-                        android:id="@+id/boy"
+                        android:id="@+id/edit_radio_btn_boy"
                         android:text="남자아이"
                         android:textSize="16dp"
                         android:textColor="#de3b3b3b"
@@ -183,7 +172,7 @@
                         />
 
                     <RadioButton
-                        android:id="@+id/girl"
+                        android:id="@+id/edit_radio_btn_girl"
                         android:text="여자아이"
                         android:textSize="16dp"
                         android:textColor="#de3b3b3b"
@@ -194,34 +183,27 @@
 
                 </RadioGroup>
 
-                <android.support.design.widget.TextInputLayout
+                <EditText
+                    android:id="@+id/edit_child_relationship"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:paddingTop="35dp"
-                    >
-
-                    <EditText
-                        android:id="@+id/txt_child_relation"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textSize="16sp"
-                        android:textColor="#de000000"
-                        app:backgroundTint="#1e000000"
-                        android:lineSpacingExtra="8sp"
-                        android:hint="아이와의 관계"
-                        android:maxLines="1"
-                        android:singleLine="true" />
-
-                </android.support.design.widget.TextInputLayout>
+                    android:textSize="16sp"
+                    android:textColor="#de000000"
+                    app:backgroundTint="#1e000000"
+                    android:lineSpacingExtra="8sp"
+                    android:hint="아이와의 관계"
+                    android:maxLines="1"
+                    android:singleLine="true" />
 
                 <Button
-                    android:id="@+id/child_add_button"
+                    android:id="@+id/child_edit_button"
                     style="?android:textAppearanceSmall"
                     android:layout_width="match_parent"
                     android:layout_height="36dp"
                     android:layout_marginTop="40dp"
                     android:layout_marginBottom="17dp"
-                    android:textSize="14sp"
+                    android:textSize="16sp"
                     android:textColor="#ffffff"
                     android:background="@color/coolGreen"
                     android:text="수정하기"
@@ -233,4 +215,4 @@
 
     </LinearLayout>
 
-</android.support.constraint.ConstraintLayout>
+</LinearLayout>

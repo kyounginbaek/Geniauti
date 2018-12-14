@@ -1,26 +1,23 @@
 package com.geniauti.geniauti;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.SeekBar;
-import android.widget.TextView;
 
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link BehaviorEighthFragment.OnFragmentInteractionListener} interface
+ * {@link TemplateChartMonthFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link BehaviorEighthFragment#newInstance} factory method to
+ * Use the {@link TemplateChartMonthFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class BehaviorEighthFragment extends Fragment {
+public class TemplateChartMonthFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -30,17 +27,9 @@ public class BehaviorEighthFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    int seekbarValue;
-    SeekBar seek;
-    private TextView intensityOne;
-    private TextView intensityTwo;
-    private TextView intensityThree;
-    private TextView intensityFour;
-    private TextView intensityFive;
-
     private OnFragmentInteractionListener mListener;
 
-    public BehaviorEighthFragment() {
+    public TemplateChartMonthFragment() {
         // Required empty public constructor
     }
 
@@ -50,11 +39,11 @@ public class BehaviorEighthFragment extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment BehaviorEighthFragment.
+     * @return A new instance of fragment TemplateChartMonthFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static BehaviorEighthFragment newInstance(String param1, String param2) {
-        BehaviorEighthFragment fragment = new BehaviorEighthFragment();
+    public static TemplateChartMonthFragment newInstance(String param1, String param2) {
+        TemplateChartMonthFragment fragment = new TemplateChartMonthFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -74,60 +63,8 @@ public class BehaviorEighthFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
-        View v = inflater.inflate(R.layout.fragment_behavior_eighth, container, false);;
-
         // Inflate the layout for this fragment
-        seek = (SeekBar) v.findViewById(R.id.seekBar);
-        seek.setOnSeekBarChangeListener(new yourListener());
-
-        intensityOne = (TextView) v.findViewById(R.id.txt_behavior_intensity_one);
-        intensityOne.setTextColor(Color.parseColor("#2dc76d"));
-        intensityTwo = (TextView) v.findViewById(R.id.txt_behavior_intensity_two);
-        intensityThree = (TextView) v.findViewById(R.id.txt_behavior_intensity_three);
-        intensityFour = (TextView) v.findViewById(R.id.txt_behavior_intensity_four);
-        intensityFive = (TextView) v.findViewById(R.id.txt_behavior_intensity_five);
-
-        return v;
-    }
-
-    private class yourListener implements SeekBar.OnSeekBarChangeListener {
-
-        public void onProgressChanged(SeekBar seekBar, int progress,
-                                      boolean fromUser) {
-            // Log the progress
-            //set textView's text
-            seekbarValue = seek.getProgress();
-
-            intensityOne.setTextColor(Color.parseColor("#ababab"));
-            intensityTwo.setTextColor(Color.parseColor("#ababab"));
-            intensityThree.setTextColor(Color.parseColor("#ababab"));
-            intensityFour.setTextColor(Color.parseColor("#ababab"));
-            intensityFive.setTextColor(Color.parseColor("#ababab"));
-
-            switch(seekbarValue+1){
-                case 1:
-                    intensityOne.setTextColor(Color.parseColor("#2dc76d"));
-                    break;
-                case 2:
-                    intensityTwo.setTextColor(Color.parseColor("#2dc76d"));
-                    break;
-                case 3:
-                    intensityThree.setTextColor(Color.parseColor("#2dc76d"));
-                    break;
-                case 4:
-                    intensityFour.setTextColor(Color.parseColor("#2dc76d"));
-                    break;
-                case 5:
-                    intensityFive.setTextColor(Color.parseColor("#2dc76d"));
-                    break;
-            }
-        }
-
-        public void onStartTrackingTouch(SeekBar seekBar) {}
-
-        public void onStopTrackingTouch(SeekBar seekBar) {}
-
+        return inflater.inflate(R.layout.fragment_template_chart_month, container, false);
     }
 
     // TODO: Rename method, update argument and hook method into UI event
