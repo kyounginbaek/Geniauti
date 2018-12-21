@@ -412,11 +412,11 @@ public class TemplateChartDayFragment extends Fragment {
         chartReasons.setTouchEnabled(false);
 
         xLabelsReasons = new ArrayList<>();
-        xLabelsReasons.add("관심");
-        xLabelsReasons.add("요구");
-        xLabelsReasons.add("자기자극");
-        xLabelsReasons.add("과제회피");
         xLabelsReasons.add("기타");
+        xLabelsReasons.add("과제회피");
+        xLabelsReasons.add("자기자극");
+        xLabelsReasons.add("요구");
+        xLabelsReasons.add("관심");
 
         XAxis xAxisReasons = chartReasons.getXAxis();
         xAxisReasons.setPosition(XAxis.XAxisPosition.BOTTOM);
@@ -440,11 +440,11 @@ public class TemplateChartDayFragment extends Fragment {
         yAxisRightReasons.setLabelCount(5, true);
         yAxisRightReasons.setAxisMaxValue(5);
 
-        yReasons.add(new BarEntry(0, interest));
-        yReasons.add(new BarEntry(1, demand));
+        yReasons.add(new BarEntry(0, reasonEtc));
+        yReasons.add(new BarEntry(1, taskevation));
         yReasons.add(new BarEntry(2, selfstimulation));
-        yReasons.add(new BarEntry(3, taskevation));
-        yReasons.add(new BarEntry(4, reasonEtc));
+        yReasons.add(new BarEntry(3, demand));
+        yReasons.add(new BarEntry(4, interest));
 
         BarDataSet setReasons = new BarDataSet(yReasons, "");
         setReasons.setColors(Color.parseColor("#2dc76d"));
@@ -461,12 +461,12 @@ public class TemplateChartDayFragment extends Fragment {
         chartTypes.setTouchEnabled(false);
 
         xLabelsTypes = new ArrayList<>();
-        xLabelsTypes.add("자해");
-        xLabelsTypes.add("타해");
-        xLabelsTypes.add("파괴");
-        xLabelsTypes.add("이탈");
-        xLabelsTypes.add("성적");
         xLabelsTypes.add("기타");
+        xLabelsTypes.add("성적");
+        xLabelsTypes.add("이탈");
+        xLabelsTypes.add("파괴");
+        xLabelsTypes.add("타해");
+        xLabelsTypes.add("자해");
 
         XAxis xAxisTypes = chartTypes.getXAxis();
         xAxisTypes.setPosition(XAxis.XAxisPosition.BOTTOM);
@@ -490,12 +490,12 @@ public class TemplateChartDayFragment extends Fragment {
         yAxisRightTypes.setLabelCount(5, true);
         yAxisRightTypes.setAxisMaxValue(5);
 
-        yTypes.add(new BarEntry(0, selfharm));
-        yTypes.add(new BarEntry(1, harm));
-        yTypes.add(new BarEntry(2, destruction));
-        yTypes.add(new BarEntry(3, breakaway));
-        yTypes.add(new BarEntry(4, sexual));
-        yTypes.add(new BarEntry(5, typeEtc));
+        yTypes.add(new BarEntry(0, typeEtc));
+        yTypes.add(new BarEntry(1, sexual));
+        yTypes.add(new BarEntry(2, breakaway));
+        yTypes.add(new BarEntry(3, destruction));
+        yTypes.add(new BarEntry(4, harm));
+        yTypes.add(new BarEntry(5, selfharm));
 
         BarDataSet setTypes = new BarDataSet(yTypes, "");
         setTypes.setColors(Color.parseColor("#2dc76d"));
@@ -512,11 +512,11 @@ public class TemplateChartDayFragment extends Fragment {
         chartLocations.setTouchEnabled(false);
 
         xLabelsLocations = new ArrayList<>();
-        xLabelsLocations.add("집");
-        xLabelsLocations.add("마트");
-        xLabelsLocations.add("식당");
-        xLabelsLocations.add("학교");
         xLabelsLocations.add("기타");
+        xLabelsLocations.add("학교");
+        xLabelsLocations.add("식당");
+        xLabelsLocations.add("마트");
+        xLabelsLocations.add("집");
 
         XAxis xAxisLocations = chartLocations.getXAxis();
         xAxisLocations.setPosition(XAxis.XAxisPosition.BOTTOM);
@@ -540,11 +540,11 @@ public class TemplateChartDayFragment extends Fragment {
         yAxisRightLocations.setLabelCount(5, true);
         yAxisRightLocations.setAxisMaxValue(5);
 
-        yLocations.add(new BarEntry(0, home));
-        yLocations.add(new BarEntry(1, mart));
+        yLocations.add(new BarEntry(0, locationEtc));
+        yLocations.add(new BarEntry(1, school));
         yLocations.add(new BarEntry(2, restaurant));
-        yLocations.add(new BarEntry(3, school));
-        yLocations.add(new BarEntry(4, locationEtc));
+        yLocations.add(new BarEntry(3, mart));
+        yLocations.add(new BarEntry(4, home));
 
         BarDataSet setLocations = new BarDataSet(yLocations, "");
         setLocations.setColors(Color.parseColor("#2dc76d"));

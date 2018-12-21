@@ -3,10 +3,31 @@ package com.geniauti.geniauti;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -27,7 +48,23 @@ public class ChartYearFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
+    private FirebaseUser user;
+    private FirebaseFirestore db;
+    private String cid;
+
+    private View v;
+    private ArrayList<Behavior> behaviorData;
+
     private OnFragmentInteractionListener mListener;
+    public static ViewPager viewPager;
+    public static ViewPagerAdapter adapter;
+    private TextView yearDate;
+    private Calendar cal, tmpcal;
+    private SimpleDateFormat sdf;
+    private ImageView forwardButton;
+    private String yearDateandTime;
+    private String yesterdayDateandTime;
+    private int lastPage;
 
     public ChartYearFragment() {
         // Required empty public constructor
@@ -64,7 +101,146 @@ public class ChartYearFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_chart_year, container, false);
+        v = inflater.inflate(R.layout.fragment_chart_year, container, false);
+
+        yearDate = v.findViewById(R.id.txt_chart_year);
+        sdf = new SimpleDateFormat("yyyy년 MM월 dd일 EEE요일");
+        cal = Calendar.getInstance();
+        yearDateandTime = sdf.format(cal.getTime());
+        yearDate.setText(yearDateandTime);
+
+        tmpcal = Calendar.getInstance();
+        tmpcal.add(Calendar.DATE, -1);
+        yesterdayDateandTime = sdf.format(tmpcal.getTime());
+
+        ImageView backButton = v.findViewById(R.id.chart_year_back);
+        forwardButton = v.findViewById(R.id.chart_year_forward);
+        forwardButton.setVisibility(View.GONE);
+
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                viewPager.setCurrentItem(viewPager.getCurrentItem()-1, true);
+            }
+        });
+
+        forwardButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                viewPager.setCurrentItem(viewPager.getCurrentItem()+1, true);
+            }
+        });
+
+        user = FirebaseAuth.getInstance().getCurrentUser();
+        db = FirebaseFirestore.getInstance();
+
+        behaviorData = new ArrayList<>();
+
+        db.collection("childs")
+                .whereGreaterThanOrEqualTo("users."+user.getUid()+".name", "")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                cid = document.getId();
+                            }
+
+                            db.collection("behaviors")
+                                    .whereEqualTo("cid", cid)
+                                    .get()
+                                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                            if (task.isSuccessful()) {
+                                                for (QueryDocumentSnapshot document : task.getResult()) {
+                                                    Behavior item = new Behavior((Date) document.getDate("start_time"), (Date) document.getDate("end_time"), document.get("place").toString(), document.get("categorization").toString(), document.get("current_behavior").toString(), document.get("before_behavior").toString(), document.get("after_behavior").toString(), (HashMap<String, Object>) document.get("type"), Integer.parseInt(document.get("intensity").toString()), (HashMap<String, Object>) document.get("reason"), document.get("created_at").toString(),  document.get("updated_at").toString(), document.get("uid").toString(), document.get("name").toString(), document.get("cid").toString(), "");
+                                                    behaviorData.add(item);
+                                                }
+
+                                                // Setting ViewPager for each Tabs
+                                                viewPager = (ViewPager) v.findViewById(R.id.chart_year_viewpager);
+                                                setupViewPager(viewPager);
+                                                lastPage = adapter.getCount()-1;
+
+                                                viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener()
+                                                {
+                                                    @Override
+                                                    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels)
+                                                    {
+
+                                                    }
+
+                                                    @Override
+                                                    public void onPageSelected(int position)
+                                                    {
+                                                        if(position < lastPage) {
+                                                            cal.add(Calendar.DATE, -1);
+                                                            yearDate.setText(sdf.format(cal.getTime()));
+
+                                                            if(sdf.format(cal.getTime()).equals(yesterdayDateandTime)) {
+                                                                forwardButton.setVisibility(View.VISIBLE);
+                                                            }
+                                                        } else if(position > lastPage) {
+                                                            cal.add(Calendar.DATE, 1);
+                                                            yearDate.setText(sdf.format(cal.getTime()));
+
+                                                            if(sdf.format(cal.getTime()).equals(yearDateandTime)) {
+                                                                forwardButton.setVisibility(View.GONE);
+                                                            }
+                                                        }
+
+                                                        lastPage = position;
+                                                    }
+
+                                                    @Override
+                                                    public void onPageScrollStateChanged(int state) {
+
+                                                    }
+                                                });
+
+                                            } else {
+
+                                            }
+                                        }
+                                    });
+                        } else {
+//                                Log.d(TAG, "Error getting documents: ", task.getException());
+                        }
+                    }
+                });
+
+
+        return v;
+    }
+
+    private void setupViewPager(ViewPager viewPager) {
+        adapter = new ViewPagerAdapter(getFragmentManager());
+        viewPager.setAdapter(adapter);
+        viewPager.setCurrentItem(adapter.getCount()-1);
+
+    }
+
+    public class ViewPagerAdapter extends FragmentStatePagerAdapter {
+
+        long msDiff = Calendar.getInstance().getTimeInMillis();
+        long daysDiff = TimeUnit.MILLISECONDS.toDays(msDiff);
+
+        public ViewPagerAdapter(FragmentManager manager) {
+            super(manager);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            return TemplateChartYearFragment.newInstance(position, behaviorData);
+        }
+
+        @Override
+        public int getCount() {
+            return (int) daysDiff;
+        }
+
     }
 
     // TODO: Rename method, update argument and hook method into UI event
