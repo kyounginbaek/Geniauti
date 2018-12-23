@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.BaseAdapter;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RadioButton;
@@ -153,21 +154,28 @@ public class BehaviorThirdFragment extends Fragment {
         public View getView(final int i, View view, ViewGroup viewGroup) {
             BehaviorThirdFragment.GridListAdapter.ViewHolder viewHolder;
 
-            if (view == null) {
-                viewHolder = new BehaviorThirdFragment.GridListAdapter.ViewHolder();
-
-                if(i == getCount()-1){
-                    view = inflater.inflate(R.layout.list_addlist, viewGroup, false);
-                    viewHolder.addListText = (TextView) view.findViewById(R.id.add_list_txt);
-                    viewHolder.addListLayout = (LinearLayout) view.findViewById(R.id.add_list_layout);
-                } else {
-                    view = inflater.inflate(R.layout.list_radio, viewGroup, false);
-                    viewHolder.radioButton = (RadioButton) view.findViewById(R.id.rowRadioButton);
-                }
+            if(i == arrayList.size()-1){
+                viewHolder = new GridListAdapter.ViewHolder();
+                view = inflater.inflate(R.layout.list_addlist, viewGroup, false);
+                viewHolder.addListText = (TextView) view.findViewById(R.id.add_list_txt);
+                viewHolder.addListLayout = (LinearLayout) view.findViewById(R.id.add_list_layout);
 
                 view.setTag(viewHolder);
-            } else
-                viewHolder = (BehaviorThirdFragment.GridListAdapter.ViewHolder) view.getTag();
+            } else {
+                if (view == null) {
+                    viewHolder = new GridListAdapter.ViewHolder();
+
+                    view = inflater.inflate(R.layout.list_radio, viewGroup, false);
+                    viewHolder.radioButton = (RadioButton) view.findViewById(R.id.rowRadioButton);
+                    if(i > 3) {
+                        viewHolder.radioDelete = (ImageView) view.findViewById(R.id.rowRadioDelete);
+                        viewHolder.radioDelete.setVisibility(View.VISIBLE);
+                    }
+
+                    view.setTag(viewHolder);
+                } else
+                    viewHolder = (GridListAdapter.ViewHolder) view.getTag();
+            }
 
             if (i == getCount()-1) {
                 viewHolder.addListText.setText("직접 입력하기");
@@ -237,6 +245,22 @@ public class BehaviorThirdFragment extends Fragment {
                         itemCheckChanged(v);
                     }
                 });
+
+                if(i > 3) {
+                    viewHolder.radioDelete.setTag(i);
+                    viewHolder.radioDelete.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            if(adapter.selectedPosition == i){
+                                adapter.selectedPosition = -1;
+                            } else if(adapter.selectedPosition > i) {
+                                adapter.selectedPosition += -1;
+                            }
+                            arrayList.remove(i);
+                            adapter.notifyDataSetChanged();
+                        }
+                    });
+                }
             }
 
             return view;
@@ -252,6 +276,7 @@ public class BehaviorThirdFragment extends Fragment {
             private TextView addListText;
             private LinearLayout addListLayout;
             private RadioButton radioButton;
+            private ImageView radioDelete;
         }
 
         //Return the selectedPosition item

@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.BaseAdapter;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RadioButton;
@@ -172,23 +173,30 @@ public class BehaviorSecondFragment extends Fragment {
         public View getView(final int i, View view, ViewGroup viewGroup) {
             ViewHolder viewHolder;
 
-            if (view == null) {
+            if(i == arrayList.size()-1){
                 viewHolder = new ViewHolder();
-
-                if(i == getCount()-1){
-                    view = inflater.inflate(R.layout.list_addlist, viewGroup, false);
-                    viewHolder.addListText = (TextView) view.findViewById(R.id.add_list_txt);
-                    viewHolder.addListLayout = (LinearLayout) view.findViewById(R.id.add_list_layout);
-                } else {
-                    view = inflater.inflate(R.layout.list_radio, viewGroup, false);
-                    viewHolder.radioButton = (RadioButton) view.findViewById(R.id.rowRadioButton);
-                }
+                view = inflater.inflate(R.layout.list_addlist, viewGroup, false);
+                viewHolder.addListText = (TextView) view.findViewById(R.id.add_list_txt);
+                viewHolder.addListLayout = (LinearLayout) view.findViewById(R.id.add_list_layout);
 
                 view.setTag(viewHolder);
-            } else
-                viewHolder = (ViewHolder) view.getTag();
+            } else {
+                if (view == null) {
+                    viewHolder = new ViewHolder();
 
-            if (i == getCount()-1) {
+                    view = inflater.inflate(R.layout.list_radio, viewGroup, false);
+                    viewHolder.radioButton = (RadioButton) view.findViewById(R.id.rowRadioButton);
+                    if(i > 3) {
+                        viewHolder.radioDelete = (ImageView) view.findViewById(R.id.rowRadioDelete);
+                        viewHolder.radioDelete.setVisibility(View.VISIBLE);
+                    }
+
+                    view.setTag(viewHolder);
+                } else
+                    viewHolder = (ViewHolder) view.getTag();
+            }
+
+            if (i == arrayList.size()-1) {
                 viewHolder.addListText.setText("장소 추가하기");
                 viewHolder.addListLayout.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -256,6 +264,22 @@ public class BehaviorSecondFragment extends Fragment {
                         itemCheckChanged(v);
                     }
                 });
+
+                if(i > 3) {
+                    viewHolder.radioDelete.setTag(i);
+                    viewHolder.radioDelete.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            if(adapter.selectedPosition == i){
+                                adapter.selectedPosition = -1;
+                            } else if(adapter.selectedPosition > i) {
+                                adapter.selectedPosition += -1;
+                            }
+                            arrayList.remove(i);
+                            adapter.notifyDataSetChanged();
+                        }
+                    });
+                }
             }
 
             return view;
@@ -271,6 +295,7 @@ public class BehaviorSecondFragment extends Fragment {
             private TextView addListText;
             private LinearLayout addListLayout;
             private RadioButton radioButton;
+            private ImageView radioDelete;
         }
 
         //Return the selectedPosition item

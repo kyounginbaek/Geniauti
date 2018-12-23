@@ -69,12 +69,29 @@
 
                 </LinearLayout>
 
+                <View
+                    android:id="@+id/behavior_line1"
+                    android:layout_width="match_parent"
+                    android:layout_marginTop="18dp"
+                    android:layout_height="2dp"
+                    />
+
+                <View
+                    android:id="@+id/behavior_edit_line1"
+                    android:layout_width="match_parent"
+                    android:layout_marginTop="14dp"
+                    android:layout_height="2dp"
+                    android:background="@drawable/dotted_line"
+                    android:layerType="software"
+                    android:visibility="gone"
+                    />
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="16dp"
                     android:layout_marginRight="16dp"
-                    android:layout_marginTop="18dp"
+                    android:layout_marginTop="13dp"
                     android:orientation="vertical">
 
                     <TextView
@@ -99,12 +116,29 @@
 
                 </LinearLayout>
 
+                <View
+                    android:id="@+id/behavior_line2"
+                    android:layout_width="match_parent"
+                    android:layout_marginTop="18dp"
+                    android:layout_height="2dp"
+                    />
+
+                <View
+                    android:id="@+id/behavior_edit_line2"
+                    android:layout_width="match_parent"
+                    android:layout_marginTop="12dp"
+                    android:layout_height="2dp"
+                    android:background="@drawable/dotted_line"
+                    android:layerType="software"
+                    android:visibility="gone"
+                    />
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="16dp"
                     android:layout_marginRight="16dp"
-                    android:layout_marginTop="18dp"
+                    android:layout_marginTop="14dp"
                     android:orientation="vertical">
 
                     <TextView
@@ -129,12 +163,29 @@
 
                 </LinearLayout>
 
+                <View
+                    android:id="@+id/behavior_line3"
+                    android:layout_width="match_parent"
+                    android:layout_marginTop="18dp"
+                    android:layout_height="2dp"
+                    />
+
+                <View
+                    android:id="@+id/behavior_edit_line3"
+                    android:layout_width="match_parent"
+                    android:layout_marginTop="11dp"
+                    android:layout_height="2dp"
+                    android:background="@drawable/dotted_line"
+                    android:layerType="software"
+                    android:visibility="gone"
+                    />
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="16dp"
                     android:layout_marginRight="16dp"
-                    android:layout_marginTop="18dp"
+                    android:layout_marginTop="14dp"
                     android:orientation="vertical">
 
                     <TextView
@@ -158,6 +209,23 @@
                         />
 
                 </LinearLayout>
+
+                <View
+                    android:id="@+id/behavior_line4"
+                    android:layout_width="match_parent"
+                    android:layout_marginTop="18dp"
+                    android:layout_height="2dp"
+                    />
+
+                <View
+                    android:id="@+id/behavior_edit_line4"
+                    android:layout_width="match_parent"
+                    android:layout_marginTop="14dp"
+                    android:layout_height="2dp"
+                    android:background="@drawable/dotted_line"
+                    android:layerType="software"
+                    android:visibility="gone"
+                    />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -317,10 +385,27 @@
 
                 </LinearLayout>
 
+                <View
+                    android:id="@+id/behavior_line5"
+                    android:layout_width="match_parent"
+                    android:layout_marginTop="18dp"
+                    android:layout_height="2dp"
+                    />
+
+                <View
+                    android:id="@+id/behavior_edit_line5"
+                    android:layout_width="match_parent"
+                    android:layout_marginTop="15dp"
+                    android:layout_height="2dp"
+                    android:background="@drawable/dotted_line"
+                    android:layerType="software"
+                    android:visibility="gone"
+                    />
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginTop="22dp"
+                    android:layout_marginTop="15dp"
                     android:orientation="vertical">
 
                     <TextView
@@ -417,12 +502,29 @@
 
                 </LinearLayout>
 
+                <View
+                    android:id="@+id/behavior_line6"
+                    android:layout_width="match_parent"
+                    android:layout_marginTop="18dp"
+                    android:layout_height="2dp"
+                    />
+
+                <View
+                    android:id="@+id/behavior_edit_line6"
+                    android:layout_width="match_parent"
+                    android:layout_marginTop="16dp"
+                    android:layout_height="2dp"
+                    android:background="@drawable/dotted_line"
+                    android:layerType="software"
+                    android:visibility="gone"
+                    />
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="16dp"
                     android:layout_marginRight="16dp"
-                    android:layout_marginTop="34dp"
+                    android:layout_marginTop="15dp"
                     android:orientation="vertical">
 
                     <TextView
@@ -446,12 +548,29 @@
 
                 </LinearLayout>
 
+                <View
+                    android:id="@+id/behavior_line7"
+                    android:layout_width="match_parent"
+                    android:layout_marginTop="18dp"
+                    android:layout_height="2dp"
+                    />
+
+                <View
+                    android:id="@+id/behavior_edit_line7"
+                    android:layout_width="match_parent"
+                    android:layout_marginTop="18dp"
+                    android:layout_height="2dp"
+                    android:background="@drawable/dotted_line"
+                    android:layerType="software"
+                    android:visibility="gone"
+                    />
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="16dp"
                     android:layout_marginRight="16dp"
-                    android:layout_marginTop="34dp"
+                    android:layout_marginTop="14dp"
                     android:orientation="vertical">
 
                     <TextView
@@ -475,12 +594,29 @@
 
                 </LinearLayout>
 
+                <View
+                    android:id="@+id/behavior_line8"
+                    android:layout_width="match_parent"
+                    android:layout_marginTop="17dp"
+                    android:layout_height="2dp"
+                    />
+
+                <View
+                    android:id="@+id/behavior_edit_line8"
+                    android:layout_width="match_parent"
+                    android:layout_marginTop="17dp"
+                    android:layout_height="2dp"
+                    android:background="@drawable/dotted_line"
+                    android:layerType="software"
+                    android:visibility="gone"
+                    />
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="16dp"
                     android:layout_marginRight="16dp"
-                    android:layout_marginTop="34dp"
+                    android:layout_marginTop="15dp"
                     android:layout_marginBottom="67dp"
                     android:orientation="vertical">
 

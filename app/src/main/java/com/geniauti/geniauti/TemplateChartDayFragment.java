@@ -91,6 +91,8 @@ public class TemplateChartDayFragment extends Fragment {
     public static int positionNum;
     private int getCount = ChartDayFragment.adapter.getCount();
 
+    private int diff;
+
     public TemplateChartDayFragment() {
         // Required empty public constructor
     }
@@ -137,11 +139,6 @@ public class TemplateChartDayFragment extends Fragment {
 
         v = inflater.inflate(R.layout.fragment_template_chart_day, container, false);
 
-        int diff = getCount - positionNum - 1;
-        int currentItem = ChartDayFragment.viewPager.getCurrentItem();
-        if(currentItem + 1 == getCount) {
-            diff = 0;
-        }
         sdf = new SimpleDateFormat("yyyy년 MM월 dd일 EEE요일");
         sdfTime = new SimpleDateFormat("aa hh");
         cal = Calendar.getInstance();
@@ -160,7 +157,13 @@ public class TemplateChartDayFragment extends Fragment {
                 String sTime = sdfTime.format(startTime);
                 int iTime = Integer.parseInt(sTime.substring(3,5));
                 if(sTime.substring(0,2).equals("오후")) {
-                    iTime = iTime + 12;
+                    if(!sTime.substring(3,5).equals("12")) {
+                        iTime = iTime + 12;
+                    }
+                } else {
+                    if(sTime.substring(3,5).equals("12")) {
+                        iTime = iTime - 12;
+                    }
                 }
                 switch(iTime) {
                     case 0:
@@ -376,7 +379,7 @@ public class TemplateChartDayFragment extends Fragment {
         mDayNumber.setText(String.valueOf(dayNumber));
 
         if(dayNumber != 0) {
-            mDayTime.setText(String.valueOf(dayTime / dayNumber));
+            mDayTime.setText(String.valueOf(Math.round((dayTime / dayNumber)*10)/10.0));
         } else {
             mDayTime.setText("0");
         }
@@ -554,6 +557,25 @@ public class TemplateChartDayFragment extends Fragment {
         chartLocations.setFitBars(true);
 
         return v;
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser)
+    {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (isVisibleToUser)
+        {
+            //화면에 실제로 보일때
+            int currentItem = ChartDayFragment.viewPager.getCurrentItem();
+            if(currentItem + 1 == getCount) {
+                diff = 0;
+            }
+        }
+        else
+        {
+            //preload 될때(전페이지에 있을때)
+            diff = getCount - positionNum - 1;
+        }
     }
 
 

@@ -309,6 +309,7 @@ public class MainFragment extends Fragment {
                                         @Override
                                         public void onComplete(@NonNull Task<QuerySnapshot> task) {
                                             if (task.isSuccessful()) {
+
                                                 for (QueryDocumentSnapshot document : task.getResult()) {
                                                     HashMap<String, Object> reason = (HashMap<String, Object>) document.get("reason");
                                                     HashMap.Entry<String,Object> entry = reason.entrySet().iterator().next();

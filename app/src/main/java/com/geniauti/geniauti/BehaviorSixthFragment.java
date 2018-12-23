@@ -45,6 +45,7 @@ public class BehaviorSixthFragment extends Fragment {
     private String mParam2;
 
     public TextView textInput;
+    public TextView textDelete;
     private ImageView voiceRecognition;
 
     Intent intent;
@@ -91,6 +92,13 @@ public class BehaviorSixthFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_behavior_sixth, container, false);
 
         textInput = (TextView) v.findViewById(R.id.text_input);
+        textDelete = (TextView) v.findViewById(R.id.sixth_delete_all);
+        textDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                textInput.setText("");
+            }
+        });
 
         intent=new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE,getActivity().getPackageName());

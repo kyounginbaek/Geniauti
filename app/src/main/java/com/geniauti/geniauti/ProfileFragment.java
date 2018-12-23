@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -18,7 +20,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.BaseAdapter;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -42,7 +46,12 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 
 /**
@@ -80,11 +89,14 @@ public class ProfileFragment extends Fragment {
     private TextView childName;
     private TextView childParent;
     private OnFragmentInteractionListener mListener;
+    private FirebaseUser user;
 
     private ListView parentListView;
     private ListView bookmarkListView;
     private ArrayList<Parent> parentData;
     private ArrayList<Bookmark> bookmarkData;
+    private ParentListviewAdapter parentAdapter;
+    private BookmarkListviewAdapter bookmarkAdapter;
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -183,7 +195,7 @@ public class ProfileFragment extends Fragment {
             e.printStackTrace();
         }
 
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        user = FirebaseAuth.getInstance().getCurrentUser();
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         childName = (TextView) v.findViewById(R.id.profile_child_name);
@@ -203,6 +215,19 @@ public class ProfileFragment extends Fragment {
                         for (QueryDocumentSnapshot doc : value) {
                             childName.setText(doc.getData().get("name").toString());
                             childParent.setText(doc.getData().get("name").toString()+"의 보호자");
+
+                            HashMap<String, Object> users = (HashMap<String, Object>) doc.getData().get("users");
+                            Iterator it = users.entrySet().iterator();
+                            while(it.hasNext()){
+                                Map.Entry pair = (Map.Entry)it.next();
+                                HashMap<String, Object> data = (HashMap<String, Object>) pair.getValue();
+                                if(!pair.getKey().toString().equals(user.getUid())){
+                                    Parent item = new Parent(data.get("name").toString(), data.get("profile_pic").toString(), data.get("relationship").toString(), pair.getKey().toString());
+                                    parentData.add(item);
+                                }
+                            }
+                            parentAdapter = new ParentListviewAdapter(getContext(), R.layout.list_parent, parentData);
+                            parentListView.setAdapter(parentAdapter);
                         }
                     }
                 });
@@ -214,7 +239,6 @@ public class ProfileFragment extends Fragment {
                 startActivity(new Intent(getActivity().getApplication(), ChildEditActivity.class));
             }
         });
-
 
         parentListView = (ListView) v.findViewById(R.id.parent_listview);
         parentData = new ArrayList<>();
@@ -341,6 +365,80 @@ public class ProfileFragment extends Fragment {
         private String sub;
     }
 
+    public class ParentListviewAdapter extends BaseAdapter {
+
+        private LayoutInflater inflater;
+        private ArrayList<Parent> data;
+        private int layout;
+
+        public ParentListviewAdapter(Context context, int layout, ArrayList<Parent> data){
+            this.inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            this.data = data;
+            this.layout = layout;
+        }
+
+        @Override
+        public int getCount(){return data.size();}
+
+        @Override
+        public Object getItem(int position){
+            return data.get(position);
+        }
+
+        @Override
+        public long getItemId(int position){return position;}
+
+        @Override
+        public View getView(final int position, View v, ViewGroup parent){
+            if(v == null){
+                v = inflater.inflate(R.layout.list_parent, parent, false);
+            }
+
+            Parent parentData = data.get(position);
+
+            ImageView parentImage = (ImageView) v.findViewById(R.id.list_parent_image);
+            TextView parentName = (TextView) v.findViewById(R.id.list_parent_name);
+            TextView parentRelationship = (TextView) v.findViewById(R.id.list_parent_relationship);
+
+            parentName.setText(parentData.name);
+            parentRelationship.setText(parentData.relationship);
+
+            return v;
+        }
+    }
+
+    public class BookmarkListviewAdapter extends BaseAdapter {
+
+        private LayoutInflater inflater;
+        private ArrayList<Bookmark> data;
+        private int layout;
+
+        public BookmarkListviewAdapter(Context context, int layout, ArrayList<Bookmark> data){
+            this.inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            this.data = data;
+            this.layout = layout;
+        }
+
+        @Override
+        public int getCount(){return data.size();}
+
+        @Override
+        public Object getItem(int position){
+            return data.get(position);
+        }
+
+        @Override
+        public long getItemId(int position){return position;}
+
+        @Override
+        public View getView(final int position, View convertView, ViewGroup parent){
+            if(convertView == null){
+                convertView = inflater.inflate(R.layout.list_bookmark, parent, false);
+            }
+
+            return convertView;
+        }
+    }
 
 
     // TODO: Rename method, update argument and hook method into UI event

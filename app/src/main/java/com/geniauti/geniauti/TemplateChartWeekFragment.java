@@ -48,8 +48,8 @@ public class TemplateChartWeekFragment extends Fragment {
 
     private View v;
 
-    private SimpleDateFormat sdf, sdfTime;
-    private Calendar cal;
+    private SimpleDateFormat sdf, sdfDay;
+    private Calendar cal, calSunday, calSaturday;
     private String DateandTime;
 
     private OnFragmentInteractionListener mListener;
@@ -77,6 +77,7 @@ public class TemplateChartWeekFragment extends Fragment {
     public static ArrayList<Behavior> behaviorData;
     public static int positionNum;
     private int getCount = ChartWeekFragment.adapter.getCount();
+    private int diff;
 
     public TemplateChartWeekFragment() {
         // Required empty public constructor
@@ -125,16 +126,40 @@ public class TemplateChartWeekFragment extends Fragment {
 
         v = inflater.inflate(R.layout.fragment_template_chart_week, container, false);
 
-        int diff = getCount - positionNum - 1;
-        int currentItem = ChartWeekFragment.viewPager.getCurrentItem();
-        if(currentItem + 1 == getCount) {
-            diff = 0;
-        }
-        sdf = new SimpleDateFormat("yyyy년 MM월 dd일");
-        sdfTime = new SimpleDateFormat("aa hh");
+        sdf = new SimpleDateFormat("yyyy년 MM월");
+        sdfDay = new SimpleDateFormat("dd");
         cal = Calendar.getInstance();
-        cal.add(Calendar.DATE, -1*diff);
-        DateandTime = sdf.format(cal.getTime());
+        calSunday = Calendar.getInstance();
+        calSaturday = Calendar.getInstance();
+        cal.add(Calendar.DATE, -7*diff);
+        calSunday.add(Calendar.DATE, -7*diff);
+        calSaturday.add(Calendar.DATE, -7*diff);
+
+        int dayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
+        if (Calendar.MONDAY == dayOfWeek) {
+            calSunday.add(Calendar.DATE, -1);
+            calSaturday.add(Calendar.DATE, +5);
+        } else if (Calendar.TUESDAY == dayOfWeek) {
+            calSunday.add(Calendar.DATE, -2);
+            calSaturday.add(Calendar.DATE, +4);
+        } else if (Calendar.WEDNESDAY == dayOfWeek) {
+            calSunday.add(Calendar.DATE, -3);
+            calSaturday.add(Calendar.DATE, +3);
+        } else if (Calendar.THURSDAY == dayOfWeek) {
+            calSunday.add(Calendar.DATE, -4);
+            calSaturday.add(Calendar.DATE, +2);
+        } else if (Calendar.FRIDAY == dayOfWeek) {
+            calSunday.add(Calendar.DATE, -5);
+            calSaturday.add(Calendar.DATE, +1);
+        } else if (Calendar.SATURDAY == dayOfWeek) {
+            calSunday.add(Calendar.DATE, -6);
+            calSaturday.add(Calendar.DATE, +0);
+        } else if (Calendar.SUNDAY == dayOfWeek) {
+            calSunday.add(Calendar.DATE, -0);
+            calSaturday.add(Calendar.DATE, +6);
+        }
+
+        DateandTime = sdf.format(cal.getTime()) + " " + sdfDay.format(calSunday.getTime()) + "일" + " - " + sdfDay.format(calSaturday.getTime()) + "일";
 
         // Behavior ArrayList
         for(int i = 0; i < behaviorData.size(); i++) {
@@ -142,113 +167,110 @@ public class TemplateChartWeekFragment extends Fragment {
 
             Date startTime = behavior.start_time;
 
-            if(sdf.format(startTime).equals(DateandTime)){
-                // frequency
+            if(sdf.format(startTime).equals(sdf.format(cal.getTime()))) {
+                if(Integer.parseInt(sdfDay.format(startTime)) >= Integer.parseInt(sdfDay.format(calSunday.getTime())) && Integer.parseInt(sdfDay.format(startTime)) <= Integer.parseInt(sdfDay.format(calSaturday.getTime()))){
 
-                String sTime = sdfTime.format(startTime);
-                int iTime = Integer.parseInt(sTime.substring(3,5));
-                if(sTime.substring(0,2).equals("오후")) {
-                    iTime = iTime + 12;
+                    // frequency
+                    switch(Integer.parseInt(sdfDay.format(calSaturday.getTime())) - Integer.parseInt(sdfDay.format(startTime))) {
+                        case 0:
+                            saturday += 1;
+                            break;
+                        case 1:
+                            friday += 1;
+                            break;
+                        case 2:
+                            thursday += 1;
+                            break;
+                        case 3:
+                            wednesday += 1;
+                            break;
+                        case 4:
+                            tuesday += 1;
+                            break;
+                        case 5:
+                            monday += 1;
+                            break;
+                        case 6:
+                            sunday += 1;
+                            break;
+                    }
+
+                    // number
+                    weekNumber += 1;
+
+                    // time
+                    long timeDiff = behavior.end_time.getTime() - behavior.start_time.getTime();
+                    weekTime = weekTime + (timeDiff/(1000*60));
+
+                    // intensity
+                    weekIntensity += behavior.intensity;
+
+                    // Reasons
+                    HashMap<String, Object> reason = (HashMap<String, Object>) behavior.reason;
+                    HashMap.Entry<String,Object> entryRaason = reason.entrySet().iterator().next();
+
+                    // Color Code
+                    switch(entryRaason.getKey()) {
+                        case "관심":
+                            interest += 1;
+                            break;
+                        case "자기자극":
+                            selfstimulation += 1;
+                            break;
+                        case "과제회피":
+                            taskevation += 1;
+                            break;
+                        case "요구":
+                            demand += 1;
+                            break;
+                        case "기타":
+                            reasonEtc += 1;
+                            break;
+                    }
+
+                    // Types
+                    HashMap<String, Object> type = (HashMap<String, Object>) behavior.type;
+                    HashMap.Entry<String,Object> entryType = type.entrySet().iterator().next();
+
+                    // Color Code
+                    switch(entryType.getKey()) {
+                        case "selfharm":
+                            selfharm += 1;
+                            break;
+                        case "harm":
+                            harm += 1;
+                            break;
+                        case "destruction":
+                            destruction += 1;
+                            break;
+                        case "breakaway":
+                            breakaway += 1;
+                            break;
+                        case "sexual":
+                            sexual += 1;
+                            break;
+                        case "etc":
+                            typeEtc += 1;
+                            break;
+                    }
+
+                    // Locations
+                    switch(behavior.place) {
+                        case "집":
+                            home += 1;
+                            break;
+                        case "마트":
+                            mart += 1;
+                            break;
+                        case "식당":
+                            restaurant += 1;
+                            break;
+                        case "학교":
+                            school += 1;
+                            break;
+                    }
+
                 }
-                switch(iTime) {
-                    case 0:
-                        sunday += 1;
-                        break;
-                    case 1:
-                        monday += 1;
-                        break;
-                    case 2:
-                        tuesday += 1;
-                        break;
-                    case 3:
-                        wednesday += 1;
-                        break;
-                    case 4:
-                        thursday += 1;
-                        break;
-                    case 5:
-                        friday += 1;
-                        break;
-                    case 6:
-                        saturday += 1;
-                        break;
-                }
-
-                // number
-                weekNumber += 1;
-
-                // time
-                long timeDiff = behavior.end_time.getTime() - behavior.start_time.getTime();
-                weekTime = weekTime + (timeDiff/(1000*60));
-
-                // intensity
-                weekIntensity += behavior.intensity;
-
-                // Reasons
-                HashMap<String, Object> reason = (HashMap<String, Object>) behavior.reason;
-                HashMap.Entry<String,Object> entryRaason = reason.entrySet().iterator().next();
-
-                // Color Code
-                switch(entryRaason.getKey()) {
-                    case "관심":
-                        interest += 1;
-                        break;
-                    case "자기자극":
-                        selfstimulation += 1;
-                        break;
-                    case "과제회피":
-                        taskevation += 1;
-                        break;
-                    case "요구":
-                        demand += 1;
-                        break;
-                    case "기타":
-                        reasonEtc += 1;
-                        break;
-                }
-
-                // Types
-                HashMap<String, Object> type = (HashMap<String, Object>) behavior.type;
-                HashMap.Entry<String,Object> entryType = type.entrySet().iterator().next();
-
-                // Color Code
-                switch(entryType.getKey()) {
-                    case "selfharm":
-                        selfharm += 1;
-                        break;
-                    case "harm":
-                        harm += 1;
-                        break;
-                    case "destruction":
-                        destruction += 1;
-                        break;
-                    case "breakaway":
-                        breakaway += 1;
-                        break;
-                    case "sexual":
-                        sexual += 1;
-                        break;
-                    case "etc":
-                        typeEtc += 1;
-                        break;
-                }
-
-                // Locations
-                switch(behavior.place) {
-                    case "집":
-                        home += 1;
-                        break;
-                    case "마트":
-                        mart += 1;
-                        break;
-                    case "식당":
-                        restaurant += 1;
-                        break;
-                    case "학교":
-                        school += 1;
-                        break;
-                }
-
             }
         }
 
@@ -268,7 +290,7 @@ public class TemplateChartWeekFragment extends Fragment {
         yAxisLeftFrequency.setStartAtZero(true);
 
         YAxis yAxisRightFrequency = chartFrequency.getAxisRight();
-        yAxisRightFrequency.setEnabled(false);
+        yAxisRightFrequency.setEnabled(true);
         yAxisRightFrequency.mAxisMinimum = 0;
         yAxisRightFrequency.setStartAtZero(true);
 
@@ -314,7 +336,7 @@ public class TemplateChartWeekFragment extends Fragment {
         mWeekNumber.setText(String.valueOf(weekNumber));
 
         if(weekNumber != 0) {
-            mWeekTime.setText(String.valueOf(weekTime / weekNumber));
+            mWeekTime.setText(String.valueOf(Math.round((weekTime / weekNumber)*10)/10.0));
         } else {
             mWeekTime.setText("0");
         }
@@ -492,6 +514,25 @@ public class TemplateChartWeekFragment extends Fragment {
         chartLocations.setFitBars(true);
 
         return v;
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser)
+    {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (isVisibleToUser)
+        {
+            //화면에 실제로 보일때
+            int currentItem = ChartWeekFragment.viewPager.getCurrentItem();
+            if(currentItem + 1 == getCount) {
+                diff = 0;
+            }
+        }
+        else
+        {
+            //preload 될때(전페이지에 있을때)
+            diff = getCount - positionNum - 1;
+        }
     }
 
     // TODO: Rename method, update argument and hook method into UI event

@@ -22,6 +22,8 @@ import java.util.Map;
 public class BehaviorDetailActivity extends AppCompatActivity {
 
     private Behavior selectedBehavior;
+    View editLine1, editLine2, editLine3, editLine4, editLine5, editLine6, editLine7, editLine8;
+    View behaviorLine1, behaviorLine2, behaviorLine3, behaviorLine4, behaviorLine5, behaviorLine6, behaviorLine7, behaviorLine8;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,6 +91,24 @@ public class BehaviorDetailActivity extends AppCompatActivity {
         TextView behavior_before = findViewById(R.id.txt_behavior_before);
         TextView behavior_current = findViewById(R.id.txt_behavior_current);
         TextView behavior_after = findViewById(R.id.txt_behavior_after);
+
+        editLine1 = findViewById(R.id.behavior_edit_line1);
+        editLine2 = findViewById(R.id.behavior_edit_line2);
+        editLine3 = findViewById(R.id.behavior_edit_line3);
+        editLine4 = findViewById(R.id.behavior_edit_line4);
+        editLine5 = findViewById(R.id.behavior_edit_line5);
+        editLine6 = findViewById(R.id.behavior_edit_line6);
+        editLine7 = findViewById(R.id.behavior_edit_line7);
+        editLine8 = findViewById(R.id.behavior_edit_line8);
+
+        behaviorLine1 = findViewById(R.id.behavior_line1);
+        behaviorLine2 = findViewById(R.id.behavior_line2);
+        behaviorLine3 = findViewById(R.id.behavior_line3);
+        behaviorLine4 = findViewById(R.id.behavior_line4);
+        behaviorLine5 = findViewById(R.id.behavior_line5);
+        behaviorLine6 = findViewById(R.id.behavior_line6);
+        behaviorLine7 = findViewById(R.id.behavior_line7);
+        behaviorLine8 = findViewById(R.id.behavior_line8);
 
         behavior_categorization.setText(selectedBehavior.categorization);
 
@@ -167,11 +187,26 @@ public class BehaviorDetailActivity extends AppCompatActivity {
         } else if(id == R.id.action_bookmark){
 
         } else if(id == R.id.action_edit) {
+            editLine1.setVisibility(View.VISIBLE);
+            editLine2.setVisibility(View.VISIBLE);
+            editLine3.setVisibility(View.VISIBLE);
+            editLine4.setVisibility(View.VISIBLE);
+            editLine5.setVisibility(View.VISIBLE);
+            editLine6.setVisibility(View.VISIBLE);
+            editLine7.setVisibility(View.VISIBLE);
+            editLine8.setVisibility(View.VISIBLE);
+
+            behaviorLine1.setVisibility(View.GONE);
+            behaviorLine2.setVisibility(View.GONE);
+            behaviorLine3.setVisibility(View.GONE);
+            behaviorLine4.setVisibility(View.GONE);
+            behaviorLine5.setVisibility(View.GONE);
+            behaviorLine6.setVisibility(View.GONE);
+            behaviorLine7.setVisibility(View.GONE);
+            behaviorLine8.setVisibility(View.GONE);
 
         } else if(id == R.id.action_delete) {
-
-
-            MainActivity.refresh();
+            MainActivity.adapter.notifyDataSetChanged();
             finish();
             Toast toast = Toast.makeText(BehaviorDetailActivity.this, "행동이 삭제되었습니다.", Toast.LENGTH_SHORT);
             toast.show();

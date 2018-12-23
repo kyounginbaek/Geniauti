@@ -44,7 +44,7 @@
                     android:lineSpacingExtra="10sp"
                     android:layout_centerHorizontal="true"
                     android:layout_centerVertical="true"
-                    android:text="2018년 12월 14일 금요일"
+                    android:text="2018년"
                     />
 
                 <ImageView

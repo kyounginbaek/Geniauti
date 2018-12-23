@@ -45,6 +45,7 @@ public class BehaviorFifthFragment extends Fragment {
     private String mParam2;
 
     public TextView textInput;
+    public TextView textDelete;
     private ImageView voiceRecognition;
 
     Intent intent;
@@ -93,6 +94,13 @@ public class BehaviorFifthFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_behavior_fifth, container, false);
 
         textInput = (TextView) v.findViewById(R.id.text_input);
+        textDelete = (TextView) v.findViewById(R.id.fifth_delete_all);
+        textDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                textInput.setText("");
+            }
+        });
 
         if ( Build.VERSION.SDK_INT >= 23 ){
             // 퍼미션 체크

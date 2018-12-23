@@ -104,13 +104,13 @@ public class ChartMonthFragment extends Fragment {
         v = inflater.inflate(R.layout.fragment_chart_month, container, false);
 
         monthDate = v.findViewById(R.id.txt_chart_month);
-        sdf = new SimpleDateFormat("yyyy년 MM월 dd일 EEE요일");
+        sdf = new SimpleDateFormat("yyyy년 MM월");
         cal = Calendar.getInstance();
         monthDateandTime = sdf.format(cal.getTime());
         monthDate.setText(monthDateandTime);
 
         tmpcal = Calendar.getInstance();
-        tmpcal.add(Calendar.DATE, -1);
+        tmpcal.add(Calendar.MONTH, -1);
         yesterdayDateandTime = sdf.format(tmpcal.getTime());
 
         ImageView backButton = v.findViewById(R.id.chart_month_back);
@@ -176,14 +176,14 @@ public class ChartMonthFragment extends Fragment {
                                                     public void onPageSelected(int position)
                                                     {
                                                         if(position < lastPage) {
-                                                            cal.add(Calendar.DATE, -1);
+                                                            cal.add(Calendar.MONTH, -1);
                                                             monthDate.setText(sdf.format(cal.getTime()));
 
                                                             if(sdf.format(cal.getTime()).equals(yesterdayDateandTime)) {
                                                                 forwardButton.setVisibility(View.VISIBLE);
                                                             }
                                                         } else if(position > lastPage) {
-                                                            cal.add(Calendar.DATE, 1);
+                                                            cal.add(Calendar.MONTH, 1);
                                                             monthDate.setText(sdf.format(cal.getTime()));
 
                                                             if(sdf.format(cal.getTime()).equals(monthDateandTime)) {
@@ -219,13 +219,12 @@ public class ChartMonthFragment extends Fragment {
         adapter = new ChartMonthFragment.ViewPagerAdapter(getFragmentManager());
         viewPager.setAdapter(adapter);
         viewPager.setCurrentItem(adapter.getCount()-1);
-
     }
 
     public class ViewPagerAdapter extends FragmentStatePagerAdapter {
 
         long msDiff = Calendar.getInstance().getTimeInMillis();
-        long daysDiff = TimeUnit.MILLISECONDS.toDays(msDiff);
+        long daysDiff = TimeUnit.MILLISECONDS.toDays(msDiff)/365*12;
 
         public ViewPagerAdapter(FragmentManager manager) {
             super(manager);
@@ -239,6 +238,11 @@ public class ChartMonthFragment extends Fragment {
         @Override
         public int getCount() {
             return (int) daysDiff;
+        }
+
+        @Override
+        public int getItemPosition(Object object) {
+            return POSITION_NONE;
         }
 
     }

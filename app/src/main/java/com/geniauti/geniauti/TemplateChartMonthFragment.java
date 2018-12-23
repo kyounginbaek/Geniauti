@@ -78,6 +78,8 @@ public class TemplateChartMonthFragment extends Fragment {
     public static int positionNum;
     private int getCount = ChartMonthFragment.adapter.getCount();
 
+    private int diff;
+
     public TemplateChartMonthFragment() {
         // Required empty public constructor
     }
@@ -117,23 +119,18 @@ public class TemplateChartMonthFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        if (v != null) {
-            if ((ViewGroup) v.getParent() != null)
-                ((ViewGroup) v.getParent()).removeView(v);
-            return v;
-        }
-
         v = inflater.inflate(R.layout.fragment_template_chart_month, container, false);
 
-        int diff = getCount - positionNum - 1;
-        int currentItem = ChartMonthFragment.viewPager.getCurrentItem();
-        if(currentItem + 1 == getCount) {
-            diff = 0;
-        }
-        sdf = new SimpleDateFormat("yyyy년 MM월 dd일");
-        sdfTime = new SimpleDateFormat("aa hh");
+        chart();
+
+        return v;
+    }
+
+    public void chart() {
+        sdf = new SimpleDateFormat("yyyy년 MM월");
+        sdfTime = new SimpleDateFormat("dd");
         cal = Calendar.getInstance();
-        cal.add(Calendar.DATE, -1*diff);
+        cal.add(Calendar.MONTH, -1*diff);
         DateandTime = sdf.format(cal.getTime());
 
         // Behavior ArrayList
@@ -146,102 +143,99 @@ public class TemplateChartMonthFragment extends Fragment {
                 // frequency
 
                 String sTime = sdfTime.format(startTime);
-                int iTime = Integer.parseInt(sTime.substring(3,5));
-                if(sTime.substring(0,2).equals("오후")) {
-                    iTime = iTime + 12;
-                }
-                switch(iTime) {
-                    case 0:
+
+                switch(Integer.parseInt(sTime)) {
+                    case 1:
                         day1 += 1;
                         break;
-                    case 1:
+                    case 2:
                         day2 += 1;
                         break;
-                    case 2:
+                    case 3:
                         day3 += 1;
                         break;
-                    case 3:
+                    case 4:
                         day4 += 1;
                         break;
-                    case 4:
+                    case 5:
                         day5 += 1;
                         break;
-                    case 5:
+                    case 6:
                         day6 += 1;
                         break;
-                    case 6:
+                    case 7:
                         day7 += 1;
                         break;
-                    case 7:
+                    case 8:
                         day8 += 1;
                         break;
-                    case 8:
+                    case 9:
                         day9 += 1;
                         break;
-                    case 9:
+                    case 10:
                         day10 += 1;
                         break;
-                    case 10:
+                    case 11:
                         day11 += 1;
                         break;
-                    case 11:
+                    case 12:
                         day12 += 1;
                         break;
-                    case 12:
+                    case 13:
                         day13 += 1;
                         break;
-                    case 13:
+                    case 14:
                         day14 += 1;
                         break;
-                    case 14:
+                    case 15:
                         day15 += 1;
                         break;
-                    case 15:
+                    case 16:
                         day16 += 1;
                         break;
-                    case 16:
+                    case 17:
                         day17 += 1;
                         break;
-                    case 17:
+                    case 18:
                         day18 += 1;
                         break;
-                    case 18:
+                    case 19:
                         day19 += 1;
                         break;
-                    case 19:
+                    case 20:
                         day20 += 1;
                         break;
-                    case 20:
+                    case 21:
                         day21 += 1;
                         break;
-                    case 21:
+                    case 22:
                         day22 += 1;
                         break;
-                    case 22:
+                    case 23:
                         day23 += 1;
                         break;
-                    case 23:
+                    case 24:
                         day24 += 1;
                         break;
-                    case 24:
+                    case 25:
                         day25 += 1;
                         break;
-                    case 25:
+                    case 26:
                         day26 += 1;
                         break;
-                    case 26:
+                    case 27:
                         day27 += 1;
                         break;
-                    case 27:
+                    case 28:
                         day28 += 1;
                         break;
-                    case 28:
+                    case 29:
                         day29 += 1;
                         break;
-                    case 29:
+                    case 30:
                         day30 += 1;
                         break;
-                    case 30:
+                    case 31:
                         day31 += 1;
                         break;
                 }
@@ -339,7 +333,7 @@ public class TemplateChartMonthFragment extends Fragment {
         yAxisLeftFrequency.setStartAtZero(true);
 
         YAxis yAxisRightFrequency = chartFrequency.getAxisRight();
-        yAxisRightFrequency.setEnabled(false);
+        yAxisRightFrequency.setEnabled(true);
         yAxisRightFrequency.mAxisMinimum = 0;
         yAxisRightFrequency.setStartAtZero(true);
 
@@ -391,7 +385,7 @@ public class TemplateChartMonthFragment extends Fragment {
         mMonthNumber.setText(String.valueOf(monthNumber));
 
         if(monthNumber != 0) {
-            mMonthTime.setText(String.valueOf(monthTime / monthNumber));
+            mMonthTime.setText(String.valueOf(Math.round((monthTime / monthNumber)*10)/10.0));
         } else {
             mMonthTime.setText("0");
         }
@@ -567,8 +561,25 @@ public class TemplateChartMonthFragment extends Fragment {
         BarData dataLocations = new BarData(setLocations);
         chartLocations.setData(dataLocations);
         chartLocations.setFitBars(true);
+    }
 
-        return v;
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser)
+    {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (isVisibleToUser)
+        {
+            //화면에 실제로 보일때
+            int currentItem = ChartMonthFragment.viewPager.getCurrentItem();
+            if(currentItem + 1 == getCount) {
+                diff = 0;
+            }
+        }
+        else
+        {
+            //preload 될때(전페이지에 있을때)
+            diff = getCount - positionNum - 1;
+        }
     }
 
     // TODO: Rename method, update argument and hook method into UI event

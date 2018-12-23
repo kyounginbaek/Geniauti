@@ -55,7 +55,7 @@
                     android:layout_marginRight="10dp"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:background="@drawable/behavior_card"
+                    android:background="@drawable/chart_rectangle"
                     android:orientation="vertical">
 
                     <TextView
@@ -103,7 +103,7 @@
                     android:layout_marginRight="5dp"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:background="@drawable/behavior_card"
+                    android:background="@drawable/chart_rectangle"
                     android:orientation="vertical">
 
                     <TextView
@@ -150,7 +150,7 @@
                     android:layout_marginLeft="10dp"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:background="@drawable/behavior_card"
+                    android:background="@drawable/chart_rectangle"
                     android:orientation="vertical">
 
                     <TextView

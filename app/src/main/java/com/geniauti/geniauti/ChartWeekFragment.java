@@ -59,8 +59,8 @@ public class ChartWeekFragment extends Fragment {
     public static ViewPager viewPager;
     public static ViewPagerAdapter adapter;
     private TextView weekDate;
-    private Calendar cal, tmpcal;
-    private SimpleDateFormat sdf;
+    private Calendar cal, calSunday, calSaturday, tmpcal;
+    private SimpleDateFormat sdf, sdfCompare, sdfDay;
     private ImageView forwardButton;
     private String weekDateandTime;
     private String yesterdayDateandTime;
@@ -104,14 +104,42 @@ public class ChartWeekFragment extends Fragment {
         v = inflater.inflate(R.layout.fragment_chart_week, container, false);
 
         weekDate = v.findViewById(R.id.txt_chart_week);
-        sdf = new SimpleDateFormat("yyyy년 MM월 dd일 EEE요일");
+        sdf = new SimpleDateFormat("yyyy년 MM월");
+        sdfCompare = new SimpleDateFormat("yyyy년 MM월 dd일");
+        sdfDay = new SimpleDateFormat("dd일");
         cal = Calendar.getInstance();
-        weekDateandTime = sdf.format(cal.getTime());
-        weekDate.setText(weekDateandTime);
+        calSunday = Calendar.getInstance();
+        calSaturday = Calendar.getInstance();
+        weekDateandTime = sdfCompare.format(cal.getTime());
+
+        int dayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
+        if (Calendar.MONDAY == dayOfWeek) {
+            calSunday.add(Calendar.DATE, -1);
+            calSaturday.add(Calendar.DATE, +5);
+        } else if (Calendar.TUESDAY == dayOfWeek) {
+            calSunday.add(Calendar.DATE, -2);
+            calSaturday.add(Calendar.DATE, +4);
+        } else if (Calendar.WEDNESDAY == dayOfWeek) {
+            calSunday.add(Calendar.DATE, -3);
+            calSaturday.add(Calendar.DATE, +3);
+        } else if (Calendar.THURSDAY == dayOfWeek) {
+            calSunday.add(Calendar.DATE, -4);
+            calSaturday.add(Calendar.DATE, +2);
+        } else if (Calendar.FRIDAY == dayOfWeek) {
+            calSunday.add(Calendar.DATE, -5);
+            calSaturday.add(Calendar.DATE, +1);
+        } else if (Calendar.SATURDAY == dayOfWeek) {
+            calSunday.add(Calendar.DATE, -6);
+            calSaturday.add(Calendar.DATE, +0);
+        } else if (Calendar.SUNDAY == dayOfWeek) {
+            calSunday.add(Calendar.DATE, -0);
+            calSaturday.add(Calendar.DATE, +6);
+        }
+        weekDate.setText(weekDateResult(cal, calSunday, calSaturday));
 
         tmpcal = Calendar.getInstance();
-        tmpcal.add(Calendar.DATE, -1);
-        yesterdayDateandTime = sdf.format(tmpcal.getTime());
+        tmpcal.add(Calendar.DATE, -7);
+        yesterdayDateandTime = sdfCompare.format(tmpcal.getTime());
 
         ImageView backButton = v.findViewById(R.id.chart_week_back);
         forwardButton = v.findViewById(R.id.chart_week_forward);
@@ -176,17 +204,21 @@ public class ChartWeekFragment extends Fragment {
                                                     public void onPageSelected(int position)
                                                     {
                                                         if(position < lastPage) {
-                                                            cal.add(Calendar.DATE, -1);
-                                                            weekDate.setText(sdf.format(cal.getTime()));
+                                                            cal.add(Calendar.DATE, -7);
+                                                            calSunday.add(Calendar.DATE, -7);
+                                                            calSaturday.add(Calendar.DATE, -7);
+                                                            weekDate.setText(weekDateResult(cal, calSunday, calSaturday));
 
-                                                            if(sdf.format(cal.getTime()).equals(yesterdayDateandTime)) {
+                                                            if(sdfCompare.format(cal.getTime()).equals(yesterdayDateandTime)) {
                                                                 forwardButton.setVisibility(View.VISIBLE);
                                                             }
                                                         } else if(position > lastPage) {
-                                                            cal.add(Calendar.DATE, 1);
-                                                            weekDate.setText(sdf.format(cal.getTime()));
+                                                            cal.add(Calendar.DATE, +7);
+                                                            calSunday.add(Calendar.DATE, +7);
+                                                            calSaturday.add(Calendar.DATE, +7);
+                                                            weekDate.setText(weekDateResult(cal, calSunday, calSaturday));
 
-                                                            if(sdf.format(cal.getTime()).equals(weekDateandTime)) {
+                                                            if(sdfCompare.format(cal.getTime()).equals(weekDateandTime)) {
                                                                 forwardButton.setVisibility(View.GONE);
                                                             }
                                                         }
@@ -215,6 +247,11 @@ public class ChartWeekFragment extends Fragment {
         return v;
     }
 
+    public String weekDateResult(Calendar cal, Calendar calSunday, Calendar calSaturday) {
+
+        return sdf.format(cal.getTime()) + " " + sdfDay.format(calSunday.getTime()) + " - " + sdfDay.format(calSaturday.getTime());
+    }
+
     private void setupViewPager(ViewPager viewPager) {
         adapter = new ViewPagerAdapter(getFragmentManager());
         viewPager.setAdapter(adapter);
@@ -225,7 +262,7 @@ public class ChartWeekFragment extends Fragment {
     public class ViewPagerAdapter extends FragmentStatePagerAdapter {
 
         long msDiff = Calendar.getInstance().getTimeInMillis();
-        long daysDiff = TimeUnit.MILLISECONDS.toDays(msDiff);
+        long daysDiff = TimeUnit.MILLISECONDS.toDays(msDiff)*365/12/4;
 
         public ViewPagerAdapter(FragmentManager manager) {
             super(manager);
@@ -239,6 +276,11 @@ public class ChartWeekFragment extends Fragment {
         @Override
         public int getCount() {
             return (int) daysDiff;
+        }
+
+        @Override
+        public int getItemPosition(Object object) {
+            return POSITION_NONE;
         }
 
     }

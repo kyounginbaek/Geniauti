@@ -41,7 +41,7 @@
                 android:layout_marginTop="30dp"
                 android:textSize="14sp"
                 android:textColor="@color/coolGreen"
-                android:text="2018년 11월 28일"
+                android:text="2018년 12월"
                 />
 
             <LinearLayout
@@ -56,7 +56,7 @@
                     android:layout_marginRight="10dp"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:background="@drawable/behavior_card"
+                    android:background="@drawable/chart_rectangle"
                     android:orientation="vertical">
 
                     <TextView
@@ -104,7 +104,7 @@
                     android:layout_marginRight="5dp"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:background="@drawable/behavior_card"
+                    android:background="@drawable/chart_rectangle"
                     android:orientation="vertical">
 
                     <TextView
@@ -151,7 +151,7 @@
                     android:layout_marginLeft="10dp"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:background="@drawable/behavior_card"
+                    android:background="@drawable/chart_rectangle"
                     android:orientation="vertical">
 
                     <TextView

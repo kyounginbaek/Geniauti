@@ -62,6 +62,24 @@
                 android:backgroundTint="@drawable/focus_tint_list"
                 />
 
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="15dp">
+
+                <TextView
+                    android:id="@+id/sixth_delete_all"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:textSize="16sp"
+                    android:textColor="#de2dc76d"
+                    android:lineSpacingExtra="8sp"
+                    android:text="모두 지우기"
+                    />
+
+            </RelativeLayout>
+
         </LinearLayout>
 
     </ScrollView>

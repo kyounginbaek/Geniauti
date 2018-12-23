@@ -77,6 +77,7 @@ public class TemplateChartYearFragment extends Fragment {
     public static ArrayList<Behavior> behaviorData;
     public static int positionNum;
     private int getCount = ChartYearFragment.adapter.getCount();
+    private int diff;
 
     public TemplateChartYearFragment() {
         // Required empty public constructor
@@ -125,15 +126,10 @@ public class TemplateChartYearFragment extends Fragment {
 
         v = inflater.inflate(R.layout.fragment_template_chart_year, container, false);
 
-        int diff = getCount - positionNum - 1;
-        int currentItem = ChartYearFragment.viewPager.getCurrentItem();
-        if(currentItem + 1 == getCount) {
-            diff = 0;
-        }
-        sdf = new SimpleDateFormat("yyyy년 MM월 dd일");
-        sdfTime = new SimpleDateFormat("aa hh");
+        sdf = new SimpleDateFormat("yyyy년");
+        sdfTime = new SimpleDateFormat("MM월");
         cal = Calendar.getInstance();
-        cal.add(Calendar.DATE, -1*diff);
+        cal.add(Calendar.YEAR, -1*diff);
         DateandTime = sdf.format(cal.getTime());
 
         // Behavior ArrayList
@@ -145,46 +141,43 @@ public class TemplateChartYearFragment extends Fragment {
             if(sdf.format(startTime).equals(DateandTime)){
                 // frequency
 
-                String sTime = sdfTime.format(startTime);
-                int iTime = Integer.parseInt(sTime.substring(3,5));
-                if(sTime.substring(0,2).equals("오후")) {
-                    iTime = iTime + 12;
-                }
-                switch(iTime) {
-                    case 0:
+                String sTime = sdfTime.format(startTime).substring(0,2);
+
+                switch(Integer.parseInt(sTime)) {
+                    case 1:
                         january += 1;
                         break;
-                    case 1:
+                    case 2:
                         february += 1;
                         break;
-                    case 2:
+                    case 3:
                         march += 1;
                         break;
-                    case 3:
+                    case 4:
                         afril += 1;
                         break;
-                    case 4:
+                    case 5:
                         may += 1;
                         break;
-                    case 5:
+                    case 6:
                         june += 1;
                         break;
-                    case 6:
+                    case 7:
                         july += 1;
                         break;
-                    case 7:
+                    case 8:
                         august += 1;
                         break;
-                    case 8:
+                    case 9:
                         september += 1;
                         break;
-                    case 9:
+                    case 10:
                         october += 1;
                         break;
-                    case 10:
+                    case 11:
                         november += 1;
                         break;
-                    case 11:
+                    case 12:
                         december += 1;
                         break;
                 }
@@ -283,8 +276,7 @@ public class TemplateChartYearFragment extends Fragment {
         yAxisLeftFrequency.setStartAtZero(true);
 
         YAxis yAxisRightFrequency = chartFrequency.getAxisRight();
-        yAxisRightFrequency.setEnabled(false);
-        yAxisRightFrequency.mAxisMinimum = 0;
+        yAxisRightFrequency.setEnabled(true);
         yAxisRightFrequency.setStartAtZero(true);
 
         xLabelsFrequency = new ArrayList<>();
@@ -322,7 +314,10 @@ public class TemplateChartYearFragment extends Fragment {
 
         });
 
+        xAxisFrequency.setLabelCount(12,true);
+
         BarDataSet setFrequency = new BarDataSet(yFrequency, "");
+        setFrequency.setColors(new int[] {Color.RED, Color.GREEN, Color.GRAY, Color.BLACK, Color.BLUE});
         setFrequency.setDrawValues(false);
         setFrequency.setColors(Color.parseColor("#2dc76d"));
         BarData dataFrequency = new BarData(setFrequency);
@@ -338,7 +333,7 @@ public class TemplateChartYearFragment extends Fragment {
         mYearNumber.setText(String.valueOf(yearNumber));
 
         if(yearNumber != 0) {
-            mYearTime.setText(String.valueOf(yearTime / yearNumber));
+            mYearTime.setText(String.valueOf(Math.round((yearTime / yearNumber)*10)/10.0));
         } else {
             mYearTime.setText("0");
         }
@@ -516,6 +511,25 @@ public class TemplateChartYearFragment extends Fragment {
         chartLocations.setFitBars(true);
 
         return v;
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser)
+    {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (isVisibleToUser)
+        {
+            //화면에 실제로 보일때
+            int currentItem = ChartYearFragment.viewPager.getCurrentItem();
+            if(currentItem + 1 == getCount) {
+                diff = 0;
+            }
+        }
+        else
+        {
+            //preload 될때(전페이지에 있을때)
+            diff = getCount - positionNum - 1;
+        }
     }
 
     // TODO: Rename method, update argument and hook method into UI event

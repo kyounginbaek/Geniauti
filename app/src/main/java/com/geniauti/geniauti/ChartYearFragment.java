@@ -104,13 +104,13 @@ public class ChartYearFragment extends Fragment {
         v = inflater.inflate(R.layout.fragment_chart_year, container, false);
 
         yearDate = v.findViewById(R.id.txt_chart_year);
-        sdf = new SimpleDateFormat("yyyy년 MM월 dd일 EEE요일");
+        sdf = new SimpleDateFormat("yyyy년");
         cal = Calendar.getInstance();
         yearDateandTime = sdf.format(cal.getTime());
         yearDate.setText(yearDateandTime);
 
         tmpcal = Calendar.getInstance();
-        tmpcal.add(Calendar.DATE, -1);
+        tmpcal.add(Calendar.YEAR, -1);
         yesterdayDateandTime = sdf.format(tmpcal.getTime());
 
         ImageView backButton = v.findViewById(R.id.chart_year_back);
@@ -176,14 +176,14 @@ public class ChartYearFragment extends Fragment {
                                                     public void onPageSelected(int position)
                                                     {
                                                         if(position < lastPage) {
-                                                            cal.add(Calendar.DATE, -1);
+                                                            cal.add(Calendar.YEAR, -1);
                                                             yearDate.setText(sdf.format(cal.getTime()));
 
                                                             if(sdf.format(cal.getTime()).equals(yesterdayDateandTime)) {
                                                                 forwardButton.setVisibility(View.VISIBLE);
                                                             }
                                                         } else if(position > lastPage) {
-                                                            cal.add(Calendar.DATE, 1);
+                                                            cal.add(Calendar.YEAR, 1);
                                                             yearDate.setText(sdf.format(cal.getTime()));
 
                                                             if(sdf.format(cal.getTime()).equals(yearDateandTime)) {
@@ -225,7 +225,7 @@ public class ChartYearFragment extends Fragment {
     public class ViewPagerAdapter extends FragmentStatePagerAdapter {
 
         long msDiff = Calendar.getInstance().getTimeInMillis();
-        long daysDiff = TimeUnit.MILLISECONDS.toDays(msDiff);
+        long daysDiff = TimeUnit.MILLISECONDS.toDays(msDiff)/365;
 
         public ViewPagerAdapter(FragmentManager manager) {
             super(manager);
@@ -239,6 +239,11 @@ public class ChartYearFragment extends Fragment {
         @Override
         public int getCount() {
             return (int) daysDiff;
+        }
+
+        @Override
+        public int getItemPosition(Object object) {
+            return POSITION_NONE;
         }
 
     }

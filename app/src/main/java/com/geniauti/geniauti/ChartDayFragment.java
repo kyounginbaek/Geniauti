@@ -247,6 +247,11 @@ public class ChartDayFragment extends Fragment implements TemplateChartDayFragme
             return (int) daysDiff;
         }
 
+        @Override
+        public int getItemPosition(Object object) {
+            return POSITION_NONE;
+        }
+
     }
 
     // TODO: Rename method, update argument and hook method into UI event

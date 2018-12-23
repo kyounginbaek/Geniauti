@@ -36,6 +36,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -243,6 +244,7 @@ public class BehaviorActivity extends AppCompatActivity implements BehaviorFirst
                         try{
                             Date date_start = formatter.parse(f1.date_start + " " + f1.hour_start);
                             Date date_end = formatter.parse(f1.date_start + " " + f1.hour_end);
+                            Calendar cal = Calendar.getInstance();
 
                             docData = new HashMap<>();
                             docData.put("start_time", date_start);
@@ -255,7 +257,8 @@ public class BehaviorActivity extends AppCompatActivity implements BehaviorFirst
                             docData.put("type", f7.getResult());
                             docData.put("intensity", f8.seekbarValue+1);
                             docData.put("reason", f9.getResult());
-                            docData.put("created_at", "");
+                            docData.put("reason_detail", "");
+                            docData.put("created_at", cal.getTime());
                             docData.put("updated_at", "");
                             docData.put("uid", user.getUid());
                             docData.put("name", user.getDisplayName());
@@ -267,7 +270,7 @@ public class BehaviorActivity extends AppCompatActivity implements BehaviorFirst
                                         @Override
                                         public void onSuccess(Void aVoid) {
 //                                                                  mProgressView.setVisibility(View.GONE);
-                                            MainActivity.refresh();
+                                            MainActivity.viewPager.setAdapter(MainActivity.adapter);
                                             finish();
                                             Toast toast = Toast.makeText(BehaviorActivity.this, "행동 생성이 완료되었습니다.", Toast.LENGTH_SHORT);
                                             toast.show();

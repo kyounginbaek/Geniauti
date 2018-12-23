@@ -119,10 +119,6 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnFr
 
     }
 
-    public static void refresh() {
-        adapter.notifyDataSetChanged();
-    }
-
     @Override
     public void onFragmentInteraction(Uri uri){
         System.out.println(uri);

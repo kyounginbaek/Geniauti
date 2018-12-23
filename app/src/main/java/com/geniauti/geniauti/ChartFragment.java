@@ -105,8 +105,6 @@ public class ChartFragment extends Fragment implements ChartDayFragment.OnFragme
 
         // Set Tabs inside Toolbar
         TabLayout tabs = (TabLayout) v.findViewById(R.id.chart_result_tabs);
-
-
         tabs.setupWithViewPager(viewPager);
 
         return v;
@@ -116,6 +114,7 @@ public class ChartFragment extends Fragment implements ChartDayFragment.OnFragme
         adapter = new ChartFragment.ViewPagerAdapter(getFragmentManager());
         viewPager.setAdapter(adapter);
         viewPager.setOffscreenPageLimit(3);
+        adapter.notifyDataSetChanged();
     }
 
     public class ViewPagerAdapter extends FragmentStatePagerAdapter {
@@ -130,6 +129,7 @@ public class ChartFragment extends Fragment implements ChartDayFragment.OnFragme
         public ViewPagerAdapter(FragmentManager manager) {
             super(manager);
         }
+
         @Override
         public Fragment getItem(int position) {
             switch (position) {
