@@ -75,7 +75,6 @@ import java.util.Locale;
 public class MainFragment extends Fragment {
 
     private CompactCalendarView compactCalendar;
-    private View topShadowGradient;
 
     private SimpleDateFormat dateFormatMonth = new SimpleDateFormat("yyyy년 MM월", Locale.getDefault());
 
@@ -166,11 +165,9 @@ public class MainFragment extends Fragment {
         if (id == R.id.menu_main_calendar) {
             if(!calendarShow) {
                 calendarLayout.setVisibility(View.VISIBLE);
-                topShadowGradient.setVisibility(View.VISIBLE);
                 calendarShow = true;
             } else {
                 calendarLayout.setVisibility(View.GONE);
-                topShadowGradient.setVisibility(View.GONE);
                 calendarShow = false;
             }
         }
@@ -190,7 +187,6 @@ public class MainFragment extends Fragment {
         v = inflater.inflate(R.layout.fragment_main, container, false);
 
         calendarLayout = (LinearLayout) v.findViewById(R.id.calendar_layout);
-        topShadowGradient = (View) v.findViewById(R.id.main_fragment_top_shadow_gradient);
 
         // final ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         // actionBar.setDisplayHomeAsUpEnabled(false);
@@ -454,9 +450,15 @@ public class MainFragment extends Fragment {
             String date_compare = "";
             SimpleDateFormat formatter = new SimpleDateFormat("yyyy년 MM월 dd일 EEE");
             Date dateToday = new Date();
+
             if(position!=0) {
                 Behavior tmp_listviewitem = data.get(position-1);
                 date_compare = formatter.format(tmp_listviewitem.start_time);
+            }
+
+            if(position==0){
+                View topShadowGradient = convertView.findViewById(R.id.main_fragment_top_shadow_gradient);
+                topShadowGradient.setVisibility(View.VISIBLE);
             }
 
             LinearLayout card_layout = convertView.findViewById(R.id.behavior_card_layout);
@@ -563,6 +565,7 @@ public class MainFragment extends Fragment {
         private LayoutInflater inflater;
         private ArrayList<Listviewitem> data;
         private int layout;
+
         public ListviewAdapter(Context context, int layout, ArrayList<Listviewitem> data){
             this.inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             this.data = data;

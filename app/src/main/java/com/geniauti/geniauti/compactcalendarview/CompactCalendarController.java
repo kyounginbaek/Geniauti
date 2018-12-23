@@ -817,7 +817,7 @@ class CompactCalendarController {
                         yPosition += indicatorOffset;
                         // offset event indicators to draw below selected day indicators
                         // this makes sure that they do no overlap
-                        if (shouldDrawIndicatorsBelowSelectedDays && (isSameDayAsCurrentDay || isCurrentSelectedDay)) {
+                        if (shouldDrawIndicatorsBelowSelectedDays && (isCurrentSelectedDay)) {
                             yPosition += indicatorOffset;
                         }
 
