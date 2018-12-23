@@ -48,6 +48,7 @@ public class BehaviorFirstFragment extends Fragment {
     private Button hourBtn;
 
     private String AM_PM_Start;
+    private String enOrKor;
 
     private OnFragmentInteractionListener mListener;
 
@@ -103,6 +104,13 @@ public class BehaviorFirstFragment extends Fragment {
         hourBtn = (Button) v.findViewById(R.id.start_end_time_button);
         hour_start = formatterHour.format(dateToday);
         hour_end = formatterHour.format(afterAddingMins);
+
+        if(hour_start.substring(0,2).equals("AM") || hour_start.substring(0,2).equals("PM")){
+            enOrKor = "english";
+        } else {
+            enOrKor = "korea";
+        }
+
         hourBtn.setText(hour_start+" ~ "+hour_end);
 
         dateBtn.setOnClickListener(new View.OnClickListener() {
@@ -150,14 +158,22 @@ public class BehaviorFirstFragment extends Fragment {
                         final StringBuffer strBufStart = new StringBuffer();
                         AM_PM_Start = "";
                         if(hour < 12) {
-                            AM_PM_Start = "오전";
+                            if(enOrKor.equals("english")){
+                                AM_PM_Start = "AM";
+                            } else {
+                                AM_PM_Start = "오전";
+                            }
                             if(hour < 10) {
                                 strBufStart.append("0"+hour);
                             } else {
                                 strBufStart.append(hour);
                             }
                         } else {
-                            AM_PM_Start = "오후";
+                            if(enOrKor.equals("english")){
+                                AM_PM_Start = "PM";
+                            } else {
+                                AM_PM_Start = "오후";
+                            }
                             if(hour-12 < 10){
                                 strBufStart.append("0"+(hour-12));
                             } else {
@@ -178,14 +194,24 @@ public class BehaviorFirstFragment extends Fragment {
                                 StringBuffer strBufEnd = new StringBuffer();
                                 String AM_PM_End = "";
                                 if(hour < 12) {
-                                    AM_PM_End = "오전";
+                                    if(enOrKor.equals("english")){
+                                        AM_PM_End = "AM";
+                                    } else {
+                                        AM_PM_End = "오전";
+                                    }
+
                                     if(hour < 10) {
                                         strBufEnd.append("0"+hour);
                                     } else {
                                         strBufEnd.append(hour);
                                     }
                                 } else {
-                                    AM_PM_End = "오후";
+                                    if(enOrKor.equals("english")){
+                                        AM_PM_End = "PM";
+                                    } else {
+                                        AM_PM_End = "오후";
+                                    }
+
                                     if(hour-12 < 10){
                                         strBufEnd.append("0"+(hour-12));
                                     } else {
