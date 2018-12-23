@@ -459,6 +459,11 @@ public class MainFragment extends Fragment {
                 date_compare = formatter.format(tmp_listviewitem.start_time);
             }
 
+            LinearLayout card_layout = convertView.findViewById(R.id.behavior_card_layout);
+            card_layout.setEnabled(false);
+            card_layout.setClickable(false);
+            card_layout.setOnClickListener(null);
+
             LinearLayout layout_date = convertView.findViewById(R.id.layout_date);
             TextView txt_date = convertView.findViewById(R.id.txt_date);
             if(formatter.format(listviewitem.start_time).equals(date_compare)) {
