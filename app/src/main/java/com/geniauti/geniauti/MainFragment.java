@@ -74,7 +74,9 @@ import java.util.Locale;
  */
 public class MainFragment extends Fragment {
 
-    CompactCalendarView compactCalendar;
+    private CompactCalendarView compactCalendar;
+    private View topShadowGradient;
+
     private SimpleDateFormat dateFormatMonth = new SimpleDateFormat("yyyy년 MM월", Locale.getDefault());
 
     // TODO: Rename parameter arguments, choose names that match
@@ -95,7 +97,6 @@ public class MainFragment extends Fragment {
     private TextView txtMonth;
     private ImageView calendarBack;
     private ImageView calendarForward;
-    private TextView todayDate;
 
     private FirebaseUser user;
     private FirebaseFirestore db;
@@ -165,9 +166,11 @@ public class MainFragment extends Fragment {
         if (id == R.id.menu_main_calendar) {
             if(!calendarShow) {
                 calendarLayout.setVisibility(View.VISIBLE);
+                topShadowGradient.setVisibility(View.VISIBLE);
                 calendarShow = true;
             } else {
                 calendarLayout.setVisibility(View.GONE);
+                topShadowGradient.setVisibility(View.GONE);
                 calendarShow = false;
             }
         }
@@ -187,6 +190,7 @@ public class MainFragment extends Fragment {
         v = inflater.inflate(R.layout.fragment_main, container, false);
 
         calendarLayout = (LinearLayout) v.findViewById(R.id.calendar_layout);
+        topShadowGradient = (View) v.findViewById(R.id.main_fragment_top_shadow_gradient);
 
         // final ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         // actionBar.setDisplayHomeAsUpEnabled(false);

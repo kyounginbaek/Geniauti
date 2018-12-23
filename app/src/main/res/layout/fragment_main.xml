@@ -74,6 +74,11 @@
 
         </LinearLayout>
 
+        <View
+            android:id="@+id/main_fragment_top_shadow_gradient"
+            android:layout_width="match_parent"
+            android:layout_height="8dp"
+            android:background="@drawable/top_shadow_gradient" />
 
         <ListView
             android:id="@+id/behavior_card_listview"
