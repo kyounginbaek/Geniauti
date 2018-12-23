@@ -456,11 +456,6 @@ public class MainFragment extends Fragment {
                 date_compare = formatter.format(tmp_listviewitem.start_time);
             }
 
-            if(position==0){
-                View topShadowGradient = convertView.findViewById(R.id.main_fragment_top_shadow_gradient);
-                topShadowGradient.setVisibility(View.VISIBLE);
-            }
-
             LinearLayout card_layout = convertView.findViewById(R.id.behavior_card_layout);
             card_layout.setEnabled(false);
             card_layout.setClickable(false);
