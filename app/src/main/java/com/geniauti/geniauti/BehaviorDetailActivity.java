@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.Map;
 
 public class BehaviorDetailActivity extends AppCompatActivity {
@@ -112,7 +113,7 @@ public class BehaviorDetailActivity extends AppCompatActivity {
 
         behavior_categorization.setText(selectedBehavior.categorization);
 
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy년 MM월 dd일 aa hh:mm");
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy년 MM월 dd일 aa hh:mm", Locale.KOREAN);
 
         behavior_time.setText(formatter.format(selectedBehavior.start_time)+" ~ "+formatter.format(selectedBehavior.end_time).substring(14,22));
         behavior_place.setText(selectedBehavior.place);

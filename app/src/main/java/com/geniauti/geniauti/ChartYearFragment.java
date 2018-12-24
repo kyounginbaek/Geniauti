@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 
@@ -104,7 +105,7 @@ public class ChartYearFragment extends Fragment {
         v = inflater.inflate(R.layout.fragment_chart_year, container, false);
 
         yearDate = v.findViewById(R.id.txt_chart_year);
-        sdf = new SimpleDateFormat("yyyy년");
+        sdf = new SimpleDateFormat("yyyy년", Locale.KOREAN);
         cal = Calendar.getInstance();
         yearDateandTime = sdf.format(cal.getTime());
         yearDate.setText(yearDateandTime);

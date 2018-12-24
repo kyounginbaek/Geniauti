@@ -13,14 +13,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
+import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 
 /**
@@ -44,11 +49,16 @@ public class BehaviorFirstFragment extends Fragment {
     public String hour_start;
     public String hour_end;
     public String date_start;
-    private Button dateBtn ;
-    private Button hourBtn;
+    private RelativeLayout dateLayout ;
+    private RelativeLayout startTimeLayout, endTimeLayout;
+    private TextView dateText, startTimeText, endTimeText;
+    private TimePicker startTimePicker, endTimePicker;
+    private LinearLayout startTimeDialogCancel, endTimeDialogCancel;
+    private LinearLayout startTimeDialogSubmit, endTimeDialogSubmit;
 
     private String AM_PM_Start;
-    private String enOrKor;
+    private SimpleDateFormat formatterDate;
+    private SimpleDateFormat formatterHour;
 
     private OnFragmentInteractionListener mListener;
 
@@ -89,8 +99,8 @@ public class BehaviorFirstFragment extends Fragment {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_behavior_first, container, false);
 
-        SimpleDateFormat formatterDate = new SimpleDateFormat("yyyy년 MM월 dd일");
-        SimpleDateFormat formatterHour = new SimpleDateFormat("aa hh:mm");
+        formatterDate = new SimpleDateFormat("yyyy년 MM월 dd일 E요일", Locale.KOREAN);
+        formatterHour = new SimpleDateFormat("aa hh:mm", Locale.KOREAN);
 
         final long ONE_MINUTE_IN_MILLIS = 60000; //millisecs
         Date dateToday = new Date();
@@ -98,22 +108,22 @@ public class BehaviorFirstFragment extends Fragment {
         long curTimeInMs = dateToday.getTime();
         Date afterAddingMins = new Date(curTimeInMs + (5 * ONE_MINUTE_IN_MILLIS));
 
-        dateBtn = (Button) v.findViewById(R.id.start_date_button);
-        dateBtn.setText(date_start);
+        dateLayout = (RelativeLayout) v.findViewById(R.id.start_date_layout);
+        dateText = (TextView) v.findViewById(R.id.start_date_txt);
 
-        hourBtn = (Button) v.findViewById(R.id.start_end_time_button);
+        dateText.setText(date_start);
+
+        startTimeLayout = (RelativeLayout) v.findViewById(R.id.start_time_layout);
+        startTimeText = (TextView) v.findViewById(R.id.start_time_txt);
+        endTimeLayout = (RelativeLayout) v.findViewById(R.id.end_time_layout);
+        endTimeText = (TextView) v.findViewById(R.id.end_time_txt);
         hour_start = formatterHour.format(dateToday);
         hour_end = formatterHour.format(afterAddingMins);
 
-        if(hour_start.substring(0,2).equals("AM") || hour_start.substring(0,2).equals("PM")){
-            enOrKor = "english";
-        } else {
-            enOrKor = "korea";
-        }
+        startTimeText.setText(hour_start);
+        endTimeText.setText(hour_end);
 
-        hourBtn.setText(hour_start+" ~ "+hour_end);
-
-        dateBtn.setOnClickListener(new View.OnClickListener() {
+        dateLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 // Create a new OnDateSetListener instance. This listener will be invoked when user click ok button in DatePickerDialog.
@@ -123,13 +133,18 @@ public class BehaviorFirstFragment extends Fragment {
                         StringBuffer strBuf = new StringBuffer();
                         strBuf.append(year);
                         strBuf.append("년 ");
-                        strBuf.append(month+1);
+                        strBuf.append(month + 1);
                         strBuf.append("월 ");
                         strBuf.append(dayOfMonth);
-                        strBuf.append("일");
+                        strBuf.append("일 ");
+
+                        SimpleDateFormat simpledateformat = new SimpleDateFormat("E요일", Locale.KOREAN);
+                        Date date = new Date(year, month, dayOfMonth-1);
+                        String dayOfWeek = simpledateformat.format(date);
+                        strBuf.append(dayOfWeek);
 
                         date_start = strBuf.toString();
-                        dateBtn.setText(date_start);
+                        dateText.setText(date_start);
                     }
                 };
 
@@ -148,119 +163,263 @@ public class BehaviorFirstFragment extends Fragment {
             }
         });
 
-        hourBtn.setOnClickListener(new View.OnClickListener() {
+        AlertDialog.Builder mStartBuilder = new AlertDialog.Builder(getContext());
+        View mStartView = getLayoutInflater().inflate(R.layout.dialog_timepicker_spinner, null);
+        mStartBuilder.setView(mStartView);
+        final AlertDialog startTimeDialog = mStartBuilder.create();
+        startTimeDialog.setTitle("행동 시작 시간");
+
+        startTimePicker = (TimePicker) mStartView.findViewById(R.id.timepicker_spinner);
+
+        startTimeDialogCancel = (LinearLayout) mStartView.findViewById(R.id.timepicker_cancel);
+        startTimeDialogCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // Create a new OnTimeSetListener instance. This listener will be invoked when user click ok button in TimePickerDialog.
-                TimePickerDialog.OnTimeSetListener onTimeSetListener = new TimePickerDialog.OnTimeSetListener() {
-                    @Override
-                    public void onTimeSet(TimePicker timePicker, int hour, int minute) {
-                        final StringBuffer strBufStart = new StringBuffer();
-                        AM_PM_Start = "";
-                        if(hour < 12) {
-                            if(enOrKor.equals("english")){
-                                AM_PM_Start = "AM";
-                            } else {
-                                AM_PM_Start = "오전";
-                            }
-                            if(hour < 10) {
-                                strBufStart.append("0"+hour);
-                            } else {
-                                strBufStart.append(hour);
-                            }
-                        } else {
-                            if(enOrKor.equals("english")){
-                                AM_PM_Start = "PM";
-                            } else {
-                                AM_PM_Start = "오후";
-                            }
-                            if(hour-12 < 10){
-                                strBufStart.append("0"+(hour-12));
-                            } else {
-                                strBufStart.append(hour-12);
-                            }
-                        }
-                        strBufStart.append(":");
-                        if(minute < 10) {
-                            strBufStart.append("0"+minute);
-                        } else {
-                            strBufStart.append(minute);
-                        }
-
-                        // Create a new OnTimeSetListener instance. This listener will be invoked when user click ok button in TimePickerDialog.
-                        TimePickerDialog.OnTimeSetListener onTimeSetListener = new TimePickerDialog.OnTimeSetListener() {
-                            @Override
-                            public void onTimeSet(TimePicker timePicker, int hour, int minute) {
-                                StringBuffer strBufEnd = new StringBuffer();
-                                String AM_PM_End = "";
-                                if(hour < 12) {
-                                    if(enOrKor.equals("english")){
-                                        AM_PM_End = "AM";
-                                    } else {
-                                        AM_PM_End = "오전";
-                                    }
-
-                                    if(hour < 10) {
-                                        strBufEnd.append("0"+hour);
-                                    } else {
-                                        strBufEnd.append(hour);
-                                    }
-                                } else {
-                                    if(enOrKor.equals("english")){
-                                        AM_PM_End = "PM";
-                                    } else {
-                                        AM_PM_End = "오후";
-                                    }
-
-                                    if(hour-12 < 10){
-                                        strBufEnd.append("0"+(hour-12));
-                                    } else {
-                                        strBufEnd.append(hour-12);
-                                    }
-                                }
-                                strBufEnd.append(":");
-                                if(minute < 10){
-                                    strBufEnd.append("0"+minute);
-                                } else {
-                                    strBufEnd.append(minute);
-                                }
-
-                                hour_start = AM_PM_Start + " " + strBufStart.toString();
-                                hour_end = AM_PM_End + " " + strBufEnd.toString();
-                                hourBtn.setText(AM_PM_Start + " " + strBufStart+" ~ "+ AM_PM_End + " " + strBufEnd);
-                            }
-                        };
-
-                        Calendar now = Calendar.getInstance();
-                        int endHour = now.get(java.util.Calendar.HOUR_OF_DAY);
-                        int endMinute = now.get(java.util.Calendar.MINUTE);
-
-                        // Whether show time in 24 hour format or not.
-                        boolean is24Hour = false;
-
-                        TimePickerDialog timePickerDialog = new TimePickerDialog(getActivity(), onTimeSetListener, endHour, endMinute, is24Hour);
-
-                        timePickerDialog.setTitle("행동 종료 시간");
-                        timePickerDialog.show();
-                    }
-                };
-
-                Calendar now = Calendar.getInstance();
-                int startHour = now.get(java.util.Calendar.HOUR_OF_DAY);
-                int startMinute = now.get(java.util.Calendar.MINUTE);
-
-                // Whether show time in 24 hour format or not.
-                boolean is24Hour = false;
-
-                TimePickerDialog timePickerDialog = new TimePickerDialog(getActivity(), onTimeSetListener, startHour, startMinute, is24Hour);
-
-                timePickerDialog.setTitle("행동 시작 시간");
-                timePickerDialog.show();
+                startTimeDialog.dismiss();
             }
         });
 
-//        getStartDate();
-//        getEndDate();
+        startTimeDialogSubmit = (LinearLayout) mStartView.findViewById(R.id.timepicker_submit);
+        startTimeDialogSubmit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String startTimeAmPm = "";
+                String startTimeHour = "";
+                String startTimeMinute = "";
+
+                if(startTimePicker.getCurrentHour() < 12){
+                    startTimeAmPm = "오전";
+                    if(startTimePicker.getCurrentHour() == 0){
+                        startTimeHour = String.valueOf(startTimePicker.getCurrentHour()+12);
+                    } else if(startTimePicker.getCurrentHour() < 10) {
+                        startTimeHour = "0" + startTimePicker.getCurrentHour().toString();
+                    } else {
+                        startTimeHour = startTimePicker.getCurrentHour().toString();
+                    }
+                } else {
+                    startTimeAmPm = "오후";
+                    if(startTimePicker.getCurrentHour() < 22 && startTimePicker.getCurrentHour() != 12) {
+                        startTimeHour = "0" + String.valueOf(startTimePicker.getCurrentHour()-12);
+                    } else if(startTimePicker.getCurrentHour() == 12) {
+                        startTimeHour = String.valueOf(startTimePicker.getCurrentHour());
+                    } else {
+                        startTimeHour = String.valueOf(startTimePicker.getCurrentHour()-12);
+                    }
+                }
+
+                if(startTimePicker.getCurrentMinute() < 10){
+                    startTimeMinute = "0" + startTimePicker.getCurrentMinute().toString();
+                } else {
+                    startTimeMinute = startTimePicker.getCurrentMinute().toString();
+                }
+
+                hour_start = startTimeAmPm + " " + startTimeHour + ":" + startTimeMinute;
+                startTimeText.setText(hour_start);
+
+                try {
+                    Date hour_start_compare = formatterHour.parse(hour_start);
+                    Date hour_end_compare = formatterHour.parse(hour_end);
+
+                    if(hour_start_compare.compareTo(hour_end_compare) < 0) {
+
+                    } else {
+                        Date date = formatterHour.parse(hour_start);
+                        long curTimeInMs = date.getTime();
+                        Date afterAddingMins = new Date(curTimeInMs + (5 * ONE_MINUTE_IN_MILLIS));
+                        hour_end = formatterHour.format(afterAddingMins);
+                        endTimeText.setText(hour_end);
+                    }
+
+                } catch (java.text.ParseException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+
+                startTimeDialog.dismiss();
+            }
+        });
+
+
+        AlertDialog.Builder mEndBuilder = new AlertDialog.Builder(getContext());
+        View mEndView = getLayoutInflater().inflate(R.layout.dialog_timepicker_spinner, null);
+        mEndBuilder.setView(mEndView);
+        final AlertDialog endTimeDialog = mEndBuilder.create();
+        endTimeDialog.setTitle("행동 종료 시간");
+
+        endTimePicker = (TimePicker) mEndView.findViewById(R.id.timepicker_spinner);
+
+        endTimeDialogCancel = (LinearLayout) mEndView.findViewById(R.id.timepicker_cancel);
+        endTimeDialogCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                endTimeDialog.dismiss();
+            }
+        });
+
+        endTimeDialogSubmit = (LinearLayout) mEndView.findViewById(R.id.timepicker_submit);
+        endTimeDialogSubmit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String endTimeAmPm = "";
+                String endTimeHour = "";
+                String endTimeMinute = "";
+
+                if(endTimePicker.getCurrentHour() < 12){
+                    endTimeAmPm = "오전";
+                    if(endTimePicker.getCurrentHour() == 0){
+                        endTimeHour = String.valueOf(endTimePicker.getCurrentHour()+12);
+                    } else if(endTimePicker.getCurrentHour() < 10) {
+                        endTimeHour = "0" + endTimePicker.getCurrentHour().toString();
+                    } else {
+                        endTimeHour = endTimePicker.getCurrentHour().toString();
+                    }
+                } else {
+                    endTimeAmPm = "오후";
+                    if (endTimePicker.getCurrentHour() < 22 && endTimePicker.getCurrentHour() != 12) {
+                        endTimeHour = "0" + String.valueOf(endTimePicker.getCurrentHour() - 12);
+                    } else if(endTimePicker.getCurrentHour() == 12) {
+                        endTimeHour = String.valueOf(endTimePicker.getCurrentHour());
+                    } else {
+                        endTimeHour = String.valueOf(endTimePicker.getCurrentHour()-12);
+                    }
+                }
+
+                if(endTimePicker.getCurrentMinute() < 10){
+                    endTimeMinute = "0" + endTimePicker.getCurrentMinute().toString();
+                } else {
+                    endTimeMinute = endTimePicker.getCurrentMinute().toString();
+                }
+
+                hour_end = endTimeAmPm + " " + endTimeHour + ":" + endTimeMinute;
+                endTimeText.setText(hour_end);
+                endTimeDialog.dismiss();
+            }
+        });
+
+        startTimeLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Create a new OnTimeSetListener instance. This listener will be invoked when user click ok button in TimePickerDialog.
+//                TimePickerDialog.OnTimeSetListener onTimeSetListener = new TimePickerDialog.OnTimeSetListener() {
+//                    @Override
+//                    public void onTimeSet(TimePicker timePicker, int hour, int minute) {
+//                        final StringBuffer strBufStart = new StringBuffer();
+//                        AM_PM_Start = "";
+//                        if(hour < 12) {
+//                            AM_PM_Start = "오전";
+//
+//                            if(hour < 10) {
+//                                strBufStart.append("0"+hour);
+//                            } else {
+//                                strBufStart.append(hour);
+//                            }
+//                        } else {
+//                            AM_PM_Start = "오후";
+//
+//                            if(hour-12 < 10){
+//                                strBufStart.append("0"+(hour-12));
+//                            } else {
+//                                strBufStart.append(hour-12);
+//                            }
+//                        }
+//                        strBufStart.append(":");
+//                        if(minute < 10) {
+//                            strBufStart.append("0"+minute);
+//                        } else {
+//                            strBufStart.append(minute);
+//                        }
+//
+//                        hour_start = AM_PM_Start + " " + strBufStart.toString();
+//                        startTimeText.setText(AM_PM_Start + " " + strBufStart);
+//                    }
+//                };
+//
+//                Calendar now = Calendar.getInstance();
+//                int startHour = now.get(java.util.Calendar.HOUR_OF_DAY);
+//                int startMinute = now.get(java.util.Calendar.MINUTE);
+//
+//                // Whether show time in 24 hour format or not.
+//                boolean is24Hour = false;
+//                TimePickerDialog timePickerDialog = new TimePickerDialog(getActivity(), onTimeSetListener, startHour, startMinute, is24Hour);
+//
+//                timePickerDialog.setTitle("행동 시작 시간");
+//                timePickerDialog.show();
+
+                if (hour_start.substring(0, 2).equals("오후") && !hour_start.substring(3, 5).equals("12")) {
+                    startTimePicker.setCurrentHour(Integer.parseInt(hour_start.substring(3, 5)) + 12);
+                } else if(hour_start.substring(0, 2).equals("오전") && hour_start.substring(3, 5).equals("12")) {
+                    startTimePicker.setCurrentHour(Integer.parseInt(hour_start.substring(3, 5)) - 12);
+                } else {
+                    startTimePicker.setCurrentHour(Integer.parseInt(hour_start.substring(3,5)));
+                }
+                startTimePicker.setCurrentMinute(Integer.parseInt(hour_start.substring(6, 8)));
+
+                startTimeDialog.show();
+
+            }
+        });
+
+        endTimeLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Create a new OnTimeSetListener instance. This listener will be invoked when user click ok button in TimePickerDialog.
+//                TimePickerDialog.OnTimeSetListener onTimeSetListener = new TimePickerDialog.OnTimeSetListener() {
+//                    @Override
+//                    public void onTimeSet(TimePicker timePicker, int hour, int minute) {
+//                        StringBuffer strBufEnd = new StringBuffer();
+//                        String AM_PM_End = "";
+//                        if(hour < 12) {
+//                            AM_PM_End = "오전";
+//
+//                            if(hour < 10) {
+//                                strBufEnd.append("0"+hour);
+//                            } else {
+//                                strBufEnd.append(hour);
+//                            }
+//                        } else {
+//                            AM_PM_End = "오후";
+//
+//                            if(hour-12 < 10){
+//                                strBufEnd.append("0"+(hour-12));
+//                            } else {
+//                                strBufEnd.append(hour-12);
+//                            }
+//                        }
+//                        strBufEnd.append(":");
+//                        if(minute < 10){
+//                            strBufEnd.append("0"+minute);
+//                        } else {
+//                            strBufEnd.append(minute);
+//                        }
+//
+//                        hour_end = AM_PM_End + " " + strBufEnd.toString();
+//                        endTimeText.setText(AM_PM_End + " " + strBufEnd);
+//                    }
+//                };
+//
+//                Calendar now = Calendar.getInstance();
+//                int endHour = now.get(java.util.Calendar.HOUR_OF_DAY);
+//                int endMinute = now.get(java.util.Calendar.MINUTE);
+//
+//                // Whether show time in 24 hour format or not.
+//                boolean is24Hour = false;
+//
+//                TimePickerDialog timePickerDialog = new TimePickerDialog(getActivity(), onTimeSetListener, endHour, endMinute, is24Hour);
+//
+//                timePickerDialog.setTitle("행동 종료 시간");
+//                timePickerDialog.show();
+                if (hour_end.substring(0, 2).equals("오후") && !hour_end.substring(3, 5).equals("12")) {
+                    endTimePicker.setCurrentHour(Integer.parseInt(hour_end.substring(3, 5)) + 12);
+                } else if(hour_end.substring(0, 2).equals("오전") && hour_end.substring(3, 5).equals("12")) {
+                    endTimePicker.setCurrentHour(Integer.parseInt(hour_end.substring(3, 5)) - 12);
+                } else {
+                    endTimePicker.setCurrentHour(Integer.parseInt(hour_end.substring(3,5)));
+                }
+                endTimePicker.setCurrentMinute(Integer.parseInt(hour_end.substring(6,8)));
+
+                endTimeDialog.show();
+            }
+        });
 
         return v;
     }

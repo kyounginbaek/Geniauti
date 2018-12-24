@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 
@@ -104,9 +105,9 @@ public class ChartWeekFragment extends Fragment {
         v = inflater.inflate(R.layout.fragment_chart_week, container, false);
 
         weekDate = v.findViewById(R.id.txt_chart_week);
-        sdf = new SimpleDateFormat("yyyy년 MM월");
-        sdfCompare = new SimpleDateFormat("yyyy년 MM월 dd일");
-        sdfDay = new SimpleDateFormat("dd일");
+        sdf = new SimpleDateFormat("yyyy년 MM월", Locale.KOREAN);
+        sdfCompare = new SimpleDateFormat("yyyy년 MM월 dd일", Locale.KOREAN);
+        sdfDay = new SimpleDateFormat("dd일", Locale.KOREAN);
         cal = Calendar.getInstance();
         calSunday = Calendar.getInstance();
         calSaturday = Calendar.getInstance();

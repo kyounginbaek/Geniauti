@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TimePicker
+        android:id="@+id/timepicker_spinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:theme="@style/NumberPickerStyle"
+        android:timePickerMode="spinner">
+    </TimePicker>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:paddingRight="8dp"
+        android:gravity="right|center_vertical"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:id="@+id/timepicker_cancel"
+            android:layout_width="75dp"
+            android:layout_height="36dp"
+            android:gravity="center"
+            android:background="?android:attr/selectableItemBackground">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:textColor="#ababab"
+                android:letterSpacing="0.04"
+                android:gravity="center_horizontal"
+                android:text="취소"
+                />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/timepicker_submit"
+            android:layout_width="75dp"
+            android:layout_height="36dp"
+            android:gravity="center"
+            android:background="?android:attr/selectableItemBackground">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:textColor="@color/coolGreen"
+                android:letterSpacing="0.04"
+                android:gravity="center_horizontal"
+                android:text="확인"
+                />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

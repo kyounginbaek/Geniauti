@@ -33,6 +33,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 
@@ -110,7 +111,7 @@ public class ChartDayFragment extends Fragment implements TemplateChartDayFragme
         v = inflater.inflate(R.layout.fragment_chart_day, container, false);
 
         todayDate = v.findViewById(R.id.txt_chart_day);
-        sdf = new SimpleDateFormat("yyyy년 MM월 dd일 EEE요일");
+        sdf = new SimpleDateFormat("yyyy년 MM월 dd일 E요일", Locale.KOREAN);
         cal = Calendar.getInstance();
         todayDateandTime = sdf.format(cal.getTime());
         todayDate.setText(todayDateandTime);

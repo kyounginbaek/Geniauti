@@ -76,7 +76,7 @@ public class MainFragment extends Fragment {
 
     private CompactCalendarView compactCalendar;
 
-    private SimpleDateFormat dateFormatMonth = new SimpleDateFormat("yyyy년 MM월", Locale.getDefault());
+    private SimpleDateFormat dateFormatMonth = new SimpleDateFormat("yyyy년 MM월", Locale.KOREAN);
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -397,7 +397,7 @@ public class MainFragment extends Fragment {
     }
 
     public int foundIndex(ArrayList<Behavior> behavior, Date date) {
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy년 MM월 dd일 EEE");
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy년 MM월 dd일 E요일", Locale.KOREAN);
         for (int i = 0; i < behavior.size(); i++) {
             if(formatter.format(behavior.get(i).start_time).equals(formatter.format(date))){
                 return i;
@@ -448,7 +448,7 @@ public class MainFragment extends Fragment {
             Behavior listviewitem = data.get(position);
 
             String date_compare = "";
-            SimpleDateFormat formatter = new SimpleDateFormat("yyyy년 MM월 dd일 EEE");
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy년 MM월 dd일 E요일", Locale.KOREAN);
             Date dateToday = new Date();
 
             if(position!=0) {
@@ -474,7 +474,7 @@ public class MainFragment extends Fragment {
                 }
 
                 String date_format = formatter.format(listviewitem.start_time);
-                txt_date.setText(date_format+"요일");
+                txt_date.setText(date_format);
             }
 
             LinearLayout layoutCard = convertView.findViewById(R.id.layout_card);
@@ -499,7 +499,7 @@ public class MainFragment extends Fragment {
 
             txtCategorization.setText(listviewitem.categorization);
 
-            SimpleDateFormat formatterHour = new SimpleDateFormat("aa hh:mm");
+            SimpleDateFormat formatterHour = new SimpleDateFormat("aa hh:mm", Locale.KOREAN);
             txtTime.setText(formatterHour.format(listviewitem.start_time) +" ~ "+ formatterHour.format(listviewitem.end_time));
             txtNameRelationship.setText(listviewitem.name+"("+listviewitem.relationship+")");
 

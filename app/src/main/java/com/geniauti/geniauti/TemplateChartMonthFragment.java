@@ -26,6 +26,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 
 /**
@@ -127,8 +128,8 @@ public class TemplateChartMonthFragment extends Fragment {
     }
 
     public void chart() {
-        sdf = new SimpleDateFormat("yyyy년 MM월");
-        sdfTime = new SimpleDateFormat("dd");
+        sdf = new SimpleDateFormat("yyyy년 MM월", Locale.KOREAN);
+        sdfTime = new SimpleDateFormat("dd", Locale.KOREAN);
         cal = Calendar.getInstance();
         cal.add(Calendar.MONTH, -1*diff);
         DateandTime = sdf.format(cal.getTime());

@@ -26,6 +26,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 
 /**
@@ -126,8 +127,8 @@ public class TemplateChartWeekFragment extends Fragment {
 
         v = inflater.inflate(R.layout.fragment_template_chart_week, container, false);
 
-        sdf = new SimpleDateFormat("yyyy년 MM월");
-        sdfDay = new SimpleDateFormat("dd");
+        sdf = new SimpleDateFormat("yyyy년 MM월", Locale.KOREAN);
+        sdfDay = new SimpleDateFormat("dd", Locale.KOREAN);
         cal = Calendar.getInstance();
         calSunday = Calendar.getInstance();
         calSaturday = Calendar.getInstance();

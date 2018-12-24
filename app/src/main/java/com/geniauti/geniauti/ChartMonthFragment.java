@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 
@@ -104,7 +105,7 @@ public class ChartMonthFragment extends Fragment {
         v = inflater.inflate(R.layout.fragment_chart_month, container, false);
 
         monthDate = v.findViewById(R.id.txt_chart_month);
-        sdf = new SimpleDateFormat("yyyy년 MM월");
+        sdf = new SimpleDateFormat("yyyy년 MM월", Locale.KOREAN);
         cal = Calendar.getInstance();
         monthDateandTime = sdf.format(cal.getTime());
         monthDate.setText(monthDateandTime);

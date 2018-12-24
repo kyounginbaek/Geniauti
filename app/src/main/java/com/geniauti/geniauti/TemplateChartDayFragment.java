@@ -39,6 +39,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 
 
 /**
@@ -139,8 +140,8 @@ public class TemplateChartDayFragment extends Fragment {
 
         v = inflater.inflate(R.layout.fragment_template_chart_day, container, false);
 
-        sdf = new SimpleDateFormat("yyyy년 MM월 dd일 EEE요일");
-        sdfTime = new SimpleDateFormat("aa hh");
+        sdf = new SimpleDateFormat("yyyy년 MM월 dd일 E요일", Locale.KOREAN);
+        sdfTime = new SimpleDateFormat("aa hh", Locale.KOREAN);
         cal = Calendar.getInstance();
         cal.add(Calendar.DATE, -1*diff);
         DateandTime = sdf.format(cal.getTime());

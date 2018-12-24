@@ -40,6 +40,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class BehaviorActivity extends AppCompatActivity implements BehaviorFirstFragment.OnFragmentInteractionListener, BehaviorSecondFragment.OnFragmentInteractionListener, BehaviorThirdFragment.OnFragmentInteractionListener, BehaviorFourthFragment.OnFragmentInteractionListener, BehaviorFifthFragment.OnFragmentInteractionListener, BehaviorSixthFragment.OnFragmentInteractionListener, BehaviorSeventhFragment.OnFragmentInteractionListener, BehaviorEighthFragment.OnFragmentInteractionListener, BehaviorNinthFragment.OnFragmentInteractionListener {
@@ -182,7 +183,7 @@ public class BehaviorActivity extends AppCompatActivity implements BehaviorFirst
                 BehaviorNinthFragment f9 = (BehaviorNinthFragment) ninthFragment;
 
                 if(mViewPager.getCurrentItem()==0) {
-                    SimpleDateFormat formatter = new SimpleDateFormat("aa hh:mm");
+                    SimpleDateFormat formatter = new SimpleDateFormat("aa hh:mm", Locale.KOREAN);
                     try {
                         Date hour_start = formatter.parse(f1.hour_start);
                         Date hour_end = formatter.parse(f1.hour_end);
@@ -240,7 +241,7 @@ public class BehaviorActivity extends AppCompatActivity implements BehaviorFirst
                     if(f9.getResult().toString()=="{}"){
                         Toast.makeText(BehaviorActivity.this, "행동 원인을 골라주세요.", Toast.LENGTH_SHORT).show();
                     } else {
-                        SimpleDateFormat formatter = new SimpleDateFormat("yyyy년 MM월 dd일 aa hh:mm");
+                        SimpleDateFormat formatter = new SimpleDateFormat("yyyy년 MM월 dd일 E요일 aa hh:mm", Locale.KOREAN);
                         try{
                             Date date_start = formatter.parse(f1.date_start + " " + f1.hour_start);
                             Date date_end = formatter.parse(f1.date_start + " " + f1.hour_end);
