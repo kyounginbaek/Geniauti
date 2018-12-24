@@ -241,7 +241,7 @@ public class BehaviorActivity extends AppCompatActivity implements BehaviorFirst
                     if(f9.getResult().toString()=="{}"){
                         Toast.makeText(BehaviorActivity.this, "행동 원인을 골라주세요.", Toast.LENGTH_SHORT).show();
                     } else {
-                        SimpleDateFormat formatter = new SimpleDateFormat("yyyy년 MM월 dd일 E요일 aa hh:mm", Locale.KOREAN);
+                        SimpleDateFormat formatter = new SimpleDateFormat("yyyy년 MM월 dd일 EEE aa hh:mm", Locale.KOREAN);
                         try{
                             Date date_start = formatter.parse(f1.date_start + " " + f1.hour_start);
                             Date date_end = formatter.parse(f1.date_start + " " + f1.hour_end);
