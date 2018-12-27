@@ -111,7 +111,7 @@ public class ChartFragment extends Fragment implements ChartDayFragment.OnFragme
     }
 
     private void setupViewPager(ViewPager viewPager) {
-        adapter = new ChartFragment.ViewPagerAdapter(getFragmentManager());
+        adapter = new ChartFragment.ViewPagerAdapter(getChildFragmentManager());
         viewPager.setAdapter(adapter);
         viewPager.setOffscreenPageLimit(3);
         adapter.notifyDataSetChanged();

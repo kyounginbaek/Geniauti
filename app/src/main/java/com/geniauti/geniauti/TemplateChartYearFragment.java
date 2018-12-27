@@ -22,7 +22,9 @@ import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -64,6 +66,7 @@ public class TemplateChartYearFragment extends Fragment {
     private List<BarEntry> yLocations = new ArrayList<>();
 
     private int january = 0, february = 0, march = 0, afril = 0, may = 0, june = 0, july = 0, august = 0, september = 0, october = 0, november = 0, december = 0;
+    private int januaryIntensity = 0, februaryIntensity = 0, marchIntensity = 0, afrilIntensity = 0, mayIntensity = 0, juneIntensity = 0, julyIntensity = 0, augustIntensity = 0, septemberIntensity = 0, octoberIntensity = 0, novemberIntensity = 0, decemberIntensity = 0;
     private int interest = 0, demand = 0, selfstimulation = 0, taskevation = 0, reasonEtc = 0;
     private int selfharm = 0, harm = 0, destruction = 0, breakaway = 0, sexual = 0, typeEtc = 0;
     private int home = 0, mart = 0, restaurant = 0, school = 0, locationEtc = 0;
@@ -74,6 +77,8 @@ public class TemplateChartYearFragment extends Fragment {
     TextView mYearNumber;
     TextView mYearTime;
     TextView mYearIntensity;
+
+    private int colorIntensity1, colorIntensity2, colorIntensity3, colorIntensity4, colorIntensity5;
 
     public static ArrayList<Behavior> behaviorData;
     public static int positionNum;
@@ -133,6 +138,12 @@ public class TemplateChartYearFragment extends Fragment {
         cal.add(Calendar.YEAR, -1*diff);
         DateandTime = sdf.format(cal.getTime());
 
+        colorIntensity5 = Color.parseColor("#2dc76d");
+        colorIntensity4 = Color.parseColor("#cc2dc76d");
+        colorIntensity3 = Color.parseColor("#992dc76d");
+        colorIntensity2 = Color.parseColor("#662dc76d");
+        colorIntensity1 = Color.parseColor("#332dc76d");
+
         // Behavior ArrayList
         for(int i = 0; i < behaviorData.size(); i++) {
             Behavior behavior =  behaviorData.get(i);
@@ -147,39 +158,51 @@ public class TemplateChartYearFragment extends Fragment {
                 switch(Integer.parseInt(sTime)) {
                     case 1:
                         january += 1;
+                        januaryIntensity += behavior.intensity;
                         break;
                     case 2:
                         february += 1;
+                        februaryIntensity += behavior.intensity;
                         break;
                     case 3:
                         march += 1;
+                        marchIntensity += behavior.intensity;
                         break;
                     case 4:
                         afril += 1;
+                        afrilIntensity += behavior.intensity;
                         break;
                     case 5:
                         may += 1;
+                        mayIntensity += behavior.intensity;
                         break;
                     case 6:
                         june += 1;
+                        juneIntensity += behavior.intensity;
                         break;
                     case 7:
                         july += 1;
+                        julyIntensity += behavior.intensity;
                         break;
                     case 8:
                         august += 1;
+                        augustIntensity += behavior.intensity;
                         break;
                     case 9:
                         september += 1;
+                        septemberIntensity += behavior.intensity;
                         break;
                     case 10:
                         october += 1;
+                        octoberIntensity += behavior.intensity;
                         break;
                     case 11:
                         november += 1;
+                        novemberIntensity += behavior.intensity;
                         break;
                     case 12:
                         december += 1;
+                        decemberIntensity += behavior.intensity;
                         break;
                 }
 
@@ -280,6 +303,15 @@ public class TemplateChartYearFragment extends Fragment {
         yAxisRightFrequency.setEnabled(true);
         yAxisRightFrequency.setStartAtZero(true);
 
+        if(yearNumber == 0) {
+            yAxisRightFrequency.mAxisMaximum = 2;
+            yAxisRightFrequency.setLabelCount(2);
+        } else {
+            List<Integer> list = Arrays.asList(january, february, march, afril, may, june, july, august, september, october, november, december);
+            yAxisRightFrequency.mAxisMaximum= Collections.max(list);
+            yAxisRightFrequency.setLabelCount(Collections.max(list));
+        }
+
         xLabelsFrequency = new ArrayList<>();
         xLabelsFrequency.add("1월");
         xLabelsFrequency.add("2월");
@@ -315,12 +347,14 @@ public class TemplateChartYearFragment extends Fragment {
 
         });
 
-        xAxisFrequency.setLabelCount(12,true);
+        xAxisFrequency.setLabelCount(12,false);
+
+        int[] colors = new int[] {colorIntensity(januaryIntensity, january), colorIntensity(februaryIntensity, february), colorIntensity(marchIntensity, march), colorIntensity(afrilIntensity, afril), colorIntensity(mayIntensity, may), colorIntensity(juneIntensity, june),
+                colorIntensity(julyIntensity, july), colorIntensity(augustIntensity, august), colorIntensity(septemberIntensity, september), colorIntensity(octoberIntensity, october), colorIntensity(novemberIntensity, november), colorIntensity(decemberIntensity, december)};
 
         BarDataSet setFrequency = new BarDataSet(yFrequency, "");
-        setFrequency.setColors(new int[] {Color.RED, Color.GREEN, Color.GRAY, Color.BLACK, Color.BLUE});
         setFrequency.setDrawValues(false);
-        setFrequency.setColors(Color.parseColor("#2dc76d"));
+        setFrequency.setColors(colors);
         BarData dataFrequency = new BarData(setFrequency);
         chartFrequency.setData(dataFrequency);
 
@@ -390,12 +424,12 @@ public class TemplateChartYearFragment extends Fragment {
         YAxis yAxisLeftReasons = chartReasons.getAxisLeft();
         yAxisLeftReasons.setStartAtZero(true);
         yAxisLeftReasons.setEnabled(false);
-        yAxisLeftReasons.setLabelCount(5, true);
+        yAxisLeftReasons.setLabelCount(5, false);
         yAxisLeftReasons.setAxisMaxValue(5);
 
         YAxis yAxisRightReasons = chartReasons.getAxisRight();
         yAxisRightReasons.setStartAtZero(true);
-        yAxisRightReasons.setLabelCount(5, true);
+        yAxisRightReasons.setLabelCount(5, false);
         yAxisRightReasons.setAxisMaxValue(5);
 
         yReasons.add(new BarEntry(0, reasonEtc));
@@ -440,12 +474,12 @@ public class TemplateChartYearFragment extends Fragment {
         YAxis yAxisLeftTypes = chartTypes.getAxisLeft();
         yAxisLeftTypes.setStartAtZero(true);
         yAxisLeftTypes.setEnabled(false);
-        yAxisLeftTypes.setLabelCount(5, true);
+        yAxisLeftTypes.setLabelCount(5, false);
         yAxisLeftTypes.setAxisMaxValue(5);
 
         YAxis yAxisRightTypes = chartTypes.getAxisRight();
         yAxisRightTypes.setStartAtZero(true);
-        yAxisRightTypes.setLabelCount(5, true);
+        yAxisRightTypes.setLabelCount(5, false);
         yAxisRightTypes.setAxisMaxValue(5);
 
         yTypes.add(new BarEntry(0, typeEtc));
@@ -490,12 +524,12 @@ public class TemplateChartYearFragment extends Fragment {
         YAxis yAxisLeftLocations = chartLocations.getAxisLeft();
         yAxisLeftLocations.setStartAtZero(true);
         yAxisLeftLocations.setEnabled(false);
-        yAxisLeftLocations.setLabelCount(5, true);
+        yAxisLeftLocations.setLabelCount(5, false);
         yAxisLeftLocations.setAxisMaxValue(5);
 
         YAxis yAxisRightLocations = chartLocations.getAxisRight();
         yAxisRightLocations.setStartAtZero(true);
-        yAxisRightLocations.setLabelCount(5, true);
+        yAxisRightLocations.setLabelCount(5, false);
         yAxisRightLocations.setAxisMaxValue(5);
 
         yLocations.add(new BarEntry(0, locationEtc));
@@ -512,6 +546,28 @@ public class TemplateChartYearFragment extends Fragment {
         chartLocations.setFitBars(true);
 
         return v;
+    }
+
+    public int colorIntensity(int intensity, int number) {
+
+        if(number != 0) {
+            switch (Math.round(intensity / number)) {
+                case 1:
+                    return colorIntensity1;
+                case 2:
+                    return colorIntensity2;
+                case 3:
+                    return colorIntensity3;
+                case 4:
+                    return colorIntensity4;
+                case 5:
+                    return colorIntensity5;
+                default:
+                    return 0;
+            }
+        }
+
+        return 0;
     }
 
     @Override

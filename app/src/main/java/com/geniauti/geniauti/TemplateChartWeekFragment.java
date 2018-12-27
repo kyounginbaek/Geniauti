@@ -22,7 +22,9 @@ import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -64,6 +66,7 @@ public class TemplateChartWeekFragment extends Fragment {
     private List<BarEntry> yLocations = new ArrayList<>();
 
     private int sunday = 0, monday = 0, tuesday = 0, wednesday = 0, thursday = 0, friday = 0, saturday = 0;
+    private int sundayIntensity = 0, mondayIntensity = 0, tuesdayIntensity = 0, wednesdayIntensity = 0, thursdayIntensity = 0, fridayIntensity = 0, saturdayIntensity = 0;
     private int interest = 0, demand = 0, selfstimulation = 0, taskevation = 0, reasonEtc = 0;
     private int selfharm = 0, harm = 0, destruction = 0, breakaway = 0, sexual = 0, typeEtc = 0;
     private int home = 0, mart = 0, restaurant = 0, school = 0, locationEtc = 0;
@@ -74,6 +77,8 @@ public class TemplateChartWeekFragment extends Fragment {
     TextView mWeekNumber;
     TextView mWeekTime;
     TextView mWeekIntensity;
+
+    private int colorIntensity1, colorIntensity2, colorIntensity3, colorIntensity4, colorIntensity5;
 
     public static ArrayList<Behavior> behaviorData;
     public static int positionNum;
@@ -162,6 +167,12 @@ public class TemplateChartWeekFragment extends Fragment {
 
         DateandTime = sdf.format(cal.getTime()) + " " + sdfDay.format(calSunday.getTime()) + "일" + " - " + sdfDay.format(calSaturday.getTime()) + "일";
 
+        colorIntensity5 = Color.parseColor("#2dc76d");
+        colorIntensity4 = Color.parseColor("#cc2dc76d");
+        colorIntensity3 = Color.parseColor("#992dc76d");
+        colorIntensity2 = Color.parseColor("#662dc76d");
+        colorIntensity1 = Color.parseColor("#332dc76d");
+
         // Behavior ArrayList
         for(int i = 0; i < behaviorData.size(); i++) {
             Behavior behavior =  behaviorData.get(i);
@@ -175,24 +186,31 @@ public class TemplateChartWeekFragment extends Fragment {
                     switch(Integer.parseInt(sdfDay.format(calSaturday.getTime())) - Integer.parseInt(sdfDay.format(startTime))) {
                         case 0:
                             saturday += 1;
+                            saturdayIntensity += behavior.intensity;
                             break;
                         case 1:
                             friday += 1;
+                            fridayIntensity += behavior.intensity;
                             break;
                         case 2:
                             thursday += 1;
+                            thursdayIntensity += behavior.intensity;
                             break;
                         case 3:
                             wednesday += 1;
+                            wednesdayIntensity += behavior.intensity;
                             break;
                         case 4:
                             tuesday += 1;
+                            tuesdayIntensity += behavior.intensity;
                             break;
                         case 5:
                             monday += 1;
+                            mondayIntensity += behavior.intensity;
                             break;
                         case 6:
                             sunday += 1;
+                            sundayIntensity += behavior.intensity;
                             break;
                     }
 
@@ -295,6 +313,15 @@ public class TemplateChartWeekFragment extends Fragment {
         yAxisRightFrequency.mAxisMinimum = 0;
         yAxisRightFrequency.setStartAtZero(true);
 
+        if(weekNumber == 0) {
+            yAxisRightFrequency.mAxisMaximum = 1;
+            yAxisRightFrequency.setLabelCount(0);
+        } else {
+            List<Integer> list = Arrays.asList(sunday, monday, tuesday, wednesday, thursday, friday, saturday, sunday);
+            yAxisRightFrequency.mAxisMaximum= Collections.max(list);
+            yAxisRightFrequency.setLabelCount(Collections.max(list));
+        }
+
         xLabelsFrequency = new ArrayList<>();
         xLabelsFrequency.add("일");
         xLabelsFrequency.add("월");
@@ -321,9 +348,11 @@ public class TemplateChartWeekFragment extends Fragment {
 
         });
 
+        int[] colors = new int[] {colorIntensity(sundayIntensity, sunday), colorIntensity(mondayIntensity, monday), colorIntensity(tuesdayIntensity, tuesday), colorIntensity(wednesdayIntensity, wednesday), colorIntensity(thursdayIntensity, thursday), colorIntensity(fridayIntensity, friday), colorIntensity(saturdayIntensity, saturday)};
+
         BarDataSet setFrequency = new BarDataSet(yFrequency, "");
         setFrequency.setDrawValues(false);
-        setFrequency.setColors(Color.parseColor("#2dc76d"));
+        setFrequency.setColors(colors);
         BarData dataFrequency = new BarData(setFrequency);
         chartFrequency.setData(dataFrequency);
 
@@ -393,12 +422,12 @@ public class TemplateChartWeekFragment extends Fragment {
         YAxis yAxisLeftReasons = chartReasons.getAxisLeft();
         yAxisLeftReasons.setStartAtZero(true);
         yAxisLeftReasons.setEnabled(false);
-        yAxisLeftReasons.setLabelCount(5, true);
+        yAxisLeftReasons.setLabelCount(5, false);
         yAxisLeftReasons.setAxisMaxValue(5);
 
         YAxis yAxisRightReasons = chartReasons.getAxisRight();
         yAxisRightReasons.setStartAtZero(true);
-        yAxisRightReasons.setLabelCount(5, true);
+        yAxisRightReasons.setLabelCount(5, false);
         yAxisRightReasons.setAxisMaxValue(5);
 
         yReasons.add(new BarEntry(0, reasonEtc));
@@ -443,12 +472,12 @@ public class TemplateChartWeekFragment extends Fragment {
         YAxis yAxisLeftTypes = chartTypes.getAxisLeft();
         yAxisLeftTypes.setStartAtZero(true);
         yAxisLeftTypes.setEnabled(false);
-        yAxisLeftTypes.setLabelCount(5, true);
+        yAxisLeftTypes.setLabelCount(5, false);
         yAxisLeftTypes.setAxisMaxValue(5);
 
         YAxis yAxisRightTypes = chartTypes.getAxisRight();
         yAxisRightTypes.setStartAtZero(true);
-        yAxisRightTypes.setLabelCount(5, true);
+        yAxisRightTypes.setLabelCount(5, false);
         yAxisRightTypes.setAxisMaxValue(5);
 
         yTypes.add(new BarEntry(0, typeEtc));
@@ -493,12 +522,12 @@ public class TemplateChartWeekFragment extends Fragment {
         YAxis yAxisLeftLocations = chartLocations.getAxisLeft();
         yAxisLeftLocations.setStartAtZero(true);
         yAxisLeftLocations.setEnabled(false);
-        yAxisLeftLocations.setLabelCount(5, true);
+        yAxisLeftLocations.setLabelCount(5, false);
         yAxisLeftLocations.setAxisMaxValue(5);
 
         YAxis yAxisRightLocations = chartLocations.getAxisRight();
         yAxisRightLocations.setStartAtZero(true);
-        yAxisRightLocations.setLabelCount(5, true);
+        yAxisRightLocations.setLabelCount(5, false);
         yAxisRightLocations.setAxisMaxValue(5);
 
         yLocations.add(new BarEntry(0, locationEtc));
@@ -515,6 +544,28 @@ public class TemplateChartWeekFragment extends Fragment {
         chartLocations.setFitBars(true);
 
         return v;
+    }
+
+    public int colorIntensity(int intensity, int number) {
+
+        if(number != 0) {
+            switch (Math.round(intensity / number)) {
+                case 1:
+                    return colorIntensity1;
+                case 2:
+                    return colorIntensity2;
+                case 3:
+                    return colorIntensity3;
+                case 4:
+                    return colorIntensity4;
+                case 5:
+                    return colorIntensity5;
+                default:
+                    return 0;
+            }
+        }
+
+        return 0;
     }
 
     @Override

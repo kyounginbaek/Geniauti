@@ -30,6 +30,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -51,7 +53,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+
+import static com.geniauti.geniauti.SearchFragment.adapterBookmark;
+import static com.geniauti.geniauti.SearchFragment.bookmark;
 
 
 /**
@@ -246,6 +252,34 @@ public class ProfileFragment extends Fragment {
         bookmarkListView = (ListView) v.findViewById(R.id.bookmark_listview);
         bookmarkData = new ArrayList<>();
 
+        db.collection("users").document(user.getUid())
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (task.isSuccessful()) {
+                            DocumentSnapshot document = task.getResult();
+                            if(document.exists()) {
+
+                                HashMap<String, Object> preset = (HashMap<String, Object>) document.getData().get("preset");
+                                List<HashMap<String, Object>> behavior_preset = (List<HashMap<String,Object>>) preset.get("behavior_preset");
+
+                                for(int i=0; i<behavior_preset.size(); i++) {
+                                    Bookmark item = new Bookmark(behavior_preset.get(i).get("title").toString());
+                                    bookmarkData.add(item);
+                                }
+
+                                bookmarkAdapter = new BookmarkListviewAdapter(getContext(), R.layout.list_bookmark, bookmarkData);
+                                bookmarkListView.setAdapter(bookmarkAdapter);
+                            } else {
+
+                            }
+                        } else {
+//                            Log.d(TAG, "Error getting documents: ", task.getException());
+                        }
+                    }
+                });
+
         profileEdit = (RelativeLayout) v.findViewById(R.id.profile_edit);
         profileEdit.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -357,12 +391,10 @@ public class ProfileFragment extends Fragment {
     }
 
     public class Bookmark {
-        public Bookmark(String main,String sub) {
-            this.main = main;
-            this.sub = sub;
+        public Bookmark(String title) {
+            this.title = title;
         }
-        private String main;
-        private String sub;
+        private String title;
     }
 
     public class ParentListviewAdapter extends BaseAdapter {
@@ -435,6 +467,14 @@ public class ProfileFragment extends Fragment {
             if(convertView == null){
                 convertView = inflater.inflate(R.layout.list_bookmark, parent, false);
             }
+
+            Bookmark bookmarkData = data.get(position);
+
+            TextView bookmarkTitle = (TextView) convertView.findViewById(R.id.list_bookmark_title);
+            TextView bookmarkSub = (TextView) convertView.findViewById(R.id.list_bookmark_sub);
+
+            bookmarkTitle.setText(bookmarkData.title);
+            bookmarkSub.setText("저장된 기록" + String.valueOf(position + 1));
 
             return convertView;
         }

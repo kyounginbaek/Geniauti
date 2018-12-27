@@ -50,6 +50,8 @@ public class BehaviorFifthFragment extends Fragment {
 
     Intent intent;
     SpeechRecognizer mRecognizer;
+    String audioText = "";
+
     final int PERMISSION = 1;
     private RippleBackground rippleBackground;
 
@@ -145,6 +147,7 @@ public class BehaviorFifthFragment extends Fragment {
         @Override
         public void onEndOfSpeech() {
             rippleBackground.stopRippleAnimation();
+            textInput.append(audioText);
         }
 
         @Override
@@ -206,7 +209,7 @@ public class BehaviorFifthFragment extends Fragment {
                     partialResults.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
 
             for(int i = 0; i < matches.size() ; i++){
-                textInput.append(matches.get(i));
+                audioText = matches.get(i);
             }
         }
 

@@ -33,6 +33,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -77,6 +78,7 @@ public class TemplateChartDayFragment extends Fragment {
     private List<BarEntry> yLocations = new ArrayList<>();
 
     private int hour0 = 0, hour1 = 0, hour2 = 0, hour3 = 0, hour4 = 0, hour5 = 0, hour6 = 0, hour7 = 0, hour8 = 0, hour9 = 0, hour10 = 0, hour11 = 0, hour12 = 0, hour13 = 0, hour14 = 0, hour15 = 0, hour16 = 0, hour17 = 0, hour18 = 0, hour19 = 0, hour20 = 0, hour21 = 0, hour22 = 0, hour23 = 0;
+    private int intensity0 = 0, intensity1 = 0, intensity2 = 0, intensity3 = 0, intensity4 = 0, intensity5 = 0, intensity6 = 0, intensity7 = 0, intensity8 = 0, intensity9 = 0, intensity10 = 0, intensity11 = 0, intensity12 = 0, intensity13 = 0, intensity14 = 0, intensity15 = 0, intensity16 = 0, intensity17 = 0, intensity18 = 0, intensity19 = 0, intensity20 = 0, intensity21 = 0, intensity22 = 0, intensity23 = 0;
     private int interest = 0, demand = 0, selfstimulation = 0, taskevation = 0, reasonEtc = 0;
     private int selfharm = 0, harm = 0, destruction = 0, breakaway = 0, sexual = 0, typeEtc = 0;
     private int home = 0, mart = 0, restaurant = 0, school = 0, locationEtc = 0;
@@ -87,6 +89,8 @@ public class TemplateChartDayFragment extends Fragment {
     TextView mDayNumber;
     TextView mDayTime;
     TextView mDayIntensity;
+
+    private int colorIntensity1, colorIntensity2, colorIntensity3, colorIntensity4, colorIntensity5;
 
     public static ArrayList<Behavior> behaviorData;
     public static int positionNum;
@@ -146,6 +150,12 @@ public class TemplateChartDayFragment extends Fragment {
         cal.add(Calendar.DATE, -1*diff);
         DateandTime = sdf.format(cal.getTime());
 
+        colorIntensity5 = Color.parseColor("#2dc76d");
+        colorIntensity4 = Color.parseColor("#cc2dc76d");
+        colorIntensity3 = Color.parseColor("#992dc76d");
+        colorIntensity2 = Color.parseColor("#662dc76d");
+        colorIntensity1 = Color.parseColor("#332dc76d");
+
         // Behavior ArrayList
         for(int i = 0; i < behaviorData.size(); i++) {
             Behavior behavior =  behaviorData.get(i);
@@ -168,76 +178,100 @@ public class TemplateChartDayFragment extends Fragment {
                 }
                 switch(iTime) {
                     case 0:
-                        hour0 = 1;
+                        hour0 += 1;
+                        intensity0 += behavior.intensity;
                         break;
                     case 1:
-                        hour1 = 1;
+                        hour1 += 1;
+                        intensity1 += behavior.intensity;
                         break;
                     case 2:
-                        hour2 = 1;
+                        hour2 += 1;
+                        intensity2 += behavior.intensity;
                         break;
                     case 3:
-                        hour3 = 1;
+                        hour3 += 1;
+                        intensity3 += behavior.intensity;
                         break;
                     case 4:
-                        hour4 = 1;
+                        hour4 += 1;
+                        intensity4 += behavior.intensity;
                         break;
                     case 5:
-                        hour5 = 1;
+                        hour5 += 1;
+                        intensity5 += behavior.intensity;
                         break;
                     case 6:
-                        hour6 = 1;
+                        hour6 += 1;
+                        intensity6 += behavior.intensity;
                         break;
                     case 7:
-                        hour7 = 1;
+                        hour7 += 1;
+                        intensity7 += behavior.intensity;
                         break;
                     case 8:
-                        hour8 = 1;
+                        hour8 += 1;
+                        intensity8 += behavior.intensity;
                         break;
                     case 9:
-                        hour9 = 1;
+                        hour9 += 1;
+                        intensity9 += behavior.intensity;
                         break;
                     case 10:
-                        hour10 = 1;
+                        hour10 += 1;
+                        intensity10 += behavior.intensity;
                         break;
                     case 11:
-                        hour11 = 1;
+                        hour11 += 1;
+                        intensity11 += behavior.intensity;
                         break;
                     case 12:
-                        hour12 = 1;
+                        hour12 += 1;
+                        intensity12 += behavior.intensity;
                         break;
                     case 13:
-                        hour13 = 1;
+                        hour13 += 1;
+                        intensity13 += behavior.intensity;
                         break;
                     case 14:
-                        hour14 = 1;
+                        hour14 += 1;
+                        intensity14 += behavior.intensity;
                         break;
                     case 15:
-                        hour15 = 1;
+                        hour15 += 1;
+                        intensity15 += behavior.intensity;
                         break;
                     case 16:
-                        hour16 = 1;
+                        hour16 += 1;
+                        intensity16 += behavior.intensity;
                         break;
                     case 17:
-                        hour17 = 1;
+                        hour17 += 1;
+                        intensity17 += behavior.intensity;
                         break;
                     case 18:
-                        hour18 = 1;
+                        hour18 += 1;
+                        intensity18 += behavior.intensity;
                         break;
                     case 19:
-                        hour19 = 1;
+                        hour19 += 1;
+                        intensity19 += behavior.intensity;
                         break;
                     case 20:
-                        hour20 = 1;
+                        hour20 += 1;
+                        intensity20 += behavior.intensity;
                         break;
                     case 21:
-                        hour21 = 1;
+                        hour21 += 1;
+                        intensity21 += behavior.intensity;
                         break;
                     case 22:
-                        hour22 = 1;
+                        hour22 += 1;
+                        intensity22 += behavior.intensity;
                         break;
                     case 23:
-                        hour23 = 1;
+                        hour23 += 1;
+                        intensity23 += behavior.intensity;
                         break;
                 }
 
@@ -335,9 +369,24 @@ public class TemplateChartDayFragment extends Fragment {
         yAxisLeftFrequency.setStartAtZero(true);
 
         YAxis yAxisRightFrequency = chartFrequency.getAxisRight();
-        yAxisRightFrequency.setEnabled(false);
+        yAxisRightFrequency.setEnabled(true);
         yAxisRightFrequency.mAxisMinimum = 0;
         yAxisRightFrequency.setStartAtZero(true);
+
+        if(dayNumber == 0) {
+            yAxisRightFrequency.mAxisMaximum = 2;
+        } else {
+            List<Integer> list = Arrays.asList(hour0, hour1, hour2, hour3, hour4, hour5, hour6, hour7, hour8, hour9, hour10,
+                    hour11, hour12, hour13, hour14, hour15, hour16, hour17, hour18, hour19, hour20, hour21, hour22, hour23);
+
+            int max = Collections.max(list);
+            if(max == 1) {
+                yAxisRightFrequency.setAxisMaximum(2);
+            } else {
+                yAxisRightFrequency.mAxisMaximum = max;
+                yAxisRightFrequency.setLabelCount(max);
+            }
+        }
 
         yFrequency.add(new BarEntry(0, hour0));
         yFrequency.add(new BarEntry(1, hour1));
@@ -364,9 +413,13 @@ public class TemplateChartDayFragment extends Fragment {
         yFrequency.add(new BarEntry(22, hour22));
         yFrequency.add(new BarEntry(23, hour23));
 
+        int[] colors = new int[] {colorIntensity(intensity0, hour0), colorIntensity(intensity1, hour1), colorIntensity(intensity2, hour2), colorIntensity(intensity3, hour3), colorIntensity(intensity4, hour4), colorIntensity(intensity5, hour5), colorIntensity(intensity6, hour6), colorIntensity(intensity7, hour7), colorIntensity(intensity8, hour8), colorIntensity(intensity9, hour9),
+                colorIntensity(intensity10, hour10), colorIntensity(intensity11, hour11), colorIntensity(intensity12, hour12), colorIntensity(intensity13, hour13), colorIntensity(intensity14, hour14), colorIntensity(intensity15, hour15), colorIntensity(intensity16, hour16), colorIntensity(intensity17, hour17), colorIntensity(intensity18, hour18), colorIntensity(intensity19, hour19),
+                colorIntensity(intensity20, hour20), colorIntensity(intensity21, hour21), colorIntensity(intensity22, hour22), colorIntensity(intensity23, hour23)};
+
         BarDataSet setFrequency = new BarDataSet(yFrequency, "");
         setFrequency.setDrawValues(false);
-        setFrequency.setColors(Color.parseColor("#2dc76d"));
+        setFrequency.setColors(colors);
         BarData dataFrequency = new BarData(setFrequency);
         chartFrequency.setData(dataFrequency);
 
@@ -436,12 +489,12 @@ public class TemplateChartDayFragment extends Fragment {
         YAxis yAxisLeftReasons = chartReasons.getAxisLeft();
         yAxisLeftReasons.setStartAtZero(true);
         yAxisLeftReasons.setEnabled(false);
-        yAxisLeftReasons.setLabelCount(5, true);
+        yAxisLeftReasons.setLabelCount(5, false);
         yAxisLeftReasons.setAxisMaxValue(5);
 
         YAxis yAxisRightReasons = chartReasons.getAxisRight();
         yAxisRightReasons.setStartAtZero(true);
-        yAxisRightReasons.setLabelCount(5, true);
+        yAxisRightReasons.setLabelCount(5, false);
         yAxisRightReasons.setAxisMaxValue(5);
 
         yReasons.add(new BarEntry(0, reasonEtc));
@@ -453,6 +506,7 @@ public class TemplateChartDayFragment extends Fragment {
         BarDataSet setReasons = new BarDataSet(yReasons, "");
         setReasons.setColors(Color.parseColor("#2dc76d"));
         setReasons.setDrawValues(false);
+        setReasons.setValueTextSize(12);
         BarData dataReasons = new BarData(setReasons);
         chartReasons.setData(dataReasons);
         chartReasons.setFitBars(true);
@@ -486,12 +540,12 @@ public class TemplateChartDayFragment extends Fragment {
         YAxis yAxisLeftTypes = chartTypes.getAxisLeft();
         yAxisLeftTypes.setStartAtZero(true);
         yAxisLeftTypes.setEnabled(false);
-        yAxisLeftTypes.setLabelCount(5, true);
+        yAxisLeftTypes.setLabelCount(5, false);
         yAxisLeftTypes.setAxisMaxValue(5);
 
         YAxis yAxisRightTypes = chartTypes.getAxisRight();
         yAxisRightTypes.setStartAtZero(true);
-        yAxisRightTypes.setLabelCount(5, true);
+        yAxisRightTypes.setLabelCount(5, false);
         yAxisRightTypes.setAxisMaxValue(5);
 
         yTypes.add(new BarEntry(0, typeEtc));
@@ -504,6 +558,7 @@ public class TemplateChartDayFragment extends Fragment {
         BarDataSet setTypes = new BarDataSet(yTypes, "");
         setTypes.setColors(Color.parseColor("#2dc76d"));
         setTypes.setDrawValues(false);
+        setTypes.setValueTextSize(12);
         BarData dataTypes = new BarData(setTypes);
         chartTypes.setData(dataTypes);
         chartTypes.setFitBars(true);
@@ -518,7 +573,7 @@ public class TemplateChartDayFragment extends Fragment {
         xLabelsLocations = new ArrayList<>();
         xLabelsLocations.add("기타");
         xLabelsLocations.add("학교");
-        xLabelsLocations.add("식당");
+        xLabelsLocations.add("식당가가");
         xLabelsLocations.add("마트");
         xLabelsLocations.add("집");
 
@@ -536,12 +591,12 @@ public class TemplateChartDayFragment extends Fragment {
         YAxis yAxisLeftLocations = chartLocations.getAxisLeft();
         yAxisLeftLocations.setStartAtZero(true);
         yAxisLeftLocations.setEnabled(false);
-        yAxisLeftLocations.setLabelCount(5, true);
+        yAxisLeftLocations.setLabelCount(5, false);
         yAxisLeftLocations.setAxisMaxValue(5);
 
         YAxis yAxisRightLocations = chartLocations.getAxisRight();
         yAxisRightLocations.setStartAtZero(true);
-        yAxisRightLocations.setLabelCount(5, true);
+        yAxisRightLocations.setLabelCount(5, false);
         yAxisRightLocations.setAxisMaxValue(5);
 
         yLocations.add(new BarEntry(0, locationEtc));
@@ -553,11 +608,34 @@ public class TemplateChartDayFragment extends Fragment {
         BarDataSet setLocations = new BarDataSet(yLocations, "");
         setLocations.setColors(Color.parseColor("#2dc76d"));
         setLocations.setDrawValues(false);
+        setLocations.setValueTextSize(12);
         BarData dataLocations = new BarData(setLocations);
         chartLocations.setData(dataLocations);
         chartLocations.setFitBars(true);
 
         return v;
+    }
+
+    public int colorIntensity(int intensity, int number) {
+
+        if(number != 0) {
+            switch (Math.round(intensity / number)) {
+                case 1:
+                    return colorIntensity1;
+                case 2:
+                    return colorIntensity2;
+                case 3:
+                    return colorIntensity3;
+                case 4:
+                    return colorIntensity4;
+                case 5:
+                    return colorIntensity5;
+                default:
+                    return 0;
+            }
+        }
+
+        return 0;
     }
 
     @Override

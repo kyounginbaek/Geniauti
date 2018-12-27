@@ -55,6 +55,7 @@ public class BehaviorFourthFragment extends Fragment {
 
     Intent intent;
     SpeechRecognizer mRecognizer;
+    String audioText = "";
 
     private OnFragmentInteractionListener mListener;
 
@@ -143,6 +144,7 @@ public class BehaviorFourthFragment extends Fragment {
         @Override
         public void onEndOfSpeech() {
             rippleBackground.stopRippleAnimation();
+            textInput.append(audioText);
         }
 
         @Override
@@ -204,7 +206,7 @@ public class BehaviorFourthFragment extends Fragment {
                     partialResults.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
 
             for(int i = 0; i < matches.size() ; i++){
-                textInput.append(matches.get(i));
+                audioText = matches.get(i);
             }
         }
 

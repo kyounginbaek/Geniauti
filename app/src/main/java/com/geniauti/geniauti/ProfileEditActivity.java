@@ -76,6 +76,7 @@ public class ProfileEditActivity extends AppCompatActivity {
                 profileEmail.setError(null);
 
                 boolean cancel = false;
+                boolean editted = false;
                 View focusView = null;
 
                 newName = profileName.getText().toString();

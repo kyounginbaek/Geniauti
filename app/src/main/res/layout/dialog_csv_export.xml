@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="24dp"
+        android:paddingRight="24dp"
+        android:paddingTop="21dp"
+        android:textSize="20sp"
+        android:textColor="#de000000"
+        android:lineSpacingExtra="8sp"
+        android:text="CSV 파일로 내보내기"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:lineSpacingExtra="8sp"
+        android:paddingLeft="24dp"
+        android:paddingTop="12dp"
+        android:paddingRight="24dp"
+        android:text="이메일을 입력하시면 데이터를 csv 파일로 다운로드 할 수 있습니다."
+        android:textColor="#8a000000"
+        android:textSize="16sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="24dp"
+        android:paddingRight="24dp"
+        android:paddingTop="27dp"
+        android:paddingBottom="42dp">
+
+        <EditText
+            android:id="@+id/txt_csv_email"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:textColor="#de000000"
+            android:backgroundTint="@drawable/focus_tint_list"
+            android:lineSpacingExtra="8sp"
+            android:hint="이메일 주소"
+            android:inputType="textMultiLine"
+            android:scrollbars="vertical"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:paddingRight="8dp"
+        android:gravity="right|center_vertical"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:id="@+id/csv_cancel"
+            android:layout_width="75dp"
+            android:layout_height="36dp"
+            android:gravity="center"
+            android:background="?android:attr/selectableItemBackground">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:textColor="#ababab"
+                android:letterSpacing="0.04"
+                android:gravity="center_horizontal"
+                android:text="취소"
+                />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/csv_export"
+            android:layout_width="75dp"
+            android:layout_height="36dp"
+            android:gravity="center"
+            android:background="?android:attr/selectableItemBackground">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:textColor="@color/coolGreen"
+                android:letterSpacing="0.04"
+                android:gravity="center_horizontal"
+                android:text="확인"
+                />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

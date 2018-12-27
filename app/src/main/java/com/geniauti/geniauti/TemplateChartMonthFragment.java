@@ -22,7 +22,9 @@ import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -63,7 +65,8 @@ public class TemplateChartMonthFragment extends Fragment {
     private List<BarEntry> yTypes = new ArrayList<>();
     private List<BarEntry> yLocations = new ArrayList<>();
 
-    private int day1 =0, day2 = 0, day3 = 0, day4 = 0, day5 = 0, day6 = 0, day7 = 0, day8 = 0, day9 = 0, day10 = 0, day11 = 0, day12 = 0, day13 = 0, day14 = 0, day15 = 0, day16 = 0, day17 = 0, day18 = 0, day19 = 0, day20 = 0, day21 = 0, day22 = 0, day23 = 0, day24 = 0, day25 = 0, day26 = 0, day27 = 0, day28 = 0, day29 = 0, day30 = 0, day31 = 0;
+    private int day1 = 0, day2 = 0, day3 = 0, day4 = 0, day5 = 0, day6 = 0, day7 = 0, day8 = 0, day9 = 0, day10 = 0, day11 = 0, day12 = 0, day13 = 0, day14 = 0, day15 = 0, day16 = 0, day17 = 0, day18 = 0, day19 = 0, day20 = 0, day21 = 0, day22 = 0, day23 = 0, day24 = 0, day25 = 0, day26 = 0, day27 = 0, day28 = 0, day29 = 0, day30 = 0, day31 = 0;
+    private int intensity1 = 0, intensity2 = 0, intensity3 = 0, intensity4 = 0, intensity5 = 0, intensity6 = 0, intensity7 = 0, intensity8 = 0, intensity9 = 0, intensity10 = 0, intensity11 = 0, intensity12 = 0, intensity13 = 0, intensity14 = 0, intensity15 = 0, intensity16 = 0, intensity17 = 0, intensity18 = 0, intensity19 = 0, intensity20 = 0, intensity21 = 0, intensity22 = 0, intensity23 = 0, intensity24 = 0, intensity25 = 0, intensity26 = 0, intensity27 = 0, intensity28 = 0, intensity29 = 0, intensity30 = 0, intensity31 = 0;
     private int interest = 0, demand = 0, selfstimulation = 0, taskevation = 0, reasonEtc = 0;
     private int selfharm = 0, harm = 0, destruction = 0, breakaway = 0, sexual = 0, typeEtc = 0;
     private int home = 0, mart = 0, restaurant = 0, school = 0, locationEtc = 0;
@@ -74,6 +77,8 @@ public class TemplateChartMonthFragment extends Fragment {
     TextView mMonthNumber;
     TextView mMonthTime;
     TextView mMonthIntensity;
+
+    private int colorIntensity1, colorIntensity2, colorIntensity3, colorIntensity4, colorIntensity5;
 
     public static ArrayList<Behavior> behaviorData;
     public static int positionNum;
@@ -88,9 +93,10 @@ public class TemplateChartMonthFragment extends Fragment {
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
+     * <p>
+     * //     * @param param1 Parameter 1.
+     * //     * @param param2 Parameter 2.
      *
-//     * @param param1 Parameter 1.
-//     * @param param2 Parameter 2.
      * @return A new instance of fragment TemplateChartMonthFragment.
      */
     // TODO: Rename and change types and number of parameters
@@ -131,113 +137,150 @@ public class TemplateChartMonthFragment extends Fragment {
         sdf = new SimpleDateFormat("yyyy년 MM월", Locale.KOREAN);
         sdfTime = new SimpleDateFormat("dd", Locale.KOREAN);
         cal = Calendar.getInstance();
-        cal.add(Calendar.MONTH, -1*diff);
+        cal.add(Calendar.MONTH, -1 * diff);
         DateandTime = sdf.format(cal.getTime());
 
+        colorIntensity5 = Color.parseColor("#2dc76d");
+        colorIntensity4 = Color.parseColor("#cc2dc76d");
+        colorIntensity3 = Color.parseColor("#992dc76d");
+        colorIntensity2 = Color.parseColor("#662dc76d");
+        colorIntensity1 = Color.parseColor("#332dc76d");
+
         // Behavior ArrayList
-        for(int i = 0; i < behaviorData.size(); i++) {
-            Behavior behavior =  behaviorData.get(i);
+        for (int i = 0; i < behaviorData.size(); i++) {
+            Behavior behavior = behaviorData.get(i);
 
             Date startTime = behavior.start_time;
 
-            if(sdf.format(startTime).equals(DateandTime)){
+            if (sdf.format(startTime).equals(DateandTime)) {
                 // frequency
 
                 String sTime = sdfTime.format(startTime);
 
-                switch(Integer.parseInt(sTime)) {
+                switch (Integer.parseInt(sTime)) {
                     case 1:
                         day1 += 1;
+                        intensity1 += behavior.intensity;
                         break;
                     case 2:
                         day2 += 1;
+                        intensity2 += behavior.intensity;
                         break;
                     case 3:
                         day3 += 1;
+                        intensity3 += behavior.intensity;
                         break;
                     case 4:
                         day4 += 1;
+                        intensity4 += behavior.intensity;
                         break;
                     case 5:
                         day5 += 1;
+                        intensity5 += behavior.intensity;
                         break;
                     case 6:
                         day6 += 1;
+                        intensity6 += behavior.intensity;
                         break;
                     case 7:
                         day7 += 1;
+                        intensity7 += behavior.intensity;
                         break;
                     case 8:
                         day8 += 1;
+                        intensity8 += behavior.intensity;
                         break;
                     case 9:
                         day9 += 1;
+                        intensity9 += behavior.intensity;
                         break;
                     case 10:
                         day10 += 1;
+                        intensity10 += behavior.intensity;
                         break;
                     case 11:
                         day11 += 1;
+                        intensity11 += behavior.intensity;
                         break;
                     case 12:
                         day12 += 1;
+                        intensity12 += behavior.intensity;
                         break;
                     case 13:
                         day13 += 1;
+                        intensity13 += behavior.intensity;
                         break;
                     case 14:
                         day14 += 1;
+                        intensity14 += behavior.intensity;
                         break;
                     case 15:
                         day15 += 1;
+                        intensity15 += behavior.intensity;
                         break;
                     case 16:
                         day16 += 1;
+                        intensity16 += behavior.intensity;
                         break;
                     case 17:
                         day17 += 1;
+                        intensity17 += behavior.intensity;
                         break;
                     case 18:
                         day18 += 1;
+                        intensity18 += behavior.intensity;
                         break;
                     case 19:
                         day19 += 1;
+                        intensity19 += behavior.intensity;
                         break;
                     case 20:
                         day20 += 1;
+                        intensity20 += behavior.intensity;
                         break;
                     case 21:
                         day21 += 1;
+                        intensity21 += behavior.intensity;
                         break;
                     case 22:
                         day22 += 1;
+                        intensity22 += behavior.intensity;
                         break;
                     case 23:
                         day23 += 1;
+                        intensity23 += behavior.intensity;
                         break;
                     case 24:
                         day24 += 1;
+                        intensity24 += behavior.intensity;
                         break;
                     case 25:
                         day25 += 1;
+                        intensity25 += behavior.intensity;
                         break;
                     case 26:
                         day26 += 1;
+                        intensity26 += behavior.intensity;
                         break;
                     case 27:
                         day27 += 1;
+                        intensity27 += behavior.intensity;
                         break;
                     case 28:
                         day28 += 1;
+                        intensity28 += behavior.intensity;
                         break;
                     case 29:
                         day29 += 1;
+                        intensity29 += behavior.intensity;
                         break;
                     case 30:
                         day30 += 1;
+                        intensity30 += behavior.intensity;
                         break;
                     case 31:
                         day31 += 1;
+                        intensity31 += behavior.intensity;
                         break;
                 }
 
@@ -246,17 +289,17 @@ public class TemplateChartMonthFragment extends Fragment {
 
                 // time
                 long timeDiff = behavior.end_time.getTime() - behavior.start_time.getTime();
-                monthTime = monthTime + (timeDiff/(1000*60));
+                monthTime = monthTime + (timeDiff / (1000 * 60));
 
                 // intensity
                 monthIntensity += behavior.intensity;
 
                 // Reasons
                 HashMap<String, Object> reason = (HashMap<String, Object>) behavior.reason;
-                HashMap.Entry<String,Object> entryRaason = reason.entrySet().iterator().next();
+                HashMap.Entry<String, Object> entryRaason = reason.entrySet().iterator().next();
 
                 // Color Code
-                switch(entryRaason.getKey()) {
+                switch (entryRaason.getKey()) {
                     case "관심":
                         interest += 1;
                         break;
@@ -276,10 +319,10 @@ public class TemplateChartMonthFragment extends Fragment {
 
                 // Types
                 HashMap<String, Object> type = (HashMap<String, Object>) behavior.type;
-                HashMap.Entry<String,Object> entryType = type.entrySet().iterator().next();
+                HashMap.Entry<String, Object> entryType = type.entrySet().iterator().next();
 
                 // Color Code
-                switch(entryType.getKey()) {
+                switch (entryType.getKey()) {
                     case "selfharm":
                         selfharm += 1;
                         break;
@@ -301,7 +344,7 @@ public class TemplateChartMonthFragment extends Fragment {
                 }
 
                 // Locations
-                switch(behavior.place) {
+                switch (behavior.place) {
                     case "집":
                         home += 1;
                         break;
@@ -338,6 +381,18 @@ public class TemplateChartMonthFragment extends Fragment {
         yAxisRightFrequency.mAxisMinimum = 0;
         yAxisRightFrequency.setStartAtZero(true);
 
+        if(monthNumber == 0) {
+            yAxisRightFrequency.mAxisMaximum = 1;
+            yAxisRightFrequency.setLabelCount(1);
+        } else {
+            List<Integer> list = Arrays.asList(day1, day2, day3, day4, day5, day6, day7, day8, day9, day10,
+                    day11, day12, day13, day14, day15, day16, day17, day18, day19, day20,
+                    day21, day22, day23, day24, day25, day26, day27, day28, day29, day30, day31);
+
+            yAxisRightFrequency.mAxisMaximum = Collections.max(list);
+            yAxisRightFrequency.setLabelCount(Collections.max(list));
+        }
+
         yFrequency.add(new BarEntry(1, day1));
         yFrequency.add(new BarEntry(2, day2));
         yFrequency.add(new BarEntry(3, day3));
@@ -370,9 +425,14 @@ public class TemplateChartMonthFragment extends Fragment {
         yFrequency.add(new BarEntry(30, day30));
         yFrequency.add(new BarEntry(31, day31));
 
+        int[] colors = new int[]{colorIntensity(intensity1, day1), colorIntensity(intensity2, day2), colorIntensity(intensity3, day3), colorIntensity(intensity4, day4), colorIntensity(intensity5, day5), colorIntensity(intensity6, day6), colorIntensity(intensity7, day7), colorIntensity(intensity8, day8), colorIntensity(intensity9, day9), colorIntensity(intensity10, day10),
+                colorIntensity(intensity11, day11), colorIntensity(intensity12, day12), colorIntensity(intensity13, day13), colorIntensity(intensity14, day14), colorIntensity(intensity15, day15), colorIntensity(intensity16, day16), colorIntensity(intensity17, day17), colorIntensity(intensity18, day18), colorIntensity(intensity19, day19), colorIntensity(intensity20, day20),
+                colorIntensity(intensity21, day21), colorIntensity(intensity22, day22), colorIntensity(intensity23, day23), colorIntensity(intensity24, day24), colorIntensity(intensity25, day25), colorIntensity(intensity26, day26), colorIntensity(intensity27, day27), colorIntensity(intensity28, day28), colorIntensity(intensity29, day29), colorIntensity(intensity30, day30),
+                colorIntensity(intensity31, day31)};
+
         BarDataSet setFrequency = new BarDataSet(yFrequency, "");
         setFrequency.setDrawValues(false);
-        setFrequency.setColors(Color.parseColor("#2dc76d"));
+        setFrequency.setColors(colors);
         BarData dataFrequency = new BarData(setFrequency);
         chartFrequency.setData(dataFrequency);
 
@@ -385,16 +445,16 @@ public class TemplateChartMonthFragment extends Fragment {
         mMonthIntensity = v.findViewById(R.id.chart_month_intensity);
         mMonthNumber.setText(String.valueOf(monthNumber));
 
-        if(monthNumber != 0) {
-            mMonthTime.setText(String.valueOf(Math.round((monthTime / monthNumber)*10)/10.0));
+        if (monthNumber != 0) {
+            mMonthTime.setText(String.valueOf(Math.round((monthTime / monthNumber) * 10) / 10.0));
         } else {
             mMonthTime.setText("0");
         }
 
-        if(monthNumber == 0) {
+        if (monthNumber == 0) {
             intensity = "없음";
         } else {
-            switch(Math.round(monthIntensity / monthNumber)) {
+            switch (Math.round(monthIntensity / monthNumber)) {
                 case 1:
                     intensity = "매우 약함";
                     break;
@@ -442,12 +502,12 @@ public class TemplateChartMonthFragment extends Fragment {
         YAxis yAxisLeftReasons = chartReasons.getAxisLeft();
         yAxisLeftReasons.setStartAtZero(true);
         yAxisLeftReasons.setEnabled(false);
-        yAxisLeftReasons.setLabelCount(5, true);
+        yAxisLeftReasons.setLabelCount(5, false);
         yAxisLeftReasons.setAxisMaxValue(5);
 
         YAxis yAxisRightReasons = chartReasons.getAxisRight();
         yAxisRightReasons.setStartAtZero(true);
-        yAxisRightReasons.setLabelCount(5, true);
+        yAxisRightReasons.setLabelCount(5, false);
         yAxisRightReasons.setAxisMaxValue(5);
 
         yReasons.add(new BarEntry(0, reasonEtc));
@@ -492,12 +552,12 @@ public class TemplateChartMonthFragment extends Fragment {
         YAxis yAxisLeftTypes = chartTypes.getAxisLeft();
         yAxisLeftTypes.setStartAtZero(true);
         yAxisLeftTypes.setEnabled(false);
-        yAxisLeftTypes.setLabelCount(5, true);
+        yAxisLeftTypes.setLabelCount(5, false);
         yAxisLeftTypes.setAxisMaxValue(5);
 
         YAxis yAxisRightTypes = chartTypes.getAxisRight();
         yAxisRightTypes.setStartAtZero(true);
-        yAxisRightTypes.setLabelCount(5, true);
+        yAxisRightTypes.setLabelCount(5, false);
         yAxisRightTypes.setAxisMaxValue(5);
 
         yTypes.add(new BarEntry(0, typeEtc));
@@ -542,12 +602,12 @@ public class TemplateChartMonthFragment extends Fragment {
         YAxis yAxisLeftLocations = chartLocations.getAxisLeft();
         yAxisLeftLocations.setStartAtZero(true);
         yAxisLeftLocations.setEnabled(false);
-        yAxisLeftLocations.setLabelCount(5, true);
+        yAxisLeftLocations.setLabelCount(5, false);
         yAxisLeftLocations.setAxisMaxValue(5);
 
         YAxis yAxisRightLocations = chartLocations.getAxisRight();
         yAxisRightLocations.setStartAtZero(true);
-        yAxisRightLocations.setLabelCount(5, true);
+        yAxisRightLocations.setLabelCount(5, false);
         yAxisRightLocations.setAxisMaxValue(5);
 
         yLocations.add(new BarEntry(0, locationEtc));
@@ -564,20 +624,38 @@ public class TemplateChartMonthFragment extends Fragment {
         chartLocations.setFitBars(true);
     }
 
-    @Override
-    public void setUserVisibleHint(boolean isVisibleToUser)
-    {
-        super.setUserVisibleHint(isVisibleToUser);
-        if (isVisibleToUser)
-        {
-            //화면에 실제로 보일때
-            int currentItem = ChartMonthFragment.viewPager.getCurrentItem();
-            if(currentItem + 1 == getCount) {
-                diff = 0;
+    public int colorIntensity(int intensity, int number) {
+
+        if(number != 0) {
+            switch (Math.round(intensity / number)) {
+                case 1:
+                    return colorIntensity1;
+                case 2:
+                    return colorIntensity2;
+                case 3:
+                    return colorIntensity3;
+                case 4:
+                    return colorIntensity4;
+                case 5:
+                    return colorIntensity5;
+                default:
+                    return 0;
             }
         }
-        else
-        {
+
+        return 0;
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (isVisibleToUser) {
+            //화면에 실제로 보일때
+            int currentItem = ChartMonthFragment.viewPager.getCurrentItem();
+            if (currentItem + 1 == getCount) {
+                diff = 0;
+            }
+        } else {
             //preload 될때(전페이지에 있을때)
             diff = getCount - positionNum - 1;
         }

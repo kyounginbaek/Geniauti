@@ -119,8 +119,7 @@ public class BehaviorActivity extends AppCompatActivity implements BehaviorFirst
             @Override
             public void onPageScrollStateChanged(int state)
             {
-                ((InputMethodManager)getSystemService(INPUT_METHOD_SERVICE))
-                        .hideSoftInputFromWindow(mViewPager.getWindowToken(), 0);
+
             }
 
 
@@ -188,10 +187,14 @@ public class BehaviorActivity extends AppCompatActivity implements BehaviorFirst
                         Date hour_start = formatter.parse(f1.hour_start);
                         Date hour_end = formatter.parse(f1.hour_end);
 
-                        if(hour_start.compareTo(hour_end) < 0) {
+                        if(f1.hour_start.substring(0,2).equals("오후") && f1.hour_end.substring(0,2).equals("오전") && Integer.parseInt(f1.hour_end.substring(3,5)) < 4) {
                             mViewPager.setCurrentItem(getItem(+1), true);
                         } else {
-                            Toast.makeText(BehaviorActivity.this, "시작 시간이 종료시간보다 빠르도록 선택해주세요.", Toast.LENGTH_SHORT).show();
+                            if(hour_start.compareTo(hour_end) < 0) {
+                                mViewPager.setCurrentItem(getItem(+1), true);
+                            } else {
+                                Toast.makeText(BehaviorActivity.this, "시작 시간이 종료시간보다 빠르도록 선택해주세요.", Toast.LENGTH_SHORT).show();
+                            }
                         }
 
                     } catch (java.text.ParseException e) {
@@ -241,6 +244,7 @@ public class BehaviorActivity extends AppCompatActivity implements BehaviorFirst
                     if(f9.getResult().toString()=="{}"){
                         Toast.makeText(BehaviorActivity.this, "행동 원인을 골라주세요.", Toast.LENGTH_SHORT).show();
                     } else {
+                        fab.setEnabled(false);
                         SimpleDateFormat formatter = new SimpleDateFormat("yyyy년 MM월 dd일 EEE aa hh:mm", Locale.KOREAN);
                         try{
                             Date date_start = formatter.parse(f1.date_start + " " + f1.hour_start);
@@ -271,7 +275,7 @@ public class BehaviorActivity extends AppCompatActivity implements BehaviorFirst
                                         @Override
                                         public void onSuccess(Void aVoid) {
 //                                                                  mProgressView.setVisibility(View.GONE);
-                                            MainActivity.viewPager.setAdapter(MainActivity.adapter);
+                                            MainActivity.adapter.notifyDataSetChanged();
                                             finish();
                                             Toast toast = Toast.makeText(BehaviorActivity.this, "행동 생성이 완료되었습니다.", Toast.LENGTH_SHORT);
                                             toast.show();
@@ -280,11 +284,13 @@ public class BehaviorActivity extends AppCompatActivity implements BehaviorFirst
                                     .addOnFailureListener(new OnFailureListener() {
                                         @Override
                                         public void onFailure(@NonNull Exception e) {
+                                            fab.setEnabled(true);
                                         }
                                     });
                         } catch (java.text.ParseException e) {
                             // TODO Auto-generated catch block
                             e.printStackTrace();
+                            fab.setEnabled(true);
                         }
                         }
                     }

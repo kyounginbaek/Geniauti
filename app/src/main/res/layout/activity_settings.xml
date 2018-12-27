@@ -367,6 +367,7 @@
                         android:background="#d9d9d9"/>
 
                     <RelativeLayout
+                        android:id="@+id/csv_export_layout"
                         android:layout_width="match_parent"
                         android:layout_height="48dp"
                         android:gravity="center_vertical"

@@ -25,6 +25,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.animation.Transformation;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
@@ -43,6 +44,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -114,6 +116,10 @@ public class MainFragment extends Fragment {
     private int colorCode;
     private long timeInMilliseconds;
 
+    private ListView bookmarkListView;
+    private ArrayList<Bookmark> bookmarkData;
+    private BookmarkListviewAdapter bookmarkAdapter;
+
     private Animation animShow, animHide;
 
     public MainFragment() {
@@ -164,15 +170,69 @@ public class MainFragment extends Fragment {
 
         if (id == R.id.menu_main_calendar) {
             if(!calendarShow) {
-                calendarLayout.setVisibility(View.VISIBLE);
+                expand(calendarLayout);
                 calendarShow = true;
             } else {
-                calendarLayout.setVisibility(View.GONE);
+                collapse(calendarLayout);
                 calendarShow = false;
             }
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public static void expand(final View v) {
+        v.measure(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        final int targetHeight = v.getMeasuredHeight();
+
+        // Older versions of android (pre API 21) cancel animations for views with a height of 0.
+        v.getLayoutParams().height = 1;
+        v.setVisibility(View.VISIBLE);
+        Animation a = new Animation()
+        {
+            @Override
+            protected void applyTransformation(float interpolatedTime, Transformation t) {
+                v.getLayoutParams().height = interpolatedTime == 1
+                        ? LinearLayout.LayoutParams.WRAP_CONTENT
+                        : (int)(targetHeight * interpolatedTime);
+                v.requestLayout();
+            }
+
+            @Override
+            public boolean willChangeBounds() {
+                return true;
+            }
+        };
+
+        // 1dp/ms
+        a.setDuration((int)(targetHeight / v.getContext().getResources().getDisplayMetrics().density));
+        v.startAnimation(a);
+    }
+
+    public static void collapse(final View v) {
+        final int initialHeight = v.getMeasuredHeight();
+
+        Animation a = new Animation()
+        {
+            @Override
+            protected void applyTransformation(float interpolatedTime, Transformation t) {
+                if(interpolatedTime == 1){
+                    v.setVisibility(View.GONE);
+                }else{
+                    v.getLayoutParams().height = initialHeight - (int)(initialHeight * interpolatedTime);
+                    v.requestLayout();
+                }
+            }
+
+            @Override
+            public boolean willChangeBounds() {
+                return true;
+            }
+        };
+
+        // 1dp/ms
+        a.setDuration((int)(initialHeight / v.getContext().getResources().getDisplayMetrics().density));
+        v.startAnimation(a);
     }
 
     @Override
@@ -185,6 +245,9 @@ public class MainFragment extends Fragment {
             return v;
         }
         v = inflater.inflate(R.layout.fragment_main, container, false);
+
+        user = FirebaseAuth.getInstance().getCurrentUser();
+        db = FirebaseFirestore.getInstance();
 
         calendarLayout = (LinearLayout) v.findViewById(R.id.calendar_layout);
 
@@ -249,19 +312,6 @@ public class MainFragment extends Fragment {
         mBuilder.setView(mView);
         final AlertDialog dialog = mBuilder.create();
 
-        ListView listView = (ListView) mView.findViewById(R.id.behavior_listview);
-        ArrayList<Listviewitem> bookmarkData = new ArrayList<>();
-//        Listviewitem item1 = new Listviewitem("집 / 때리기 / 관심","최근 기록");
-//        Listviewitem item2 = new Listviewitem("공원 / 소리 지르기 / 요구","저장된 기록 1");
-//        Listviewitem item3 = new Listviewitem("집 / 울기 / 관심","저장된 기록 2");
-
-//        data.add(item1);
-//        data.add(item2);
-//        data.add(item3);
-
-        ListviewAdapter adapter = new ListviewAdapter(getContext(), R.layout.list_behavior, bookmarkData);
-        listView.setAdapter(adapter);
-
         LinearLayout behavior_add = (LinearLayout) mView.findViewById(R.id.behavior_add);
         behavior_add.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -280,14 +330,42 @@ public class MainFragment extends Fragment {
             }
         });
 
+        bookmarkListView = (ListView) mView.findViewById(R.id.behavior_listview);
+        bookmarkData = new ArrayList<>();
+
+        db.collection("users").document(user.getUid())
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (task.isSuccessful()) {
+                            DocumentSnapshot document = task.getResult();
+                            if(document.exists()) {
+
+                                HashMap<String, Object> preset = (HashMap<String, Object>) document.getData().get("preset");
+                                List<HashMap<String, Object>> behavior_preset = (List<HashMap<String,Object>>) preset.get("behavior_preset");
+
+                                for(int i=0; i<behavior_preset.size(); i++) {
+                                    Bookmark item = new Bookmark(behavior_preset.get(i).get("title").toString());
+                                    bookmarkData.add(item);
+                                }
+
+                                bookmarkAdapter = new BookmarkListviewAdapter(getContext(), R.layout.list_bookmark, bookmarkData);
+                                bookmarkListView.setAdapter(bookmarkAdapter);
+                            } else {
+
+                            }
+                        } else {
+//                            Log.d(TAG, "Error getting documents: ", task.getException());
+                        }
+                    }
+                });
+
 
         // cardListView
         cardListView = (ListView) v.findViewById(R.id.behavior_card_listview);
         cardData = new ArrayList<>();
         tmpData = new ArrayList<>();
-
-        user = FirebaseAuth.getInstance().getCurrentUser();
-        db = FirebaseFirestore.getInstance();
 
         db.collection("childs")
                 .whereGreaterThanOrEqualTo("users."+user.getUid()+".name", "")
@@ -335,9 +413,11 @@ public class MainFragment extends Fragment {
 
                                                     // Date
                                                     timeInMilliseconds = document.getDate("start_time").getTime();
-
                                                     Event ev = new Event(colorCode, timeInMilliseconds, "");
-                                                    compactCalendar.addEvent(ev);
+
+                                                    if(true){
+                                                        compactCalendar.addEvent(ev);
+                                                    }
 
                                                     Behavior item = new Behavior((Date) document.getDate("start_time"), (Date) document.getDate("end_time"), document.get("place").toString(), document.get("categorization").toString(), document.get("current_behavior").toString(), document.get("before_behavior").toString(), document.get("after_behavior").toString(), (HashMap<String, Object>) document.get("type"), Integer.parseInt(document.get("intensity").toString()), (HashMap<String, Object>) document.get("reason"), document.get("created_at").toString(),  document.get("updated_at").toString(), document.get("uid").toString(), document.get("name").toString(), document.get("cid").toString(), relationship);
                                                     cardData.add(item);
@@ -545,23 +625,20 @@ public class MainFragment extends Fragment {
         }
     }
 
-    public class Listviewitem {
-        private String main;
-        private String sub;
-        public String getMain() {return main;}
-        public String getSub() {return sub;}
-        public Listviewitem(String main,String sub) {
-            this.main = main;
-            this.sub = sub;
+    public class Bookmark {
+        public Bookmark(String title) {
+            this.title = title;
         }
+        private String title;
     }
 
-    public class ListviewAdapter extends BaseAdapter {
+    public class BookmarkListviewAdapter extends BaseAdapter {
+
         private LayoutInflater inflater;
-        private ArrayList<Listviewitem> data;
+        private ArrayList<Bookmark> data;
         private int layout;
 
-        public ListviewAdapter(Context context, int layout, ArrayList<Listviewitem> data){
+        public BookmarkListviewAdapter(Context context, int layout, ArrayList<Bookmark> data){
             this.inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             this.data = data;
             this.layout = layout;
@@ -571,21 +648,27 @@ public class MainFragment extends Fragment {
         public int getCount(){return data.size();}
 
         @Override
-        public String getItem(int position){return data.get(position).getMain();}
+        public Object getItem(int position){
+            return data.get(position);
+        }
 
         @Override
         public long getItemId(int position){return position;}
 
         @Override
-        public View getView(int position, View convertView, ViewGroup parent){
+        public View getView(final int position, View convertView, ViewGroup parent){
             if(convertView == null){
-                convertView = inflater.inflate(layout, parent, false);
+                convertView = inflater.inflate(R.layout.list_bookmark, parent, false);
             }
-            Listviewitem listviewitem = data.get(position);
-            TextView main = (TextView) convertView.findViewById(R.id.list_bookmark_title);
-            main.setText(listviewitem.getMain());
-            TextView sub = (TextView)convertView.findViewById(R.id.list_bookmark_sub);
-            sub.setText(listviewitem.getSub());
+
+            Bookmark bookmarkData = data.get(position);
+
+            TextView bookmarkTitle = (TextView) convertView.findViewById(R.id.list_bookmark_title);
+            TextView bookmarkSub = (TextView) convertView.findViewById(R.id.list_bookmark_sub);
+
+            bookmarkTitle.setText(bookmarkData.title);
+            bookmarkSub.setText("저장된 기록" + String.valueOf(position + 1));
+
             return convertView;
         }
     }

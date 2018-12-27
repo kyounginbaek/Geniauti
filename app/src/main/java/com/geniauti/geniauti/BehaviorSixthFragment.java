@@ -50,8 +50,9 @@ public class BehaviorSixthFragment extends Fragment {
 
     Intent intent;
     SpeechRecognizer mRecognizer;
-    private RippleBackground rippleBackground;
+    String audioText = "";
 
+    private RippleBackground rippleBackground;
     private OnFragmentInteractionListener mListener;
 
     public BehaviorSixthFragment() {
@@ -137,6 +138,7 @@ public class BehaviorSixthFragment extends Fragment {
         @Override
         public void onEndOfSpeech() {
             rippleBackground.stopRippleAnimation();
+            textInput.append(audioText);
         }
 
         @Override
@@ -198,7 +200,7 @@ public class BehaviorSixthFragment extends Fragment {
                     partialResults.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
 
             for(int i = 0; i < matches.size() ; i++){
-                textInput.append(matches.get(i));
+                audioText = matches.get(i);
             }
         }
 
