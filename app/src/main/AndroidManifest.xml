@@ -41,6 +41,11 @@
         <activity
             android:name=".BehaviorActivity"
             android:label="@string/title_activity_behavior"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateHidden" />
+        <activity
+            android:name=".BookmarkActivity"
+            android:label="BehaviorBookmarkActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".CaseDetailActivity" />
         <activity android:name=".ChildRegisterActivity" />
@@ -54,6 +59,7 @@
             android:label="@string/title_activity_invited"
             android:theme="@style/AppTheme" />
         <activity android:name=".BehaviorDetailActivity" />
+        <activity android:name=".BookmarkDetailActivity" />
         <activity android:name=".RalationshipAddActivity"></activity>
     </application>
 

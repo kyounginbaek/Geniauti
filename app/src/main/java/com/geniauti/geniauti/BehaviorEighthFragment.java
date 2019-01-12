@@ -79,17 +79,63 @@ public class BehaviorEighthFragment extends Fragment {
 
         // Inflate the layout for this fragment
         seek = (SeekBar) v.findViewById(R.id.seekBar);
+
         seek.setOnSeekBarChangeListener(new yourListener());
 
         intensityOne = (TextView) v.findViewById(R.id.txt_behavior_intensity_one);
         intensityOne.setTextColor(Color.parseColor("#2dc76d"));
+        intensityOne.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                seek.setProgress(0);
+            }
+        });
+
         intensityTwo = (TextView) v.findViewById(R.id.txt_behavior_intensity_two);
+        intensityTwo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                seek.setProgress(1);
+            }
+        });
         intensityThree = (TextView) v.findViewById(R.id.txt_behavior_intensity_three);
+        intensityThree.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                seek.setProgress(2);
+            }
+        });
         intensityFour = (TextView) v.findViewById(R.id.txt_behavior_intensity_four);
+        intensityFour.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                seek.setProgress(3);
+            }
+        });
         intensityFive = (TextView) v.findViewById(R.id.txt_behavior_intensity_five);
+        intensityFive.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                seek.setProgress(4);
+            }
+        });
+
+        if(BehaviorActivity.bookmarkState == true && BehaviorActivity.tmpBookmark != null) {
+            seek.setProgress(BehaviorActivity.tmpBookmark.intensity-1);
+        }
+
+        if(BehaviorActivity.editBehaviorState == true && BehaviorActivity.editBehavior != null) {
+            seek.setProgress(BehaviorActivity.editBehavior.intensity-1);
+        }
+
+        if(BookmarkActivity.editBookmarkState == true && BookmarkActivity.editBookmark != null) {
+            seek.setProgress(BookmarkActivity.editBookmark.intensity-1);
+        }
 
         return v;
     }
+
+
 
     private class yourListener implements SeekBar.OnSeekBarChangeListener {
 

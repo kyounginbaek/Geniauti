@@ -1,23 +1,18 @@
 package com.geniauti.geniauti;
 
-import android.Manifest;
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.media.Image;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -116,6 +111,10 @@ public class BehaviorSixthFragment extends Fragment {
                 mRecognizer.startListening(intent);
             }
         });
+
+        if(BehaviorActivity.editBehaviorState == true && BehaviorActivity.editBehavior != null) {
+            textInput.setText(BehaviorActivity.editBehavior.after_behavior);
+        }
 
         return v;
     }

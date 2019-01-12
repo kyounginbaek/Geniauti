@@ -1,7 +1,6 @@
 package com.geniauti.geniauti;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -20,18 +19,13 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.UserInfo;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import static java.lang.Integer.parseInt;
 
 public class ChildAddActivity extends AppCompatActivity {
 
@@ -44,6 +38,7 @@ public class ChildAddActivity extends AppCompatActivity {
     private RadioGroup radioGroupSex;
     private RadioButton radioGirl;
     private TextView mChildRelation;
+    private Button mChildAddButton;
 
     private int childAge;
     private RadioButton radioBtnSex;
@@ -100,11 +95,12 @@ public class ChildAddActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
         user = FirebaseAuth.getInstance().getCurrentUser();
 
-        final Button mChildAddButton = (Button) findViewById(R.id.child_add_button);
+        mChildAddButton = (Button) findViewById(R.id.child_add_button);
         mChildAddButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 mProgressView.setVisibility(View.VISIBLE);
+                mChildAddButton.setEnabled(false);
 
                 // Reset errors.
                 mChildName.setError(null);
@@ -150,6 +146,7 @@ public class ChildAddActivity extends AppCompatActivity {
                     // There was an error; don't attempt login and focus the first
                     // form field with an error.
                     focusView.requestFocus();
+                    mChildAddButton.setEnabled(true);
                 } else {
                     int selectedAge = radioGroupAge.getCheckedRadioButtonId();
                     // find the radiobutton by returned id
@@ -225,6 +222,7 @@ public class ChildAddActivity extends AppCompatActivity {
                                                                     .addOnFailureListener(new OnFailureListener() {
                                                                         @Override
                                                                         public void onFailure(@NonNull Exception e) {
+                                                                            mChildAddButton.setEnabled(true);
                                                                         }
                                                                     });
 
@@ -241,6 +239,7 @@ public class ChildAddActivity extends AppCompatActivity {
                                 @Override
                                 public void onFailure(@NonNull Exception e) {
 //                                Log.w(TAG, "Error writing document", e);
+                                    mChildAddButton.setEnabled(true);
                                 }
                             });
                 }

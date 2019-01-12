@@ -11,12 +11,13 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -134,15 +135,9 @@ public class BehaviorSeventhFragment extends Fragment {
         private String name = "" ;
         private String type = "";
         private boolean checked = false ;
-        public Type() {}
         public Type( String name, String type ) {
             this.name = name ;
             this.type = type;
-        }
-        public Type( String name, String type , boolean checked ) {
-            this.name = name ;
-            this.type = type;
-            this.checked = checked ;
         }
         public String getName() {
             return name;
@@ -168,23 +163,12 @@ public class BehaviorSeventhFragment extends Fragment {
     /** Holds child views for one row. */
     private static class TypeViewHolder {
         private CheckBox checkBox ;
-        private TextView textView ;
-        public TypeViewHolder() {}
-        public TypeViewHolder(CheckBox checkBox ) {
+        public TypeViewHolder(CheckBox checkBox) {
             this.checkBox = checkBox ;
 //            this.textView = textView ;
         }
         public CheckBox getCheckBox() {
             return checkBox;
-        }
-        public void setCheckBox(CheckBox checkBox) {
-            this.checkBox = checkBox;
-        }
-        public TextView getTextView() {
-            return textView;
-        }
-        public void setTextView(TextView textView) {
-            this.textView = textView;
         }
     }
 
@@ -220,6 +204,36 @@ public class BehaviorSeventhFragment extends Fragment {
                 // call findViewById() later when we reuse the row.
                 convertView.setTag( new BehaviorSeventhFragment.TypeViewHolder(checkBox) );
 
+                if(BehaviorActivity.bookmarkState == true && BehaviorActivity.tmpBookmark != null) {
+                    Iterator it = BehaviorActivity.tmpBookmark.type.entrySet().iterator();
+                    while (it.hasNext()) {
+                        Map.Entry pair = (Map.Entry)it.next();
+                        if(type.type.equals(pair.getKey().toString())) {
+                            type.setChecked(true);
+                        }
+                    }
+                }
+
+                if(BehaviorActivity.editBehaviorState == true && BehaviorActivity.editBehavior != null) {
+                    Iterator it = BehaviorActivity.editBehavior.type.entrySet().iterator();
+                    while (it.hasNext()) {
+                        Map.Entry pair = (Map.Entry)it.next();
+                        if(type.type.equals(pair.getKey().toString())) {
+                            type.setChecked(true);
+                        }
+                    }
+                }
+
+                if(BookmarkActivity.editBookmarkState == true && BookmarkActivity.editBookmark != null) {
+                    Iterator it = BookmarkActivity.editBookmark.type.entrySet().iterator();
+                    while (it.hasNext()) {
+                        Map.Entry pair = (Map.Entry)it.next();
+                        if(type.type.equals(pair.getKey().toString())) {
+                            type.setChecked(true);
+                        }
+                    }
+                }
+
                 // If CheckBox is toggled, update the type it is tagged with.
                 checkBox.setOnClickListener( new View.OnClickListener() {
                     public void onClick(View v) {
@@ -242,6 +256,8 @@ public class BehaviorSeventhFragment extends Fragment {
             checkBox.setTag( type );
 
             // Display type data
+
+
             checkBox.setChecked( type.isChecked() );
             checkBox.setText(type.getName());
 //            textView.setText( type.getName() );

@@ -1,36 +1,23 @@
 package com.geniauti.geniauti;
 
-import android.content.Context;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.geniauti.geniauti.compactcalendarview.domain.Event;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.HorizontalBarChart;
 import com.github.mikephil.charting.components.AxisBase;
-import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
-import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -41,6 +28,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 
 /**
@@ -63,7 +51,7 @@ public class TemplateChartDayFragment extends Fragment {
 
     private View v;
 
-    private SimpleDateFormat sdf, sdfTime;
+    private SimpleDateFormat sdf, sdfNew;
     private Calendar cal;
     private String DateandTime;
 
@@ -78,7 +66,7 @@ public class TemplateChartDayFragment extends Fragment {
     private List<BarEntry> yLocations = new ArrayList<>();
 
     private int hour0 = 0, hour1 = 0, hour2 = 0, hour3 = 0, hour4 = 0, hour5 = 0, hour6 = 0, hour7 = 0, hour8 = 0, hour9 = 0, hour10 = 0, hour11 = 0, hour12 = 0, hour13 = 0, hour14 = 0, hour15 = 0, hour16 = 0, hour17 = 0, hour18 = 0, hour19 = 0, hour20 = 0, hour21 = 0, hour22 = 0, hour23 = 0;
-    private int intensity0 = 0, intensity1 = 0, intensity2 = 0, intensity3 = 0, intensity4 = 0, intensity5 = 0, intensity6 = 0, intensity7 = 0, intensity8 = 0, intensity9 = 0, intensity10 = 0, intensity11 = 0, intensity12 = 0, intensity13 = 0, intensity14 = 0, intensity15 = 0, intensity16 = 0, intensity17 = 0, intensity18 = 0, intensity19 = 0, intensity20 = 0, intensity21 = 0, intensity22 = 0, intensity23 = 0;
+    private int intensity0 = 5, intensity1 = 5, intensity2 = 5, intensity3 = 5, intensity4 = 5, intensity5 = 5, intensity6 = 5, intensity7 = 5, intensity8 = 5, intensity9 = 5, intensity10 = 5, intensity11 = 5, intensity12 = 5, intensity13 = 5, intensity14 = 5, intensity15 = 5, intensity16 = 5, intensity17 = 5, intensity18 = 5, intensity19 = 5, intensity20 = 5, intensity21 = 5, intensity22 = 5, intensity23 = 5;
     private int interest = 0, demand = 0, selfstimulation = 0, taskevation = 0, reasonEtc = 0;
     private int selfharm = 0, harm = 0, destruction = 0, breakaway = 0, sexual = 0, typeEtc = 0;
     private int home = 0, mart = 0, restaurant = 0, school = 0, locationEtc = 0;
@@ -92,7 +80,7 @@ public class TemplateChartDayFragment extends Fragment {
 
     private int colorIntensity1, colorIntensity2, colorIntensity3, colorIntensity4, colorIntensity5;
 
-    public static ArrayList<Behavior> behaviorData;
+    public static Statistics statisticData;
     public static int positionNum;
     private int getCount = ChartDayFragment.adapter.getCount();
 
@@ -111,14 +99,13 @@ public class TemplateChartDayFragment extends Fragment {
      * @return A new instance of fragment TemplateChartDayFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static TemplateChartDayFragment newInstance(int position, ArrayList<Behavior> behaviors) {
+    public static TemplateChartDayFragment newInstance(int position) {
         TemplateChartDayFragment fragment = new TemplateChartDayFragment();
         Bundle args = new Bundle();
 //        args.putString(ARG_PARAM1, param1);
 //        args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
 
-        behaviorData = behaviors;
         positionNum = position;
         return fragment;
     }
@@ -145,7 +132,7 @@ public class TemplateChartDayFragment extends Fragment {
         v = inflater.inflate(R.layout.fragment_template_chart_day, container, false);
 
         sdf = new SimpleDateFormat("yyyy년 MM월 dd일 E요일", Locale.KOREAN);
-        sdfTime = new SimpleDateFormat("aa hh", Locale.KOREAN);
+        sdfNew = new SimpleDateFormat("yyyyMMdd", Locale.KOREAN);
         cal = Calendar.getInstance();
         cal.add(Calendar.DATE, -1*diff);
         DateandTime = sdf.format(cal.getTime());
@@ -156,202 +143,361 @@ public class TemplateChartDayFragment extends Fragment {
         colorIntensity2 = Color.parseColor("#662dc76d");
         colorIntensity1 = Color.parseColor("#332dc76d");
 
-        // Behavior ArrayList
-        for(int i = 0; i < behaviorData.size(); i++) {
-            Behavior behavior =  behaviorData.get(i);
+        if(ChartDayFragment.statisticsHashMap.containsKey(sdfNew.format(cal.getTime()))) {
+            statisticData = ChartDayFragment.statisticsHashMap.get(sdfNew.format(cal.getTime()));
 
-            Date startTime = behavior.start_time;
-
-            if(sdf.format(startTime).equals(DateandTime)){
-                // frequency
-
-                String sTime = sdfTime.format(startTime);
-                int iTime = Integer.parseInt(sTime.substring(3,5));
-                if(sTime.substring(0,2).equals("오후")) {
-                    if(!sTime.substring(3,5).equals("12")) {
-                        iTime = iTime + 12;
-                    }
-                } else {
-                    if(sTime.substring(3,5).equals("12")) {
-                        iTime = iTime - 12;
-                    }
-                }
-                switch(iTime) {
+            HashMap<String, Object> behavior_freq = statisticData.behavior_freq;
+            Iterator it_behavior_freq = behavior_freq.entrySet().iterator();
+            while (it_behavior_freq.hasNext()) {
+                Map.Entry pair = (Map.Entry)it_behavior_freq.next();
+                switch(Integer.parseInt(pair.getKey().toString())) {
                     case 0:
-                        hour0 += 1;
-                        intensity0 += behavior.intensity;
+                        hour0 = Integer.parseInt(pair.getValue().toString());
                         break;
                     case 1:
-                        hour1 += 1;
-                        intensity1 += behavior.intensity;
+                        hour1 = Integer.parseInt(pair.getValue().toString());
                         break;
                     case 2:
-                        hour2 += 1;
-                        intensity2 += behavior.intensity;
+                        hour2 = Integer.parseInt(pair.getValue().toString());
                         break;
                     case 3:
-                        hour3 += 1;
-                        intensity3 += behavior.intensity;
+                        hour3 = Integer.parseInt(pair.getValue().toString());
                         break;
                     case 4:
-                        hour4 += 1;
-                        intensity4 += behavior.intensity;
+                        hour4 = Integer.parseInt(pair.getValue().toString());
                         break;
                     case 5:
-                        hour5 += 1;
-                        intensity5 += behavior.intensity;
+                        hour5 = Integer.parseInt(pair.getValue().toString());
                         break;
                     case 6:
-                        hour6 += 1;
-                        intensity6 += behavior.intensity;
+                        hour6 = Integer.parseInt(pair.getValue().toString());
                         break;
                     case 7:
-                        hour7 += 1;
-                        intensity7 += behavior.intensity;
+                        hour7 = Integer.parseInt(pair.getValue().toString());
                         break;
                     case 8:
-                        hour8 += 1;
-                        intensity8 += behavior.intensity;
+                        hour8 = Integer.parseInt(pair.getValue().toString());
                         break;
                     case 9:
-                        hour9 += 1;
-                        intensity9 += behavior.intensity;
+                        hour9 = Integer.parseInt(pair.getValue().toString());
                         break;
                     case 10:
-                        hour10 += 1;
-                        intensity10 += behavior.intensity;
+                        hour10 = Integer.parseInt(pair.getValue().toString());
                         break;
                     case 11:
-                        hour11 += 1;
-                        intensity11 += behavior.intensity;
+                        hour11 = Integer.parseInt(pair.getValue().toString());
                         break;
                     case 12:
-                        hour12 += 1;
-                        intensity12 += behavior.intensity;
+                        hour12 = Integer.parseInt(pair.getValue().toString());
                         break;
                     case 13:
-                        hour13 += 1;
-                        intensity13 += behavior.intensity;
+                        hour13 = Integer.parseInt(pair.getValue().toString());
                         break;
                     case 14:
-                        hour14 += 1;
-                        intensity14 += behavior.intensity;
+                        hour14 = Integer.parseInt(pair.getValue().toString());
                         break;
                     case 15:
-                        hour15 += 1;
-                        intensity15 += behavior.intensity;
+                        hour15 = Integer.parseInt(pair.getValue().toString());
                         break;
                     case 16:
-                        hour16 += 1;
-                        intensity16 += behavior.intensity;
+                        hour16 = Integer.parseInt(pair.getValue().toString());
                         break;
                     case 17:
-                        hour17 += 1;
-                        intensity17 += behavior.intensity;
+                        hour17 = Integer.parseInt(pair.getValue().toString());
                         break;
                     case 18:
-                        hour18 += 1;
-                        intensity18 += behavior.intensity;
+                        hour18 = Integer.parseInt(pair.getValue().toString());
                         break;
                     case 19:
-                        hour19 += 1;
-                        intensity19 += behavior.intensity;
+                        hour19 = Integer.parseInt(pair.getValue().toString());
                         break;
                     case 20:
-                        hour20 += 1;
-                        intensity20 += behavior.intensity;
+                        hour20 = Integer.parseInt(pair.getValue().toString());
                         break;
                     case 21:
-                        hour21 += 1;
-                        intensity21 += behavior.intensity;
+                        hour21 = Integer.parseInt(pair.getValue().toString());
                         break;
                     case 22:
-                        hour22 += 1;
-                        intensity22 += behavior.intensity;
+                        hour22 = Integer.parseInt(pair.getValue().toString());
                         break;
                     case 23:
-                        hour23 += 1;
-                        intensity23 += behavior.intensity;
+                        hour23 = Integer.parseInt(pair.getValue().toString());
                         break;
                 }
+            }
 
-                // number
-                dayNumber += 1;
+            HashMap<String, Object> summary = statisticData.summary;
+            dayNumber = Integer.parseInt(summary.get("count").toString());
+            dayTime = Integer.parseInt(summary.get("duration_min").toString());
+            dayIntensity = Integer.parseInt(summary.get("intensity_sum").toString());
 
-                // time
-                long timeDiff = behavior.end_time.getTime() - behavior.start_time.getTime();
-                dayTime = dayTime + (timeDiff/(1000*60));
-
-                // intensity
-                dayIntensity += behavior.intensity;
-
-                // Reasons
-                HashMap<String, Object> reason = (HashMap<String, Object>) behavior.reason;
-                HashMap.Entry<String,Object> entryRaason = reason.entrySet().iterator().next();
-
-                // Color Code
-                switch(entryRaason.getKey()) {
-                    case "관심":
-                        interest += 1;
-                        break;
-                    case "자기자극":
-                        selfstimulation += 1;
-                        break;
-                    case "과제회피":
-                        taskevation += 1;
-                        break;
-                    case "요구":
-                        demand += 1;
-                        break;
-                    case "기타":
-                        reasonEtc += 1;
-                        break;
-                }
-
-                // Types
-                HashMap<String, Object> type = (HashMap<String, Object>) behavior.type;
-                HashMap.Entry<String,Object> entryType = type.entrySet().iterator().next();
-
-                // Color Code
-                switch(entryType.getKey()) {
+            HashMap<String, Object> type = statisticData.type;
+            Iterator it_type = type.entrySet().iterator();
+            while (it_type.hasNext()) {
+                Map.Entry pair = (Map.Entry)it_type.next();
+                switch(pair.getKey().toString()) {
                     case "selfharm":
-                        selfharm += 1;
+                        selfharm = Integer.parseInt(pair.getValue().toString());
                         break;
                     case "harm":
-                        harm += 1;
+                        harm = Integer.parseInt(pair.getValue().toString());
                         break;
                     case "destruction":
-                        destruction += 1;
+                        destruction = Integer.parseInt(pair.getValue().toString());
                         break;
                     case "breakaway":
-                        breakaway += 1;
+                        breakaway = Integer.parseInt(pair.getValue().toString());
                         break;
                     case "sexual":
-                        sexual += 1;
+                        sexual = Integer.parseInt(pair.getValue().toString());
                         break;
                     case "etc":
-                        typeEtc += 1;
+                        typeEtc = Integer.parseInt(pair.getValue().toString());
                         break;
                 }
+            }
 
-                // Locations
-                switch(behavior.place) {
+            HashMap<String, Object> reason_type = statisticData.reason_type;
+            Iterator it_reason_type = reason_type.entrySet().iterator();
+            while (it_reason_type.hasNext()) {
+                Map.Entry pair = (Map.Entry)it_reason_type.next();
+                switch(pair.getKey().toString()) {
+                    case "interest":
+                        interest = Integer.parseInt(pair.getValue().toString());
+                        break;
+                    case "selfstimulation":
+                        selfstimulation = Integer.parseInt(pair.getValue().toString());
+                        break;
+                    case "taskevation":
+                        taskevation = Integer.parseInt(pair.getValue().toString());
+                        break;
+                    case "demand":
+                        demand = Integer.parseInt(pair.getValue().toString());
+                        break;
+                    case "etc":
+                        reasonEtc = Integer.parseInt(pair.getValue().toString());
+                        break;
+                }
+            }
+
+            HashMap<String, Object> place = statisticData.place;
+            Iterator it_place = place.entrySet().iterator();
+            while (it_place.hasNext()) {
+                Map.Entry pair = (Map.Entry)it_place.next();
+                switch(pair.getKey().toString()) {
                     case "집":
-                        home += 1;
+                        home = Integer.parseInt(pair.getValue().toString());
                         break;
                     case "마트":
-                        mart += 1;
+                        mart = Integer.parseInt(pair.getValue().toString());
                         break;
                     case "식당":
-                        restaurant += 1;
+                        restaurant = Integer.parseInt(pair.getValue().toString());
                         break;
                     case "학교":
-                        school += 1;
+                        school = Integer.parseInt(pair.getValue().toString());
                         break;
                 }
-
             }
+
         }
+
+        // Behavior ArrayList
+//        for(int i = 0; i < behaviorData.size(); i++) {
+//            Behavior behavior =  behaviorData.get(i);
+//
+//            Date startTime = behavior.start_time;
+//
+//            if(sdf.format(startTime).equals(DateandTime)){
+//                // frequency
+//
+//                String sTime = sdfTime.format(startTime);
+//                int iTime = Integer.parseInt(sTime.substring(3,5));
+//                if(sTime.substring(0,2).equals("오후")) {
+//                    if(!sTime.substring(3,5).equals("12")) {
+//                        iTime = iTime + 12;
+//                    }
+//                } else {
+//                    if(sTime.substring(3,5).equals("12")) {
+//                        iTime = iTime - 12;
+//                    }
+//                }
+//                switch(iTime) {
+//                    case 0:
+//                        hour0 += 1;
+//                        intensity0 += behavior.intensity;
+//                        break;
+//                    case 1:
+//                        hour1 += 1;
+//                        intensity1 += behavior.intensity;
+//                        break;
+//                    case 2:
+//                        hour2 += 1;
+//                        intensity2 += behavior.intensity;
+//                        break;
+//                    case 3:
+//                        hour3 += 1;
+//                        intensity3 += behavior.intensity;
+//                        break;
+//                    case 4:
+//                        hour4 += 1;
+//                        intensity4 += behavior.intensity;
+//                        break;
+//                    case 5:
+//                        hour5 += 1;
+//                        intensity5 += behavior.intensity;
+//                        break;
+//                    case 6:
+//                        hour6 += 1;
+//                        intensity6 += behavior.intensity;
+//                        break;
+//                    case 7:
+//                        hour7 += 1;
+//                        intensity7 += behavior.intensity;
+//                        break;
+//                    case 8:
+//                        hour8 += 1;
+//                        intensity8 += behavior.intensity;
+//                        break;
+//                    case 9:
+//                        hour9 += 1;
+//                        intensity9 += behavior.intensity;
+//                        break;
+//                    case 10:
+//                        hour10 += 1;
+//                        intensity10 += behavior.intensity;
+//                        break;
+//                    case 11:
+//                        hour11 += 1;
+//                        intensity11 += behavior.intensity;
+//                        break;
+//                    case 12:
+//                        hour12 += 1;
+//                        intensity12 += behavior.intensity;
+//                        break;
+//                    case 13:
+//                        hour13 += 1;
+//                        intensity13 += behavior.intensity;
+//                        break;
+//                    case 14:
+//                        hour14 += 1;
+//                        intensity14 += behavior.intensity;
+//                        break;
+//                    case 15:
+//                        hour15 += 1;
+//                        intensity15 += behavior.intensity;
+//                        break;
+//                    case 16:
+//                        hour16 += 1;
+//                        intensity16 += behavior.intensity;
+//                        break;
+//                    case 17:
+//                        hour17 += 1;
+//                        intensity17 += behavior.intensity;
+//                        break;
+//                    case 18:
+//                        hour18 += 1;
+//                        intensity18 += behavior.intensity;
+//                        break;
+//                    case 19:
+//                        hour19 += 1;
+//                        intensity19 += behavior.intensity;
+//                        break;
+//                    case 20:
+//                        hour20 += 1;
+//                        intensity20 += behavior.intensity;
+//                        break;
+//                    case 21:
+//                        hour21 += 1;
+//                        intensity21 += behavior.intensity;
+//                        break;
+//                    case 22:
+//                        hour22 += 1;
+//                        intensity22 += behavior.intensity;
+//                        break;
+//                    case 23:
+//                        hour23 += 1;
+//                        intensity23 += behavior.intensity;
+//                        break;
+//                }
+//
+//                // number
+//                dayNumber += 1;
+//
+//                // time
+//                long timeDiff = behavior.end_time.getTime() - behavior.start_time.getTime();
+//                dayTime = dayTime + (timeDiff/(1000*60));
+//
+//                // intensity
+//                dayIntensity += behavior.intensity;
+//
+//                // Reasons
+//                HashMap<String, Object> reason = (HashMap<String, Object>) behavior.reason_type;
+//                HashMap.Entry<String,Object> entryRaason = reason.entrySet().iterator().next();
+//
+//                // Color Code
+//                switch(entryRaason.getKey()) {
+//                    case "interest":
+//                        interest += 1;
+//                        break;
+//                    case "selfstimulation":
+//                        selfstimulation += 1;
+//                        break;
+//                    case "taskevation":
+//                        taskevation += 1;
+//                        break;
+//                    case "demand":
+//                        demand += 1;
+//                        break;
+//                    case "etc":
+//                        reasonEtc += 1;
+//                        break;
+//                }
+//
+//                // Types
+//                HashMap<String, Object> type = (HashMap<String, Object>) behavior.type;
+//                HashMap.Entry<String,Object> entryType = type.entrySet().iterator().next();
+//
+//                // Color Code
+//                switch(entryType.getKey()) {
+//                    case "selfharm":
+//                        selfharm += 1;
+//                        break;
+//                    case "harm":
+//                        harm += 1;
+//                        break;
+//                    case "destruction":
+//                        destruction += 1;
+//                        break;
+//                    case "breakaway":
+//                        breakaway += 1;
+//                        break;
+//                    case "sexual":
+//                        sexual += 1;
+//                        break;
+//                    case "etc":
+//                        typeEtc += 1;
+//                        break;
+//                }
+//
+//                // Locations
+//                switch(behavior.place) {
+//                    case "집":
+//                        home += 1;
+//                        break;
+//                    case "마트":
+//                        mart += 1;
+//                        break;
+//                    case "식당":
+//                        restaurant += 1;
+//                        break;
+//                    case "학교":
+//                        school += 1;
+//                        break;
+//                }
+//
+//            }
+//        }
 
         // Frequency
         chartFrequency = v.findViewById(R.id.chart_day_frequency);
@@ -373,20 +519,20 @@ public class TemplateChartDayFragment extends Fragment {
         yAxisRightFrequency.mAxisMinimum = 0;
         yAxisRightFrequency.setStartAtZero(true);
 
-        if(dayNumber == 0) {
-            yAxisRightFrequency.mAxisMaximum = 2;
-        } else {
-            List<Integer> list = Arrays.asList(hour0, hour1, hour2, hour3, hour4, hour5, hour6, hour7, hour8, hour9, hour10,
-                    hour11, hour12, hour13, hour14, hour15, hour16, hour17, hour18, hour19, hour20, hour21, hour22, hour23);
-
-            int max = Collections.max(list);
-            if(max == 1) {
-                yAxisRightFrequency.setAxisMaximum(2);
-            } else {
-                yAxisRightFrequency.mAxisMaximum = max;
-                yAxisRightFrequency.setLabelCount(max);
-            }
-        }
+//        if(dayNumber == 0) {
+//            yAxisRightFrequency.mAxisMaximum = 2;
+//        } else {
+//            List<Integer> list = Arrays.asList(hour0, hour1, hour2, hour3, hour4, hour5, hour6, hour7, hour8, hour9, hour10,
+//                    hour11, hour12, hour13, hour14, hour15, hour16, hour17, hour18, hour19, hour20, hour21, hour22, hour23);
+//
+//            int max = Collections.max(list);
+//            if(max == 1) {
+//                yAxisRightFrequency.setAxisMaximum(2);
+//            } else {
+//                yAxisRightFrequency.mAxisMaximum = max;
+//                yAxisRightFrequency.setLabelCount(max);
+//            }
+//        }
 
         yFrequency.add(new BarEntry(0, hour0));
         yFrequency.add(new BarEntry(1, hour1));
@@ -573,7 +719,7 @@ public class TemplateChartDayFragment extends Fragment {
         xLabelsLocations = new ArrayList<>();
         xLabelsLocations.add("기타");
         xLabelsLocations.add("학교");
-        xLabelsLocations.add("식당가가");
+        xLabelsLocations.add("식당가");
         xLabelsLocations.add("마트");
         xLabelsLocations.add("집");
 

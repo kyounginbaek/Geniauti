@@ -1,6 +1,7 @@
 package com.geniauti.geniauti;
 
 import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
@@ -10,10 +11,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -22,7 +21,11 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Transaction;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -34,10 +37,13 @@ import java.util.Map;
 
 public class BehaviorDetailActivity extends AppCompatActivity {
 
+    private Menu menu;
+
     private Behavior selectedBehavior;
     View editLine1, editLine2, editLine3, editLine4, editLine5, editLine6, editLine7, editLine8;
     TextView editText1, editText2, editText3, editText4, editText5, editText6, editText7, editText8, editText9;
     View behaviorLine1, behaviorLine2, behaviorLine3, behaviorLine4, behaviorLine5, behaviorLine6, behaviorLine7, behaviorLine8;
+    LinearLayout editLayout1, editLayout2, editLayout3, editLayout4, editLayout5, editLayout6, editLayout7, editLayout8, editLayout9;
 
     private boolean editMode = false;
     private FirebaseFirestore db;
@@ -45,6 +51,8 @@ public class BehaviorDetailActivity extends AppCompatActivity {
     private AlertDialog bookmarkDialog;
     private LinearLayout bookmarkSubmit;
     private TextView textBookmark;
+
+    private Map<String, Object> presetData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,23 +89,23 @@ public class BehaviorDetailActivity extends AppCompatActivity {
 
         String tmp_reason = "";
 
-        if(selectedBehavior.reason.get("관심")!=null) {
+        if(selectedBehavior.reason_type.get("interest")!=null) {
             behavior_interest.setVisibility(View.VISIBLE);
             tmp_reason = tmp_reason + "관심, ";
         }
-        if(selectedBehavior.reason.get("자기자극")!=null) {
+        if(selectedBehavior.reason_type.get("selfstimulation")!=null) {
             behavior_self_stimulation.setVisibility(View.VISIBLE);
             tmp_reason = tmp_reason + "자기자극, ";
         }
-        if(selectedBehavior.reason.get("과제회피")!=null) {
+        if(selectedBehavior.reason_type.get("taskevation")!=null) {
             behavior_task_evation.setVisibility(View.VISIBLE);
             tmp_reason = tmp_reason + "과제회피, ";
         }
-        if(selectedBehavior.reason.get("요구")!=null) {
+        if(selectedBehavior.reason_type.get("demand")!=null) {
             behavior_demand.setVisibility(View.VISIBLE);
             tmp_reason = tmp_reason + "요구, ";
         }
-        if(selectedBehavior.reason.get("기타")!=null){
+        if(selectedBehavior.reason_type.get("etc")!=null){
             behavior_etc.setVisibility(View.VISIBLE);
             tmp_reason = tmp_reason + "기타, ";
         }
@@ -107,12 +115,7 @@ public class BehaviorDetailActivity extends AppCompatActivity {
         TextView behavior_place = findViewById(R.id.txt_behavior_place);
         TextView behavior_type = findViewById(R.id.txt_behavior_type);
         SeekBar behavior_intensity = findViewById(R.id.behavior_seekbar);
-        behavior_intensity.setOnTouchListener(new View.OnTouchListener(){
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                return true;
-            }
-        });
+
         TextView intensityOne = (TextView) findViewById(R.id.txt_behavior_detail_intensity_one);
         TextView intensityTwo = (TextView) findViewById(R.id.txt_behavior_detail_intensity_two);
         TextView intensityThree = (TextView) findViewById(R.id.txt_behavior_detail_intensity_three);
@@ -142,66 +145,94 @@ public class BehaviorDetailActivity extends AppCompatActivity {
         editText8 = findViewById(R.id.behavior_edit_text8);
         editText9 = findViewById(R.id.behavior_edit_text9);
 
-        editText1.setOnClickListener(new View.OnClickListener() {
+        editLayout1 = findViewById(R.id.behavior_edit_layout1);
+        editLayout2 = findViewById(R.id.behavior_edit_layout2);
+        editLayout3 = findViewById(R.id.behavior_edit_layout3);
+        editLayout4 = findViewById(R.id.behavior_edit_layout4);
+        editLayout5 = findViewById(R.id.behavior_edit_layout5);
+        editLayout6 = findViewById(R.id.behavior_edit_layout6);
+        editLayout7 = findViewById(R.id.behavior_edit_layout7);
+        editLayout8 = findViewById(R.id.behavior_edit_layout8);
+        editLayout9 = findViewById(R.id.behavior_edit_layout9);
+
+        editLayout1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                if(editMode == true) {
+                    goToBehaviorActivity(3);
+                }
             }
         });
 
-        editText2.setOnClickListener(new View.OnClickListener() {
+        editLayout2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                if(editMode == true) {
+                    goToBehaviorActivity(1);
+                }
             }
         });
 
-        editText3.setOnClickListener(new View.OnClickListener() {
+        editLayout3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                if(editMode == true) {
+                    goToBehaviorActivity(2);
+                }
             }
         });
 
-        editText4.setOnClickListener(new View.OnClickListener() {
+        editLayout4.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                if(editMode == true) {
+                    goToBehaviorActivity(7);
+                }
             }
         });
 
-        editText5.setOnClickListener(new View.OnClickListener() {
+        editLayout5.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                if(editMode == true) {
+                    goToBehaviorActivity(9);
+                }
             }
         });
 
-        editText6.setOnClickListener(new View.OnClickListener() {
+        editLayout6.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                if(editMode == true) {
+                    goToBehaviorActivity(8);
+                }
             }
         });
 
-        editText7.setOnClickListener(new View.OnClickListener() {
+        editLayout7.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                if(editMode == true) {
+                    goToBehaviorActivity(4);
+                }
             }
         });
 
-        editText8.setOnClickListener(new View.OnClickListener() {
+        editLayout8.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                if(editMode == true) {
+                    goToBehaviorActivity(5);
+                }
             }
         });
 
-        editText9.setOnClickListener(new View.OnClickListener() {
+        editLayout9.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                if(editMode == true) {
+                    goToBehaviorActivity(6);
+                }
             }
         });
 
@@ -245,7 +276,6 @@ public class BehaviorDetailActivity extends AppCompatActivity {
                     tmp_type = tmp_type + "기타, ";
                     break;
             }
-            it.remove(); // avoids a ConcurrentModificationException
         }
         behavior_type.setText(tmp_type.substring(0, tmp_type.length()-2));
 
@@ -294,32 +324,51 @@ public class BehaviorDetailActivity extends AppCompatActivity {
             public void onClick(View view) {
                 bookmarkSubmit.setEnabled(false);
 
-                Map<String, Object> presetData = new HashMap<>();
+                presetData = new HashMap<>();
                 presetData.put("title", textBookmark.getText().toString());
                 presetData.put("place", selectedBehavior.place);
                 presetData.put("categorization", selectedBehavior.categorization);
                 presetData.put("type", selectedBehavior.type);
                 presetData.put("intensity", selectedBehavior.intensity);
+                presetData.put("reason_type", selectedBehavior.reason_type);
                 presetData.put("reason", selectedBehavior.reason);
 
-                List<Map<String, Object>> behaviorPresetArray = new ArrayList<>();
-                behaviorPresetArray.add(presetData);
+                final DocumentReference sfDocRef = db.collection("users").document(user.getUid());
 
-                db.collection("users").document(user.getUid())
-                        .update("preset.behavior_preset", behaviorPresetArray)
-                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void aVoid) {
-//                                                                  mProgressView.setVisibility(View.GONE);
-                                bookmarkDialog.dismiss();
-                                Toast toast = Toast.makeText(BehaviorDetailActivity.this, "자주 쓰는 기록으로 등록되었습니다.", Toast.LENGTH_SHORT);
-                                toast.show();
-                            }
-                        })
+                db.runTransaction(new Transaction.Function<Void>() {
+                    @Override
+                    public Void apply(Transaction transaction) throws FirebaseFirestoreException {
+                        DocumentSnapshot snapshot = transaction.get(sfDocRef);
+                        List<Map<String, Object>> behaviorPresetArray = (List<Map<String, Object>>) snapshot.get("preset.behavior_preset");
+                        if(behaviorPresetArray != null) {
+                            behaviorPresetArray.add(presetData);
+                            transaction.update(sfDocRef, "preset.behavior_preset", behaviorPresetArray);
+
+                        } else {
+                            List<Map<String, Object>> newBehaviorPresetArray = new ArrayList();
+                            newBehaviorPresetArray.add(presetData);
+                            transaction.update(sfDocRef, "preset.behavior_preset", newBehaviorPresetArray);
+
+                        }
+
+                        // Success
+                        return null;
+                    }
+                }).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+//                        mProgressView.setVisibility(View.GONE);
+                        MainActivity.adapter.notifyDataSetChanged();
+                        bookmarkDialog.dismiss();
+                        Toast toast = Toast.makeText(BehaviorDetailActivity.this, "자주 쓰는 기록으로 등록되었습니다.", Toast.LENGTH_SHORT);
+                        toast.show();
+
+                    }
+                })
                         .addOnFailureListener(new OnFailureListener() {
                             @Override
                             public void onFailure(@NonNull Exception e) {
-
+                                bookmarkSubmit.setEnabled(true);
                             }
                         });
             }
@@ -327,10 +376,20 @@ public class BehaviorDetailActivity extends AppCompatActivity {
 
     }
 
+    public void goToBehaviorActivity(int editPage) {
+        Intent intent = new Intent(BehaviorDetailActivity.this, BehaviorActivity.class);
+        intent.putExtra("behaviorEdit", (Behavior) selectedBehavior);
+        intent.putExtra("behaviorEditPage", editPage);
+        startActivity(intent);
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_behavior, menu);
+
+        this.menu = menu;
+
         return true;
     }
 
@@ -339,13 +398,20 @@ public class BehaviorDetailActivity extends AppCompatActivity {
 
         int id = item.getItemId();
 
+        MenuItem behaviorEdit = menu.findItem(R.id.behavior_edit);
+        if(editMode){
+            behaviorEdit.setTitle("수정 취소");
+        } else {
+            behaviorEdit.setTitle("수정");
+        }
+
         if (id == android.R.id.home) {
             finish();
-        } else if(id == R.id.action_bookmark){
+        } else if(id == R.id.behavior_bookmark){
 
             bookmarkDialog.show();
 
-        } else if(id == R.id.action_edit) {
+        } else if(id == R.id.behavior_edit) {
 
             if(editMode == false) {
                 editLine1.setVisibility(View.VISIBLE);
@@ -409,13 +475,45 @@ public class BehaviorDetailActivity extends AppCompatActivity {
                 editMode = false;
             }
 
+        } else if(id == R.id.behavior_delete) {
 
-
-        } else if(id == R.id.action_delete) {
-            MainActivity.adapter.notifyDataSetChanged();
-            finish();
-            Toast toast = Toast.makeText(BehaviorDetailActivity.this, "행동이 삭제되었습니다.", Toast.LENGTH_SHORT);
-            toast.show();
+            AlertDialog.Builder alt_bld = new AlertDialog.Builder(BehaviorDetailActivity.this);
+            alt_bld.setMessage("행동 카드를 삭제하시겠습니까?").setCancelable(
+                    false).setPositiveButton("확인",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            // Action for 'Yes' Button
+                            db.collection("behaviors").document(selectedBehavior.bid)
+                                    .delete()
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+//                                                           mProgressView.setVisibility(View.GONE);
+                                            MainActivity.adapter.notifyDataSetChanged();
+                                            finish();
+                                            Toast toast = Toast.makeText(BehaviorDetailActivity.this, "행동이 삭제되었습니다.", Toast.LENGTH_SHORT);
+                                            toast.show();
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+//                                                          Log.w(TAG, "Error writing document", e);
+                                        }
+                                    });
+                        }
+                    }).setNegativeButton("취소",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            // Action for 'NO' Button
+                            dialog.cancel();
+                        }
+                    });
+            AlertDialog alert = alt_bld.create();
+            // Title for AlertDialog
+//                        alert.setTitle("Title");
+            // Icon for AlertDialog
+            alert.show();
         }
 
         return super.onOptionsItemSelected(item);

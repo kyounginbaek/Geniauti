@@ -1,60 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    android:id="@+id/list_bookmark_profile_layout"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_height="wrap_content"
+    android:foreground="?attr/selectableItemBackground"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="88dp"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:background="?android:attr/selectableItemBackground">
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="72dp"
             android:layout_marginLeft="16dp"
             android:gravity="center_vertical"
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/search_title"
+                android:id="@+id/list_bookmark_profile_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="16sp"
-                android:textColor="#de3b3b3b"
+                android:textColor="#de000000"
                 android:lineSpacingExtra="8sp"
-                tools:text="방에 엎드려 외출 거부하기"
+                android:text="공원 / 소리 지르기 / 요구"
                 />
 
             <TextView
-                android:id="@+id/search_reason"
+                android:id="@+id/list_bookmark_profile_sub"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="14sp"
-                android:textColor="#ababab"
+                android:textColor="#8b000000"
                 android:lineSpacingExtra="6sp"
-                tools:text="행동 원인 &gt; 과제 회피 / 관심"
-                />
-
-            <TextView
-                android:id="@+id/search_type"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="14sp"
-                android:textColor="#ababab"
-                android:lineSpacingExtra="6sp"
-                tools:text="행동 종류 &gt; 타해"
+                android:text="저장된 기록 1"
                 />
 
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/bookmark_delete"
+            android:id="@+id/list_bookmark_profile_delete"
             android:layout_width="58dp"
-            android:layout_height="match_parent"
+            android:layout_height="72dp"
             android:layout_alignParentRight="true"
             android:gravity="center_horizontal"
             android:layout_centerInParent="true">

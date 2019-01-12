@@ -1,6 +1,5 @@
 package com.geniauti.geniauti;
 
-import android.content.Context;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
@@ -27,8 +26,10 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 
 /**
@@ -51,7 +52,7 @@ public class TemplateChartYearFragment extends Fragment {
 
     private View v;
 
-    private SimpleDateFormat sdf, sdfTime;
+    private SimpleDateFormat sdf, sdfNew;
     private Calendar cal;
     private String DateandTime;
 
@@ -66,7 +67,7 @@ public class TemplateChartYearFragment extends Fragment {
     private List<BarEntry> yLocations = new ArrayList<>();
 
     private int january = 0, february = 0, march = 0, afril = 0, may = 0, june = 0, july = 0, august = 0, september = 0, october = 0, november = 0, december = 0;
-    private int januaryIntensity = 0, februaryIntensity = 0, marchIntensity = 0, afrilIntensity = 0, mayIntensity = 0, juneIntensity = 0, julyIntensity = 0, augustIntensity = 0, septemberIntensity = 0, octoberIntensity = 0, novemberIntensity = 0, decemberIntensity = 0;
+    private int januaryIntensity = 5, februaryIntensity = 5, marchIntensity = 5, afrilIntensity = 5, mayIntensity = 5, juneIntensity = 5, julyIntensity = 5, augustIntensity = 5, septemberIntensity = 5, octoberIntensity = 5, novemberIntensity = 5, decemberIntensity = 5;
     private int interest = 0, demand = 0, selfstimulation = 0, taskevation = 0, reasonEtc = 0;
     private int selfharm = 0, harm = 0, destruction = 0, breakaway = 0, sexual = 0, typeEtc = 0;
     private int home = 0, mart = 0, restaurant = 0, school = 0, locationEtc = 0;
@@ -80,10 +81,10 @@ public class TemplateChartYearFragment extends Fragment {
 
     private int colorIntensity1, colorIntensity2, colorIntensity3, colorIntensity4, colorIntensity5;
 
-    public static ArrayList<Behavior> behaviorData;
+    public static Statistics statisticData;
     public static int positionNum;
     private int getCount = ChartYearFragment.adapter.getCount();
-    private int diff;
+    private int diff = 0;
 
     public TemplateChartYearFragment() {
         // Required empty public constructor
@@ -98,13 +99,12 @@ public class TemplateChartYearFragment extends Fragment {
      * @return A new instance of fragment TemplateChartYearFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static TemplateChartYearFragment newInstance(int position, ArrayList<Behavior> behaviors) {
+    public static TemplateChartYearFragment newInstance(int position) {
         TemplateChartYearFragment fragment = new TemplateChartYearFragment();
         Bundle args = new Bundle();
 //        args.putString(ARG_PARAM1, param1);
 //        args.putString(ARG_PARAM2, param2);
 
-        behaviorData = behaviors;
         positionNum = position;
 
         fragment.setArguments(args);
@@ -133,7 +133,7 @@ public class TemplateChartYearFragment extends Fragment {
         v = inflater.inflate(R.layout.fragment_template_chart_year, container, false);
 
         sdf = new SimpleDateFormat("yyyy년", Locale.KOREAN);
-        sdfTime = new SimpleDateFormat("MM월", Locale.KOREAN);
+        sdfNew = new SimpleDateFormat("yyyy", Locale.KOREAN);
         cal = Calendar.getInstance();
         cal.add(Calendar.YEAR, -1*diff);
         DateandTime = sdf.format(cal.getTime());
@@ -144,145 +144,224 @@ public class TemplateChartYearFragment extends Fragment {
         colorIntensity2 = Color.parseColor("#662dc76d");
         colorIntensity1 = Color.parseColor("#332dc76d");
 
-        // Behavior ArrayList
-        for(int i = 0; i < behaviorData.size(); i++) {
-            Behavior behavior =  behaviorData.get(i);
+        if(ChartYearFragment.statisticsHashMap.containsKey(sdfNew.format(cal.getTime()))){
+            statisticData = ChartYearFragment.statisticsHashMap.get(sdfNew.format(cal.getTime()));
 
-            Date startTime = behavior.start_time;
-
-            if(sdf.format(startTime).equals(DateandTime)){
-                // frequency
-
-                String sTime = sdfTime.format(startTime).substring(0,2);
-
-                switch(Integer.parseInt(sTime)) {
+            HashMap<String, Object> behavior_freq = statisticData.behavior_freq;
+            Iterator it_behavior_freq = behavior_freq.entrySet().iterator();
+            while (it_behavior_freq.hasNext()) {
+                Map.Entry pair = (Map.Entry)it_behavior_freq.next();
+                switch(Integer.parseInt(pair.getKey().toString())) {
                     case 1:
-                        january += 1;
-                        januaryIntensity += behavior.intensity;
+                        january = Integer.parseInt(pair.getValue().toString());
                         break;
                     case 2:
-                        february += 1;
-                        februaryIntensity += behavior.intensity;
+                        february = Integer.parseInt(pair.getValue().toString());
                         break;
                     case 3:
-                        march += 1;
-                        marchIntensity += behavior.intensity;
+                        march = Integer.parseInt(pair.getValue().toString());
                         break;
                     case 4:
-                        afril += 1;
-                        afrilIntensity += behavior.intensity;
+                        afril = Integer.parseInt(pair.getValue().toString());
                         break;
                     case 5:
-                        may += 1;
-                        mayIntensity += behavior.intensity;
+                        may = Integer.parseInt(pair.getValue().toString());
                         break;
                     case 6:
-                        june += 1;
-                        juneIntensity += behavior.intensity;
+                        june = Integer.parseInt(pair.getValue().toString());
                         break;
                     case 7:
-                        july += 1;
-                        julyIntensity += behavior.intensity;
+                        july = Integer.parseInt(pair.getValue().toString());
                         break;
                     case 8:
-                        august += 1;
-                        augustIntensity += behavior.intensity;
+                        august = Integer.parseInt(pair.getValue().toString());
                         break;
                     case 9:
-                        september += 1;
-                        septemberIntensity += behavior.intensity;
+                        september = Integer.parseInt(pair.getValue().toString());
                         break;
                     case 10:
-                        october += 1;
-                        octoberIntensity += behavior.intensity;
+                        october = Integer.parseInt(pair.getValue().toString());
                         break;
                     case 11:
-                        november += 1;
-                        novemberIntensity += behavior.intensity;
+                        november = Integer.parseInt(pair.getValue().toString());
                         break;
                     case 12:
-                        december += 1;
-                        decemberIntensity += behavior.intensity;
+                        december = Integer.parseInt(pair.getValue().toString());
                         break;
                 }
+            }
 
-                // number
-                yearNumber += 1;
+            HashMap<String, Object> summary = statisticData.summary;
+            yearNumber = Integer.parseInt(summary.get("count").toString());
+            yearTime = Integer.parseInt(summary.get("duration_min").toString());
+            yearIntensity = Integer.parseInt(summary.get("intensity_sum").toString());
 
-                // time
-                long timeDiff = behavior.end_time.getTime() - behavior.start_time.getTime();
-                yearTime = yearTime + (timeDiff/(1000*60));
-
-                // intensity
-                yearIntensity += behavior.intensity;
-
-                // Reasons
-                HashMap<String, Object> reason = (HashMap<String, Object>) behavior.reason;
-                HashMap.Entry<String,Object> entryRaason = reason.entrySet().iterator().next();
-
-                // Color Code
-                switch(entryRaason.getKey()) {
-                    case "관심":
-                        interest += 1;
-                        break;
-                    case "자기자극":
-                        selfstimulation += 1;
-                        break;
-                    case "과제회피":
-                        taskevation += 1;
-                        break;
-                    case "요구":
-                        demand += 1;
-                        break;
-                    case "기타":
-                        reasonEtc += 1;
-                        break;
-                }
-
-                // Types
-                HashMap<String, Object> type = (HashMap<String, Object>) behavior.type;
-                HashMap.Entry<String,Object> entryType = type.entrySet().iterator().next();
-
-                // Color Code
-                switch(entryType.getKey()) {
+            HashMap<String, Object> type = statisticData.type;
+            Iterator it_type = type.entrySet().iterator();
+            while (it_type.hasNext()) {
+                Map.Entry pair = (Map.Entry) it_type.next();
+                switch (pair.getKey().toString()) {
                     case "selfharm":
-                        selfharm += 1;
+                        selfharm = Integer.parseInt(pair.getValue().toString());
                         break;
                     case "harm":
-                        harm += 1;
+                        harm = Integer.parseInt(pair.getValue().toString());
                         break;
                     case "destruction":
-                        destruction += 1;
+                        destruction = Integer.parseInt(pair.getValue().toString());
                         break;
                     case "breakaway":
-                        breakaway += 1;
+                        breakaway = Integer.parseInt(pair.getValue().toString());
                         break;
                     case "sexual":
-                        sexual += 1;
+                        sexual = Integer.parseInt(pair.getValue().toString());
                         break;
                     case "etc":
-                        typeEtc += 1;
+                        typeEtc = Integer.parseInt(pair.getValue().toString());
                         break;
                 }
-
-                // Locations
-                switch(behavior.place) {
-                    case "집":
-                        home += 1;
-                        break;
-                    case "마트":
-                        mart += 1;
-                        break;
-                    case "식당":
-                        restaurant += 1;
-                        break;
-                    case "학교":
-                        school += 1;
-                        break;
-                }
-
             }
         }
+
+        // Behavior ArrayList
+//        for(int i = 0; i < behaviorData.size(); i++) {
+//            Behavior behavior =  behaviorData.get(i);
+//
+//            Date startTime = behavior.start_time;
+//
+//            if(sdf.format(startTime).equals(DateandTime)){
+//                // frequency
+//
+//                String sTime = sdfTime.format(startTime).substring(0,2);
+//
+//                switch(Integer.parseInt(sTime)) {
+//                    case 1:
+//                        january += 1;
+//                        januaryIntensity += behavior.intensity;
+//                        break;
+//                    case 2:
+//                        february += 1;
+//                        februaryIntensity += behavior.intensity;
+//                        break;
+//                    case 3:
+//                        march += 1;
+//                        marchIntensity += behavior.intensity;
+//                        break;
+//                    case 4:
+//                        afril += 1;
+//                        afrilIntensity += behavior.intensity;
+//                        break;
+//                    case 5:
+//                        may += 1;
+//                        mayIntensity += behavior.intensity;
+//                        break;
+//                    case 6:
+//                        june += 1;
+//                        juneIntensity += behavior.intensity;
+//                        break;
+//                    case 7:
+//                        july += 1;
+//                        julyIntensity += behavior.intensity;
+//                        break;
+//                    case 8:
+//                        august += 1;
+//                        augustIntensity += behavior.intensity;
+//                        break;
+//                    case 9:
+//                        september += 1;
+//                        septemberIntensity += behavior.intensity;
+//                        break;
+//                    case 10:
+//                        october += 1;
+//                        octoberIntensity += behavior.intensity;
+//                        break;
+//                    case 11:
+//                        november += 1;
+//                        novemberIntensity += behavior.intensity;
+//                        break;
+//                    case 12:
+//                        december += 1;
+//                        decemberIntensity += behavior.intensity;
+//                        break;
+//                }
+//
+//                // number
+//                yearNumber += 1;
+//
+//                // time
+//                long timeDiff = behavior.end_time.getTime() - behavior.start_time.getTime();
+//                yearTime = yearTime + (timeDiff/(1000*60));
+//
+//                // intensity
+//                yearIntensity += behavior.intensity;
+//
+//                // Reasons
+//                HashMap<String, Object> reason = (HashMap<String, Object>) behavior.reason_type;
+//                HashMap.Entry<String,Object> entryRaason = reason.entrySet().iterator().next();
+//
+//                // Color Code
+//                switch(entryRaason.getKey()) {
+//                    case "interest":
+//                        interest += 1;
+//                        break;
+//                    case "selfstimulation":
+//                        selfstimulation += 1;
+//                        break;
+//                    case "taskevation":
+//                        taskevation += 1;
+//                        break;
+//                    case "demand":
+//                        demand += 1;
+//                        break;
+//                    case "etc":
+//                        reasonEtc += 1;
+//                        break;
+//                }
+//
+//                // Types
+//                HashMap<String, Object> type = (HashMap<String, Object>) behavior.type;
+//                HashMap.Entry<String,Object> entryType = type.entrySet().iterator().next();
+//
+//                // Color Code
+//                switch(entryType.getKey()) {
+//                    case "selfharm":
+//                        selfharm += 1;
+//                        break;
+//                    case "harm":
+//                        harm += 1;
+//                        break;
+//                    case "destruction":
+//                        destruction += 1;
+//                        break;
+//                    case "breakaway":
+//                        breakaway += 1;
+//                        break;
+//                    case "sexual":
+//                        sexual += 1;
+//                        break;
+//                    case "etc":
+//                        typeEtc += 1;
+//                        break;
+//                }
+//
+//                // Locations
+//                switch(behavior.place) {
+//                    case "집":
+//                        home += 1;
+//                        break;
+//                    case "마트":
+//                        mart += 1;
+//                        break;
+//                    case "식당":
+//                        restaurant += 1;
+//                        break;
+//                    case "학교":
+//                        school += 1;
+//                        break;
+//                }
+//
+//            }
+//        }
 
         // Frequency
         chartFrequency = v.findViewById(R.id.chart_year_frequency);
@@ -303,14 +382,14 @@ public class TemplateChartYearFragment extends Fragment {
         yAxisRightFrequency.setEnabled(true);
         yAxisRightFrequency.setStartAtZero(true);
 
-        if(yearNumber == 0) {
-            yAxisRightFrequency.mAxisMaximum = 2;
-            yAxisRightFrequency.setLabelCount(2);
-        } else {
-            List<Integer> list = Arrays.asList(january, february, march, afril, may, june, july, august, september, october, november, december);
-            yAxisRightFrequency.mAxisMaximum= Collections.max(list);
-            yAxisRightFrequency.setLabelCount(Collections.max(list));
-        }
+//        if(yearNumber == 0) {
+//            yAxisRightFrequency.mAxisMaximum = 2;
+//            yAxisRightFrequency.setLabelCount(2);
+//        } else {
+//            List<Integer> list = Arrays.asList(january, february, march, afril, may, june, july, august, september, october, november, december);
+//            yAxisRightFrequency.mAxisMaximum= Collections.max(list);
+//            yAxisRightFrequency.setLabelCount(Collections.max(list));
+//        }
 
         xLabelsFrequency = new ArrayList<>();
         xLabelsFrequency.add("1월");

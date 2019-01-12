@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    android:id="@+id/list_bookmark_behavior_layout"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:foreground="?attr/selectableItemBackground"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -11,7 +14,7 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/list_bookmark_title"
+            android:id="@+id/list_bookmark_behavior_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="16sp"
@@ -21,11 +24,11 @@
             />
 
         <TextView
-            android:id="@+id/list_bookmark_sub"
+            android:id="@+id/list_bookmark_behavior_sub"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="14sp"
-            android:textColor="#8b000000"
+            android:textColor="@color/coolGreen"
             android:lineSpacingExtra="6sp"
             android:text="저장된 기록 1"
             />

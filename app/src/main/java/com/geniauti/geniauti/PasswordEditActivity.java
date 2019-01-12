@@ -1,12 +1,10 @@
 package com.geniauti.geniauti;
 
-import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
@@ -25,6 +23,7 @@ public class PasswordEditActivity extends AppCompatActivity {
 
     private FirebaseUser user;
     private View mProgressView;
+    private Button btnPasswordEdit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,11 +50,12 @@ public class PasswordEditActivity extends AppCompatActivity {
         final EditText newPassword = (EditText) findViewById(R.id.txt_new_password);
         final EditText newPasswordCheck = (EditText) findViewById(R.id.txt_new_password_check);
 
-        Button btnPasswordEdit = (Button) findViewById(R.id.password_edit_button);
+        btnPasswordEdit = (Button) findViewById(R.id.password_edit_button);
         btnPasswordEdit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 mProgressView.setVisibility(View.VISIBLE);
+                btnPasswordEdit.setEnabled(false);
 
                 // Reset errors.
                 currentPassword.setError(null);
@@ -113,6 +113,7 @@ public class PasswordEditActivity extends AppCompatActivity {
 
                 if(cancel){
                     mProgressView.setVisibility(View.GONE);
+                    btnPasswordEdit.setEnabled(true);
                 } else {
                     AuthCredential credential = EmailAuthProvider.getCredential(user.getEmail(), mCurrentPassword);
 
@@ -134,6 +135,7 @@ public class PasswordEditActivity extends AppCompatActivity {
                                                     }
                                                 });
                                     } else {
+                                        btnPasswordEdit.setEnabled(true);
                                         mProgressView.setVisibility(View.GONE);
                                         Toast toast = Toast.makeText(PasswordEditActivity.this, "기존 비밀번호가 일치하지 않습니다.", Toast.LENGTH_SHORT);
                                         toast.show();

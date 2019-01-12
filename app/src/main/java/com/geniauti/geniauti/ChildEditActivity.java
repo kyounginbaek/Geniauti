@@ -1,6 +1,5 @@
 package com.geniauti.geniauti;
 
-import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -9,7 +8,6 @@ import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
@@ -44,6 +42,7 @@ public class ChildEditActivity extends AppCompatActivity {
     RadioButton radioMonth, radioYear;
     RadioButton radioBoy, radioGirl;
     private View mProgressView;
+    private Button childEditButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -131,11 +130,12 @@ public class ChildEditActivity extends AppCompatActivity {
                     }
                 });
 
-        Button childEditButton = (Button) findViewById(R.id.child_edit_button);
+        childEditButton = (Button) findViewById(R.id.child_edit_button);
         childEditButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 mProgressView.setVisibility(View.VISIBLE);
+                childEditButton.setEnabled(false);
 
                 // Reset errors.
                 mChildName.setError(null);
@@ -164,7 +164,7 @@ public class ChildEditActivity extends AppCompatActivity {
                 }
 
                 if(cancel){
-
+                    childEditButton.setEnabled(true);
                 } else {
                     int selectedAge = radioGroupAge.getCheckedRadioButtonId();
                     // find the radiobutton by returned id
@@ -218,6 +218,7 @@ public class ChildEditActivity extends AppCompatActivity {
                                             .addOnFailureListener(new OnFailureListener() {
                                                 @Override
                                                 public void onFailure(@NonNull Exception e) {
+                                                    childEditButton.setEnabled(true);
                                                 }
                                             });
 //                                Log.d(TAG, "DocumentSnapshot successfully written!");
@@ -227,6 +228,7 @@ public class ChildEditActivity extends AppCompatActivity {
                                 @Override
                                 public void onFailure(@NonNull Exception e) {
 //                                Log.w(TAG, "Error writing document", e);
+                                    childEditButton.setEnabled(true);
                                 }
                             });
                 }

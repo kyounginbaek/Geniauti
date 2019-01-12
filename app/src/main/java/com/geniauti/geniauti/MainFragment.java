@@ -1,12 +1,7 @@
 package com.geniauti.geniauti;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.os.Handler;
 import android.support.annotation.NonNull;
-import android.support.v7.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -14,9 +9,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.util.Log;
+import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -24,36 +17,23 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.view.animation.Transformation;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.geniauti.geniauti.compactcalendarview.CompactCalendarView;
 import com.geniauti.geniauti.compactcalendarview.domain.Event;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import org.w3c.dom.Text;
-
-import java.sql.Time;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -62,8 +42,10 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 
 /**
@@ -96,17 +78,18 @@ public class MainFragment extends Fragment {
     private View v;
     private OnFragmentInteractionListener mListener;
     private TextView txtMonth;
-    private ImageView calendarBack;
-    private ImageView calendarForward;
+    private LinearLayout calendarBack;
+    private LinearLayout calendarForward;
 
     private FirebaseUser user;
     private FirebaseFirestore db;
-    private String cid;
+    public static String cid;
     private String relationship;
     private ArrayList<Behavior> cardData;
     private ArrayList<Behavior> tmpData;
     private ListView cardListView;
     private CardListviewAdapter cardAdapter;
+    private CardView cardBlankBehavior;
 
     private int color_interest;
     private int color_self_stimulation;
@@ -115,12 +98,13 @@ public class MainFragment extends Fragment {
     private int color_etc;
     private int colorCode;
     private long timeInMilliseconds;
+    private HashMap<String, HashMap<String, Boolean>> calendarHash = new HashMap<>();
+    private SimpleDateFormat formatter = new SimpleDateFormat("yyyy년 MM월 dd일", Locale.KOREAN);
 
     private ListView bookmarkListView;
-    private ArrayList<Bookmark> bookmarkData;
-    private BookmarkListviewAdapter bookmarkAdapter;
-
-    private Animation animShow, animHide;
+    public static ArrayList<Bookmark> bookmarkData;
+    public static BookmarkListviewAdapter bookmarkAdapter;
+    private AlertDialog dialog;
 
     public MainFragment() {
         // Required empty public constructor
@@ -260,8 +244,8 @@ public class MainFragment extends Fragment {
         compactCalendar.shouldSelectFirstDayOfMonthOnScroll(false);
         compactCalendar.shouldDrawIndicatorsBelowSelectedDays(true);
 
-        calendarBack = (ImageView) v.findViewById(R.id.calendar_back);
-        calendarForward = (ImageView) v.findViewById(R.id.calendar_forward);
+        calendarBack = (LinearLayout) v.findViewById(R.id.calendar_back);
+        calendarForward = (LinearLayout) v.findViewById(R.id.calendar_forward);
 
         calendarBack.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -310,7 +294,7 @@ public class MainFragment extends Fragment {
         AlertDialog.Builder mBuilder = new AlertDialog.Builder(getContext());
         View mView = getLayoutInflater().inflate(R.layout.dialog_behavior_add, null);
         mBuilder.setView(mView);
-        final AlertDialog dialog = mBuilder.create();
+        dialog = mBuilder.create();
 
         LinearLayout behavior_add = (LinearLayout) mView.findViewById(R.id.behavior_add);
         behavior_add.setOnClickListener(new View.OnClickListener() {
@@ -341,17 +325,17 @@ public class MainFragment extends Fragment {
                         if (task.isSuccessful()) {
                             DocumentSnapshot document = task.getResult();
                             if(document.exists()) {
-
                                 HashMap<String, Object> preset = (HashMap<String, Object>) document.getData().get("preset");
-                                List<HashMap<String, Object>> behavior_preset = (List<HashMap<String,Object>>) preset.get("behavior_preset");
+                                if(preset != null){
+                                    List<HashMap<String, Object>> behavior_preset = (List<HashMap<String,Object>>) preset.get("behavior_preset");
+                                    for(int i=0; i<behavior_preset.size(); i++) {
+                                        Bookmark item = new Bookmark(i, behavior_preset.get(i).get("title").toString(), behavior_preset.get(i).get("place").toString(), behavior_preset.get(i).get("categorization").toString(), (HashMap<String, Object>) behavior_preset.get(i).get("type"), Integer.parseInt(behavior_preset.get(i).get("intensity").toString()), (HashMap<String, Object>) behavior_preset.get(i).get("reason_type"), (HashMap<String, Object>) behavior_preset.get(i).get("reason"));
+                                        bookmarkData.add(item);
+                                    }
 
-                                for(int i=0; i<behavior_preset.size(); i++) {
-                                    Bookmark item = new Bookmark(behavior_preset.get(i).get("title").toString());
-                                    bookmarkData.add(item);
+                                    bookmarkAdapter = new BookmarkListviewAdapter(getContext(), R.layout.list_bookmark_profile, bookmarkData);
+                                    bookmarkListView.setAdapter(bookmarkAdapter);
                                 }
-
-                                bookmarkAdapter = new BookmarkListviewAdapter(getContext(), R.layout.list_bookmark, bookmarkData);
-                                bookmarkListView.setAdapter(bookmarkAdapter);
                             } else {
 
                             }
@@ -366,6 +350,8 @@ public class MainFragment extends Fragment {
         cardListView = (ListView) v.findViewById(R.id.behavior_card_listview);
         cardData = new ArrayList<>();
         tmpData = new ArrayList<>();
+
+        cardBlankBehavior = (CardView) v.findViewById(R.id.blank_behavior_layout);
 
         db.collection("childs")
                 .whereGreaterThanOrEqualTo("users."+user.getUid()+".name", "")
@@ -389,45 +375,47 @@ public class MainFragment extends Fragment {
                                             if (task.isSuccessful()) {
 
                                                 for (QueryDocumentSnapshot document : task.getResult()) {
-                                                    HashMap<String, Object> reason = (HashMap<String, Object>) document.get("reason");
-                                                    HashMap.Entry<String,Object> entry = reason.entrySet().iterator().next();
+                                                    HashMap<String, Boolean> reasonToday = (HashMap<String, Boolean>) document.get("reason_type");
+                                                    String todayDate = formatter.format(document.getDate("start_time"));
 
-                                                    // Color Code
-                                                    switch(entry.getKey()) {
-                                                        case "관심":
-                                                            colorCode = color_interest;
-                                                            break;
-                                                        case "자기자극":
-                                                            colorCode = color_self_stimulation;
-                                                            break;
-                                                        case "과제회피":
-                                                            colorCode = color_task_evation;
-                                                            break;
-                                                        case "요구":
-                                                            colorCode = color_demand;
-                                                            break;
-                                                        case "기타":
-                                                            colorCode = color_etc;
-                                                            break;
+                                                    if(calendarHash.get(todayDate)==null){
+                                                        calendarHash.put(todayDate, reasonToday);
+                                                    } else {
+                                                        HashMap<String, Boolean> reasonHash = (HashMap<String, Boolean>) calendarHash.get(todayDate);
+                                                        HashMap<String, Boolean> tmpReason = calendarHash.get(todayDate);
+                                                        if(reasonHash.get("interest")==null && reasonToday.get("interest")!=null) {
+                                                            tmpReason.put("interest", true);
+                                                        }
+                                                        if(reasonHash.get("selfstimulation")==null && reasonToday.get("selfstimulation")!=null) {
+                                                            tmpReason.put("selfstimulation", true);
+                                                        }
+                                                        if(reasonHash.get("taskevation")==null && reasonToday.get("taskevation")!=null) {
+                                                            tmpReason.put("taskevation", true);
+                                                        }
+                                                        if(reasonHash.get("demand")==null && reasonToday.get("demand")!=null) {
+                                                            tmpReason.put("demand", true);
+                                                        }
+                                                        if(reasonHash.get("etc")==null && reasonToday.get("etc")!=null){
+                                                            tmpReason.put("etc", true);
+                                                        }
+                                                        calendarHash.put(todayDate, tmpReason);
                                                     }
 
-                                                    // Date
-                                                    timeInMilliseconds = document.getDate("start_time").getTime();
-                                                    Event ev = new Event(colorCode, timeInMilliseconds, "");
-
-                                                    if(true){
-                                                        compactCalendar.addEvent(ev);
-                                                    }
-
-                                                    Behavior item = new Behavior((Date) document.getDate("start_time"), (Date) document.getDate("end_time"), document.get("place").toString(), document.get("categorization").toString(), document.get("current_behavior").toString(), document.get("before_behavior").toString(), document.get("after_behavior").toString(), (HashMap<String, Object>) document.get("type"), Integer.parseInt(document.get("intensity").toString()), (HashMap<String, Object>) document.get("reason"), document.get("created_at").toString(),  document.get("updated_at").toString(), document.get("uid").toString(), document.get("name").toString(), document.get("cid").toString(), relationship);
+                                                    Behavior item = new Behavior(document.getId(), (Date) document.getDate("start_time"), (Date) document.getDate("end_time"), document.get("place").toString(), document.get("categorization").toString(), document.get("current_behavior").toString(), document.get("before_behavior").toString(), document.get("after_behavior").toString(), (HashMap<String, Object>) document.get("type"), Integer.parseInt(document.get("intensity").toString()), (HashMap<String, Object>) document.get("reason_type"), (HashMap<String, Object>) document.get("reason"), document.get("created_at").toString(),  document.get("updated_at").toString(), document.get("uid").toString(), document.get("name").toString(), document.get("cid").toString(), relationship);
                                                     cardData.add(item);
                                                 }
 
-                                                Collections.sort(cardData, new BehaviorComparator());
-                                                tmpData.addAll(cardData);
+                                                if(cardData.size() == 0){
+                                                    cardBlankBehavior.setVisibility(View.VISIBLE);
+                                                } else {
+                                                    makeDotLoop(calendarHash);
 
-                                                cardAdapter = new CardListviewAdapter(getContext(), R.layout.list_behavior_card, cardData);
-                                                cardListView.setAdapter(cardAdapter);
+                                                    Collections.sort(cardData, new BehaviorComparator());
+                                                    tmpData.addAll(cardData);
+
+                                                    cardAdapter = new CardListviewAdapter(getContext(), R.layout.list_behavior_card, cardData);
+                                                    cardListView.setAdapter(cardAdapter);
+                                                }
 
                                             } else {
 
@@ -447,7 +435,11 @@ public class MainFragment extends Fragment {
         String korDayOfWeek = "";
 
         txtMonth = (TextView) v.findViewById(R.id.txt_month);
-        txtMonth.setText(cal.get(Calendar.YEAR) +"년 " + String.valueOf(month+1)+"월");
+        if(month < 9) {
+            txtMonth.setText(cal.get(Calendar.YEAR) +"년 " + "0" + String.valueOf(month+1)+"월");
+        } else {
+            txtMonth.setText(cal.get(Calendar.YEAR) +"년 " + String.valueOf(month+1)+"월");
+        }
 
         switch(dayOfWeek) {
             case 1:
@@ -474,6 +466,63 @@ public class MainFragment extends Fragment {
         }
 
         return v;
+    }
+
+    public void  makeDotLoop(HashMap<String, HashMap<String, Boolean>> calendarHash) {
+        Iterator it = calendarHash.entrySet().iterator();
+
+        while(it.hasNext()) {
+            Map.Entry pair = (Map.Entry)it.next();
+            try {
+                Date today = formatter.parse(pair.getKey().toString());
+                HashMap<String, Boolean> reason = (HashMap<String, Boolean>) pair.getValue();
+
+                if(reason.get("interest")!=null){
+                    makeDot(today, "interest");
+                }
+                if(reason.get("selfstimulation")!=null){
+                    makeDot(today, "selfstimulation");
+                }
+                if(reason.get("taskevation")!=null){
+                    makeDot(today, "taskevation");
+                }
+                if(reason.get("demand")!=null){
+                    makeDot(today, "demand");
+                }
+                if(reason.get("etc")!=null){
+                    makeDot(today, "etc");
+                }
+            } catch (ParseException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void makeDot(Date date, String reason) {
+        // Color Code
+        switch(reason) {
+            case "interest":
+                colorCode = color_interest;
+                break;
+            case "selfstimulation":
+                colorCode = color_self_stimulation;
+                break;
+            case "taskevation":
+                colorCode = color_task_evation;
+                break;
+            case "demand":
+                colorCode = color_demand;
+                break;
+            case "etc":
+                colorCode = color_etc;
+                break;
+        }
+
+        // Date
+        timeInMilliseconds = date.getTime();
+        Event ev = new Event(colorCode, timeInMilliseconds, "");
+        compactCalendar.addEvent(ev);
     }
 
     public int foundIndex(ArrayList<Behavior> behavior, Date date) {
@@ -589,19 +638,19 @@ public class MainFragment extends Fragment {
             card_demand.setVisibility(View.GONE);
             card_etc.setVisibility(View.GONE);
 
-            if(listviewitem.reason.get("관심")!=null) {
+            if(listviewitem.reason_type.get("interest")!=null) {
                 card_interest.setVisibility(View.VISIBLE);
             }
-            if(listviewitem.reason.get("자기자극")!=null) {
+            if(listviewitem.reason_type.get("selfstimulation")!=null) {
                 card_self_stimulation.setVisibility(View.VISIBLE);
             }
-            if(listviewitem.reason.get("과제회피")!=null) {
+            if(listviewitem.reason_type.get("taskevation")!=null) {
                 card_task_evation.setVisibility(View.VISIBLE);
             }
-            if(listviewitem.reason.get("요구")!=null) {
+            if(listviewitem.reason_type.get("demand")!=null) {
                 card_demand.setVisibility(View.VISIBLE);
             }
-            if(listviewitem.reason.get("기타")!=null){
+            if(listviewitem.reason_type.get("etc")!=null){
                 card_etc.setVisibility(View.VISIBLE);
             }
 
@@ -623,13 +672,6 @@ public class MainFragment extends Fragment {
 
             return convertView;
         }
-    }
-
-    public class Bookmark {
-        public Bookmark(String title) {
-            this.title = title;
-        }
-        private String title;
     }
 
     public class BookmarkListviewAdapter extends BaseAdapter {
@@ -658,16 +700,27 @@ public class MainFragment extends Fragment {
         @Override
         public View getView(final int position, View convertView, ViewGroup parent){
             if(convertView == null){
-                convertView = inflater.inflate(R.layout.list_bookmark, parent, false);
+                convertView = inflater.inflate(R.layout.list_bookmark_behavior, parent, false);
             }
 
-            Bookmark bookmarkData = data.get(position);
+            final Bookmark bookmarkData = data.get(position);
 
-            TextView bookmarkTitle = (TextView) convertView.findViewById(R.id.list_bookmark_title);
-            TextView bookmarkSub = (TextView) convertView.findViewById(R.id.list_bookmark_sub);
+            TextView bookmarkTitle = (TextView) convertView.findViewById(R.id.list_bookmark_behavior_title);
+            TextView bookmarkSub = (TextView) convertView.findViewById(R.id.list_bookmark_behavior_sub);
 
             bookmarkTitle.setText(bookmarkData.title);
             bookmarkSub.setText("저장된 기록" + String.valueOf(position + 1));
+
+            LinearLayout bookmarkLayout = (LinearLayout) convertView.findViewById(R.id.list_bookmark_behavior_layout);
+            bookmarkLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(getActivity(), BehaviorActivity.class);
+                    intent.putExtra("bookmark", (Bookmark) bookmarkData);
+                    startActivity(intent);
+                    dialog.dismiss();
+                }
+            });
 
             return convertView;
         }

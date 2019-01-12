@@ -20,7 +20,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -35,21 +34,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
@@ -84,6 +78,7 @@ public class SignupActivity extends AppCompatActivity implements LoaderCallbacks
     private View mLoginFormView;
     private FirebaseAuth firebaseAuth;
     private FirebaseFirestore db;
+    private Button mEmailSignInButton;
 
 
     @Override
@@ -135,7 +130,7 @@ public class SignupActivity extends AppCompatActivity implements LoaderCallbacks
         });
 
 
-        Button mEmailSignInButton = (Button) findViewById(R.id.signup_email_sign_up_button);
+        mEmailSignInButton = (Button) findViewById(R.id.signup_email_sign_up_button);
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -215,6 +210,7 @@ public class SignupActivity extends AppCompatActivity implements LoaderCallbacks
      */
     private void attemptLogin() {
         mProgressView.setVisibility(View.VISIBLE);
+        mEmailSignInButton.setEnabled(false);
 
         InputMethodManager imm = (InputMethodManager)getSystemService(INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
@@ -270,6 +266,7 @@ public class SignupActivity extends AppCompatActivity implements LoaderCallbacks
             // There was an error; don't attempt login and focus the first
             // form field with an error.
             focusView.requestFocus();
+            mEmailSignInButton.setEnabled(true);
         } else {
             if(password.equals(password_check)){
                 firebaseAuth.createUserWithEmailAndPassword(email, password)
@@ -280,6 +277,7 @@ public class SignupActivity extends AppCompatActivity implements LoaderCallbacks
                                 // the auth state listener will be notified and logic to handle the
                                 // signed in user can be handled in the listener.
                                 if (!task.isSuccessful()) {
+                                    mEmailSignInButton.setEnabled(true);
                                     mProgressView.setVisibility(View.GONE);
                                     FirebaseAuthException e = (FirebaseAuthException )task.getException();
 
@@ -309,8 +307,9 @@ public class SignupActivity extends AppCompatActivity implements LoaderCallbacks
                                                         startActivity(new Intent(SignupActivity.this,ChildRegisterActivity.class));
                                                         finish();
                                                     } else {
-                                                        Toast.makeText(SignupActivity.this, "사용자 이름 등록 중에 오류가 발생했습니다.", Toast.LENGTH_SHORT).show();
+                                                        mEmailSignInButton.setEnabled(true);
                                                         mProgressView.setVisibility(View.GONE);
+                                                        Toast.makeText(SignupActivity.this, "사용자 이름 등록 중에 오류가 발생했습니다.", Toast.LENGTH_SHORT).show();
                                                         startActivity(new Intent(SignupActivity.this,ChildRegisterActivity.class));
                                                         finish();
                                                     }
@@ -322,6 +321,7 @@ public class SignupActivity extends AppCompatActivity implements LoaderCallbacks
                 // showProgress(true);
 
             } else {
+                mEmailSignInButton.setEnabled(true);
                 mProgressView.setVisibility(View.GONE);
                 mPasswordCheckView.setError("비밀번호와 비밀번호 확인이 일치하지 않습니다.\"");
             }

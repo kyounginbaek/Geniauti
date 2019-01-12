@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
-    android:id="@+id/behavior_first_frag"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -8,7 +7,6 @@
     android:layout_height="match_parent"
     android:background="#ffffff"
     tools:context=".BehaviorThirdFragment">
-
 
     <TextView
         android:layout_width="wrap_content"
@@ -23,11 +21,10 @@
         />
 
     <ListView
-        android:id="@+id/radio_listview_second"
+        android:id="@+id/radio_listview_third"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:paddingTop="160dp"
-        android:layout_marginBottom="80dp"
         android:fadeScrollbars="false"
         android:divider="#00000000">
 

@@ -1,6 +1,5 @@
 package com.geniauti.geniauti;
 
-import android.content.Context;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
@@ -27,8 +26,10 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 
 /**
@@ -51,7 +52,7 @@ public class TemplateChartWeekFragment extends Fragment {
 
     private View v;
 
-    private SimpleDateFormat sdf, sdfDay;
+    private SimpleDateFormat sdf, sdfDay, sdfNew;
     private Calendar cal, calSunday, calSaturday;
     private String DateandTime;
 
@@ -66,7 +67,7 @@ public class TemplateChartWeekFragment extends Fragment {
     private List<BarEntry> yLocations = new ArrayList<>();
 
     private int sunday = 0, monday = 0, tuesday = 0, wednesday = 0, thursday = 0, friday = 0, saturday = 0;
-    private int sundayIntensity = 0, mondayIntensity = 0, tuesdayIntensity = 0, wednesdayIntensity = 0, thursdayIntensity = 0, fridayIntensity = 0, saturdayIntensity = 0;
+    private int sundayIntensity = 5, mondayIntensity = 5, tuesdayIntensity = 5, wednesdayIntensity = 5, thursdayIntensity = 5, fridayIntensity = 5, saturdayIntensity = 5;
     private int interest = 0, demand = 0, selfstimulation = 0, taskevation = 0, reasonEtc = 0;
     private int selfharm = 0, harm = 0, destruction = 0, breakaway = 0, sexual = 0, typeEtc = 0;
     private int home = 0, mart = 0, restaurant = 0, school = 0, locationEtc = 0;
@@ -80,7 +81,7 @@ public class TemplateChartWeekFragment extends Fragment {
 
     private int colorIntensity1, colorIntensity2, colorIntensity3, colorIntensity4, colorIntensity5;
 
-    public static ArrayList<Behavior> behaviorData;
+    public static Statistics statisticData;
     public static int positionNum;
     private int getCount = ChartWeekFragment.adapter.getCount();
     private int diff;
@@ -98,14 +99,13 @@ public class TemplateChartWeekFragment extends Fragment {
      * @return A new instance of fragment TemplateChartWeekFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static TemplateChartWeekFragment newInstance(int position, ArrayList<Behavior> behaviors) {
+    public static TemplateChartWeekFragment newInstance(int position) {
         TemplateChartWeekFragment fragment = new TemplateChartWeekFragment();
         Bundle args = new Bundle();
 //        args.putString(ARG_PARAM1, param1);
 //        args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
 
-        behaviorData = behaviors;
         positionNum = position;
 
         return fragment;
@@ -134,6 +134,7 @@ public class TemplateChartWeekFragment extends Fragment {
 
         sdf = new SimpleDateFormat("yyyy년 MM월", Locale.KOREAN);
         sdfDay = new SimpleDateFormat("dd", Locale.KOREAN);
+        sdfNew = new SimpleDateFormat("yyyyMMdd", Locale.KOREAN);
         cal = Calendar.getInstance();
         calSunday = Calendar.getInstance();
         calSaturday = Calendar.getInstance();
@@ -165,7 +166,7 @@ public class TemplateChartWeekFragment extends Fragment {
             calSaturday.add(Calendar.DATE, +6);
         }
 
-        DateandTime = sdf.format(cal.getTime()) + " " + sdfDay.format(calSunday.getTime()) + "일" + " - " + sdfDay.format(calSaturday.getTime()) + "일";
+        DateandTime = sdf.format(calSunday.getTime()) + " " + sdfDay.format(calSunday.getTime()) + "일" + " - " + sdf.format(calSaturday.getTime()) + " " + sdfDay.format(calSaturday.getTime()) + "일";
 
         colorIntensity5 = Color.parseColor("#2dc76d");
         colorIntensity4 = Color.parseColor("#cc2dc76d");
@@ -173,125 +174,234 @@ public class TemplateChartWeekFragment extends Fragment {
         colorIntensity2 = Color.parseColor("#662dc76d");
         colorIntensity1 = Color.parseColor("#332dc76d");
 
-        // Behavior ArrayList
-        for(int i = 0; i < behaviorData.size(); i++) {
-            Behavior behavior =  behaviorData.get(i);
+        for(int i = 0; i < 7; i++) {
+            Calendar tmpCal = calSunday;
+            tmpCal.add(Calendar.DATE, +i);
 
-            Date startTime = behavior.start_time;
+            if(ChartDayFragment.statisticsHashMap.containsKey(sdfNew.format(tmpCal.getTime()))) {
+                statisticData = ChartDayFragment.statisticsHashMap.get(sdfNew.format(tmpCal.getTime()));
 
-            if(sdf.format(startTime).equals(sdf.format(cal.getTime()))) {
-                if(Integer.parseInt(sdfDay.format(startTime)) >= Integer.parseInt(sdfDay.format(calSunday.getTime())) && Integer.parseInt(sdfDay.format(startTime)) <= Integer.parseInt(sdfDay.format(calSaturday.getTime()))){
+                int tmpDayOfWeek = tmpCal.get(Calendar.DAY_OF_WEEK);
 
-                    // frequency
-                    switch(Integer.parseInt(sdfDay.format(calSaturday.getTime())) - Integer.parseInt(sdfDay.format(startTime))) {
-                        case 0:
-                            saturday += 1;
-                            saturdayIntensity += behavior.intensity;
-                            break;
-                        case 1:
-                            friday += 1;
-                            fridayIntensity += behavior.intensity;
-                            break;
-                        case 2:
-                            thursday += 1;
-                            thursdayIntensity += behavior.intensity;
-                            break;
-                        case 3:
-                            wednesday += 1;
-                            wednesdayIntensity += behavior.intensity;
-                            break;
-                        case 4:
-                            tuesday += 1;
-                            tuesdayIntensity += behavior.intensity;
-                            break;
-                        case 5:
-                            monday += 1;
-                            mondayIntensity += behavior.intensity;
-                            break;
-                        case 6:
-                            sunday += 1;
-                            sundayIntensity += behavior.intensity;
-                            break;
-                    }
+                switch(tmpDayOfWeek) {
+                    case 1:
+                        sunday += 1;
+                        break;
+                    case 2:
+                         monday += 1;
+                        break;
+                    case 3:
+                        tuesday += 1;
+                        break;
+                    case 4:
+                        wednesday += 1;
+                        break;
+                    case 5:
+                        thursday += 1;
+                        break;
+                    case 6:
+                        friday += 1;
+                        break;
+                    case 7:
+                        saturday += 1;
+                        break;
+                }
 
-                    // number
-                    weekNumber += 1;
+                HashMap<String, Object> summary = statisticData.summary;
+                weekNumber += Integer.parseInt(summary.get("count").toString());
+                weekTime += Integer.parseInt(summary.get("duration_min").toString());
+                weekIntensity += Integer.parseInt(summary.get("intensity_sum").toString());
 
-                    // time
-                    long timeDiff = behavior.end_time.getTime() - behavior.start_time.getTime();
-                    weekTime = weekTime + (timeDiff/(1000*60));
-
-                    // intensity
-                    weekIntensity += behavior.intensity;
-
-                    // Reasons
-                    HashMap<String, Object> reason = (HashMap<String, Object>) behavior.reason;
-                    HashMap.Entry<String,Object> entryRaason = reason.entrySet().iterator().next();
-
-                    // Color Code
-                    switch(entryRaason.getKey()) {
-                        case "관심":
-                            interest += 1;
-                            break;
-                        case "자기자극":
-                            selfstimulation += 1;
-                            break;
-                        case "과제회피":
-                            taskevation += 1;
-                            break;
-                        case "요구":
-                            demand += 1;
-                            break;
-                        case "기타":
-                            reasonEtc += 1;
-                            break;
-                    }
-
-                    // Types
-                    HashMap<String, Object> type = (HashMap<String, Object>) behavior.type;
-                    HashMap.Entry<String,Object> entryType = type.entrySet().iterator().next();
-
-                    // Color Code
-                    switch(entryType.getKey()) {
+                HashMap<String, Object> type = statisticData.type;
+                Iterator it_type = type.entrySet().iterator();
+                while (it_type.hasNext()) {
+                    Map.Entry pair = (Map.Entry)it_type.next();
+                    switch(pair.getKey().toString()) {
                         case "selfharm":
-                            selfharm += 1;
+                            selfharm += Integer.parseInt(pair.getValue().toString());
                             break;
                         case "harm":
-                            harm += 1;
+                            harm += Integer.parseInt(pair.getValue().toString());
                             break;
                         case "destruction":
-                            destruction += 1;
+                            destruction += Integer.parseInt(pair.getValue().toString());
                             break;
                         case "breakaway":
-                            breakaway += 1;
+                            breakaway += Integer.parseInt(pair.getValue().toString());
                             break;
                         case "sexual":
-                            sexual += 1;
+                            sexual += Integer.parseInt(pair.getValue().toString());
                             break;
                         case "etc":
-                            typeEtc += 1;
+                            typeEtc += Integer.parseInt(pair.getValue().toString());
                             break;
                     }
+                }
 
-                    // Locations
-                    switch(behavior.place) {
+                HashMap<String, Object> reason_type = statisticData.reason_type;
+                Iterator it_reason_type = reason_type.entrySet().iterator();
+                while (it_reason_type.hasNext()) {
+                    Map.Entry pair = (Map.Entry)it_reason_type.next();
+                    switch(pair.getKey().toString()) {
+                        case "interest":
+                            interest += Integer.parseInt(pair.getValue().toString());
+                            break;
+                        case "selfstimulation":
+                            selfstimulation += Integer.parseInt(pair.getValue().toString());
+                            break;
+                        case "taskevation":
+                            taskevation += Integer.parseInt(pair.getValue().toString());
+                            break;
+                        case "demand":
+                            demand += Integer.parseInt(pair.getValue().toString());
+                            break;
+                        case "etc":
+                            reasonEtc += Integer.parseInt(pair.getValue().toString());
+                            break;
+                    }
+                }
+
+                HashMap<String, Object> place = statisticData.place;
+                Iterator it_place = place.entrySet().iterator();
+                while (it_place.hasNext()) {
+                    Map.Entry pair = (Map.Entry)it_place.next();
+                    switch(pair.getKey().toString()) {
                         case "집":
-                            home += 1;
+                            home += Integer.parseInt(pair.getValue().toString());
                             break;
                         case "마트":
-                            mart += 1;
+                            mart += Integer.parseInt(pair.getValue().toString());
                             break;
                         case "식당":
-                            restaurant += 1;
+                            restaurant += Integer.parseInt(pair.getValue().toString());
                             break;
                         case "학교":
-                            school += 1;
+                            school += Integer.parseInt(pair.getValue().toString());
                             break;
                     }
-
                 }
             }
         }
+
+        // Behavior ArrayList
+//        for(int i = 0; i < behaviorData.size(); i++) {
+//            Behavior behavior =  behaviorData.get(i);
+//            Date startTime = behavior.start_time;
+//
+//            if(sdf.format(startTime).equals(sdf.format(calSunday.getTime())) || sdf.format(startTime).equals(sdf.format(calSaturday.getTime()))) {
+//
+//
+//                if(Integer.parseInt(sdfDay.format(startTime)) >= Integer.parseInt(sdfDay.format(calSunday.getTime())) && Integer.parseInt(sdfDay.format(startTime)) <= Integer.parseInt(sdfDay.format(calSaturday.getTime()))){
+//                    // frequency
+//                    switch(Integer.parseInt(sdfDay.format(calSaturday.getTime())) - Integer.parseInt(sdfDay.format(startTime))) {
+//                        case 0:
+//                            saturday += 1;
+//                            saturdayIntensity += behavior.intensity;
+//                            break;
+//                        case 1:
+//                            friday += 1;
+//                            fridayIntensity += behavior.intensity;
+//                            break;
+//                        case 2:
+//                            thursday += 1;
+//                            thursdayIntensity += behavior.intensity;
+//                            break;
+//                        case 3:
+//                            wednesday += 1;
+//                            wednesdayIntensity += behavior.intensity;
+//                            break;
+//                        case 4:
+//                            tuesday += 1;
+//                            tuesdayIntensity += behavior.intensity;
+//                            break;
+//                        case 5:
+//                            monday += 1;
+//                            mondayIntensity += behavior.intensity;
+//                            break;
+//                        case 6:
+//                            sunday += 1;
+//                            sundayIntensity += behavior.intensity;
+//                            break;
+//                    }
+//
+//                    // number
+//                    weekNumber += 1;
+//
+//                    // time
+//                    long timeDiff = behavior.end_time.getTime() - behavior.start_time.getTime();
+//                    weekTime = weekTime + (timeDiff/(1000*60));
+//
+//                    // intensity
+//                    weekIntensity += behavior.intensity;
+//
+//                    // Reasons
+//                    HashMap<String, Object> reason = (HashMap<String, Object>) behavior.reason_type;
+//                    HashMap.Entry<String,Object> entryRaason = reason.entrySet().iterator().next();
+//
+//                    // Color Code
+//                    switch(entryRaason.getKey()) {
+//                        case "interest":
+//                            interest += 1;
+//                            break;
+//                        case "selfstimulation":
+//                            selfstimulation += 1;
+//                            break;
+//                        case "taskevation":
+//                            taskevation += 1;
+//                            break;
+//                        case "demand":
+//                            demand += 1;
+//                            break;
+//                        case "etc":
+//                            reasonEtc += 1;
+//                            break;
+//                    }
+//
+//                    // Types
+//                    HashMap<String, Object> type = (HashMap<String, Object>) behavior.type;
+//                    HashMap.Entry<String,Object> entryType = type.entrySet().iterator().next();
+//
+//                    // Color Code
+//                    switch(entryType.getKey()) {
+//                        case "selfharm":
+//                            selfharm += 1;
+//                            break;
+//                        case "harm":
+//                            harm += 1;
+//                            break;
+//                        case "destruction":
+//                            destruction += 1;
+//                            break;
+//                        case "breakaway":
+//                            breakaway += 1;
+//                            break;
+//                        case "sexual":
+//                            sexual += 1;
+//                            break;
+//                        case "etc":
+//                            typeEtc += 1;
+//                            break;
+//                    }
+//
+//                    // Locations
+//                    switch(behavior.place) {
+//                        case "집":
+//                            home += 1;
+//                            break;
+//                        case "마트":
+//                            mart += 1;
+//                            break;
+//                        case "식당":
+//                            restaurant += 1;
+//                            break;
+//                        case "학교":
+//                            school += 1;
+//                            break;
+//                    }
+//
+//                }
+//            }
+//        }
 
         // Frequency
         chartFrequency = v.findViewById(R.id.chart_week_frequency);
@@ -313,14 +423,14 @@ public class TemplateChartWeekFragment extends Fragment {
         yAxisRightFrequency.mAxisMinimum = 0;
         yAxisRightFrequency.setStartAtZero(true);
 
-        if(weekNumber == 0) {
-            yAxisRightFrequency.mAxisMaximum = 1;
-            yAxisRightFrequency.setLabelCount(0);
-        } else {
-            List<Integer> list = Arrays.asList(sunday, monday, tuesday, wednesday, thursday, friday, saturday, sunday);
-            yAxisRightFrequency.mAxisMaximum= Collections.max(list);
-            yAxisRightFrequency.setLabelCount(Collections.max(list));
-        }
+//        if(weekNumber == 0) {
+//            yAxisRightFrequency.mAxisMaximum = 1;
+//            yAxisRightFrequency.setLabelCount(0);
+//        } else {
+//            List<Integer> list = Arrays.asList(sunday, monday, tuesday, wednesday, thursday, friday, saturday, sunday);
+//            yAxisRightFrequency.mAxisMaximum= Collections.max(list);
+//            yAxisRightFrequency.setLabelCount(Collections.max(list));
+//        }
 
         xLabelsFrequency = new ArrayList<>();
         xLabelsFrequency.add("일");
@@ -566,6 +676,115 @@ public class TemplateChartWeekFragment extends Fragment {
         }
 
         return 0;
+    }
+
+    public void weekCalculate(Date date) {
+
+        ChartWeekFragment.statisticsHashMap.get(sdfNew.format(date.getTime()));
+
+        HashMap<String, Object> behavior_freq = statisticData.behavior_freq;
+        Iterator it_behavior_freq = behavior_freq.entrySet().iterator();
+        while (it_behavior_freq.hasNext()) {
+            Map.Entry pair = (Map.Entry)it_behavior_freq.next();
+            switch(Integer.parseInt(pair.getKey().toString())) {
+                case 0:
+                    saturday += 1;
+                    break;
+                case 1:
+                    friday += 1;
+                    break;
+                case 2:
+                    thursday += 1;
+                    break;
+                case 3:
+                    wednesday += 1;
+                    break;
+                case 4:
+                    tuesday += 1;
+                    break;
+                case 5:
+                    monday += 1;
+                    break;
+                case 6:
+                    sunday += 1;
+                    break;
+            }
+        }
+
+        HashMap<String, Object> summary = statisticData.summary;
+        weekNumber += Integer.parseInt(summary.get("count").toString());
+        weekTime += Integer.parseInt(summary.get("duration_min").toString());
+        weekIntensity += Integer.parseInt(summary.get("intensity_sum").toString());
+
+        HashMap<String, Object> type = statisticData.type;
+        Iterator it_type = type.entrySet().iterator();
+        while (it_type.hasNext()) {
+            Map.Entry pair = (Map.Entry)it_type.next();
+            switch(pair.getKey().toString()) {
+                case "selfharm":
+                    selfharm += Integer.parseInt(pair.getValue().toString());
+                    break;
+                case "harm":
+                    harm += Integer.parseInt(pair.getValue().toString());
+                    break;
+                case "destruction":
+                    destruction += Integer.parseInt(pair.getValue().toString());
+                    break;
+                case "breakaway":
+                    breakaway += Integer.parseInt(pair.getValue().toString());
+                    break;
+                case "sexual":
+                    sexual += Integer.parseInt(pair.getValue().toString());
+                    break;
+                case "etc":
+                    typeEtc += Integer.parseInt(pair.getValue().toString());
+                    break;
+            }
+        }
+
+        HashMap<String, Object> reason_type = statisticData.reason_type;
+        Iterator it_reason_type = reason_type.entrySet().iterator();
+        while (it_reason_type.hasNext()) {
+            Map.Entry pair = (Map.Entry)it_reason_type.next();
+            switch(pair.getKey().toString()) {
+                case "interest":
+                    interest += Integer.parseInt(pair.getValue().toString());
+                    break;
+                case "selfstimulation":
+                    selfstimulation += Integer.parseInt(pair.getValue().toString());
+                    break;
+                case "taskevation":
+                    taskevation += Integer.parseInt(pair.getValue().toString());
+                    break;
+                case "demand":
+                    demand += Integer.parseInt(pair.getValue().toString());
+                    break;
+                case "etc":
+                    reasonEtc += Integer.parseInt(pair.getValue().toString());
+                    break;
+            }
+        }
+
+        HashMap<String, Object> place = statisticData.place;
+        Iterator it_place = place.entrySet().iterator();
+        while (it_place.hasNext()) {
+            Map.Entry pair = (Map.Entry)it_place.next();
+            switch(pair.getKey().toString()) {
+                case "집":
+                    home += Integer.parseInt(pair.getValue().toString());
+                    break;
+                case "마트":
+                    mart += Integer.parseInt(pair.getValue().toString());
+                    break;
+                case "식당":
+                    restaurant += Integer.parseInt(pair.getValue().toString());
+                    break;
+                case "학교":
+                    school += Integer.parseInt(pair.getValue().toString());
+                    break;
+            }
+        }
+
     }
 
     @Override

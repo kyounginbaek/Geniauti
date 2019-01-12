@@ -2,26 +2,19 @@ package com.geniauti.geniauti;
 
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
-import android.app.TimePickerDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
-import android.widget.Toast;
 
-import java.sql.Time;
-import java.sql.Timestamp;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -56,7 +49,7 @@ public class BehaviorFirstFragment extends Fragment {
     private LinearLayout startTimeDialogCancel, endTimeDialogCancel;
     private LinearLayout startTimeDialogSubmit, endTimeDialogSubmit;
 
-    private String AM_PM_Start;
+    private long ONE_MINUTE_IN_MILLIS = 60000; //millisecs
     private SimpleDateFormat formatterDate;
     private SimpleDateFormat formatterHour;
 
@@ -102,26 +95,36 @@ public class BehaviorFirstFragment extends Fragment {
         formatterDate = new SimpleDateFormat("yyyy년 MM월 dd일 E요일", Locale.KOREAN);
         formatterHour = new SimpleDateFormat("aa hh:mm", Locale.KOREAN);
 
-        final long ONE_MINUTE_IN_MILLIS = 60000; //millisecs
-        Date dateToday = new Date();
-        date_start = formatterDate.format(dateToday);
-        long curTimeInMs = dateToday.getTime();
-        Date afterAddingMins = new Date(curTimeInMs + (5 * ONE_MINUTE_IN_MILLIS));
-
         dateLayout = (RelativeLayout) v.findViewById(R.id.start_date_layout);
         dateText = (TextView) v.findViewById(R.id.start_date_txt);
-
-        dateText.setText(date_start);
-
         startTimeLayout = (RelativeLayout) v.findViewById(R.id.start_time_layout);
         startTimeText = (TextView) v.findViewById(R.id.start_time_txt);
         endTimeLayout = (RelativeLayout) v.findViewById(R.id.end_time_layout);
         endTimeText = (TextView) v.findViewById(R.id.end_time_txt);
-        hour_start = formatterHour.format(dateToday);
-        hour_end = formatterHour.format(afterAddingMins);
 
-        startTimeText.setText(hour_start);
-        endTimeText.setText(hour_end);
+
+        if(BehaviorActivity.editBehaviorState == true && BehaviorActivity.editBehavior != null) {
+            date_start = formatterDate.format(BehaviorActivity.editBehavior.start_time);
+            hour_start = formatterHour.format(BehaviorActivity.editBehavior.start_time);
+            hour_end = formatterHour.format(BehaviorActivity.editBehavior.end_time);
+
+            dateText.setText(date_start);
+            startTimeText.setText(hour_start);
+            endTimeText.setText(hour_end);
+        } else {
+            Date dateToday = new Date();
+            long curTimeInMs = dateToday.getTime();
+            Date afterAddingMins = new Date(curTimeInMs + (5 * ONE_MINUTE_IN_MILLIS));
+
+            date_start = formatterDate.format(dateToday);
+            dateText.setText(date_start);
+
+            hour_start = formatterHour.format(dateToday);
+            hour_end = formatterHour.format(afterAddingMins);
+
+            startTimeText.setText(hour_start);
+            endTimeText.setText(hour_end);
+        }
 
         dateLayout.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -1,21 +1,18 @@
 package com.geniauti.geniauti;
 
-import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -25,10 +22,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
-
-import java.util.HashMap;
 
 public class ProfileEditActivity extends AppCompatActivity {
 
@@ -36,7 +29,7 @@ public class ProfileEditActivity extends AppCompatActivity {
     private EditText profileEmail;
     private RelativeLayout passwordEdit;
     private Button btnProfileEdit;
-    private String newName;
+    private String newName, newEmail;
 
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -71,6 +64,8 @@ public class ProfileEditActivity extends AppCompatActivity {
         btnProfileEdit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                btnProfileEdit.setEnabled(false);
+
                 // Reset errors.
                 profileName.setError(null);
                 profileEmail.setError(null);
@@ -80,7 +75,7 @@ public class ProfileEditActivity extends AppCompatActivity {
                 View focusView = null;
 
                 newName = profileName.getText().toString();
-                String newEmail = profileEmail.getText().toString();
+                newEmail = profileEmail.getText().toString();
 
                 if (TextUtils.isEmpty(newName)) {
                     profileName.setError("이름을 입력해주세요.");
@@ -94,18 +89,6 @@ public class ProfileEditActivity extends AppCompatActivity {
                     cancel = true;
                 }
 
-                if(newName.equals(user.getDisplayName())) {
-                    profileName.setError("새로운 이름을 입력해주세요.");
-                    focusView = profileName;
-                    cancel = true;
-                }
-
-                if(newEmail.equals(user.getEmail())) {
-                    profileEmail.setError("새로운 이메일 주소를 입력해주세요.");
-                    focusView = profileEmail;
-                    cancel = true;
-                }
-
                 if (!isEmailValid(newEmail)) {
                     profileEmail.setError("잘못된 이메일 형식입니다.");
                     focusView = profileEmail;
@@ -113,38 +96,24 @@ public class ProfileEditActivity extends AppCompatActivity {
                 }
 
                 if(cancel) {
-
+                    btnProfileEdit.setEnabled(true);
                 } else {
-                    db.collection("users").document(user.getUid())
-                            .update("name", newName)
-                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                @Override
-                                public void onSuccess(Void aVoid) {
 
-                                }
-                            })
-                            .addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                }
-                            });
+                    if(newName.equals(user.getDisplayName()) && newEmail.equals(user.getEmail())) {
+                        btnProfileEdit.setEnabled(true);
+                        Toast.makeText(ProfileEditActivity.this, "이름 혹은 이메일 주소를 변경해주세요.", Toast.LENGTH_SHORT).show();
+                    } else {
+                        if(!newName.equals(user.getDisplayName())) {
+                            nameChange();
+                        } else {
+                            if(!newEmail.equals(user.getEmail())) {
+                                // email
+                                emailChange();
+                            }
+                        }
 
 
-
-                    UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
-                            .setDisplayName(newName)
-                            .build();
-
-                    user.updateProfile(profileUpdates)
-                            .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                @Override
-                                public void onComplete(@NonNull Task<Void> task) {
-                                    if (task.isSuccessful()) {
-                                        finish();
-                                    }
-                                }
-                            });
-
+                    }
 
 //                    user.updateEmail(newEmail)
 //                            .addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -167,6 +136,63 @@ public class ProfileEditActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    private void nameChange() {
+        // users
+        db.collection("users").document(user.getUid())
+                .update("name", newName)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+
+                        // childs
+
+
+                        // behaviors
+
+
+                        // admin
+                        UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                                .setDisplayName(newName)
+                                .build();
+
+                        user.updateProfile(profileUpdates)
+                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        if (task.isSuccessful()) {
+                                            finish();
+                                        }
+                                    }
+                                });
+
+                        // email change check
+                        if(!newEmail.equals(user.getEmail())) {
+                            // email
+                            emailChange();
+                        }
+
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        btnProfileEdit.setEnabled(true);
+                    }
+                });
+    }
+
+    private void emailChange() {
+        user.updateEmail(newEmail)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+
+                        }
+                    }
+                });
     }
 
     private boolean isEmailValid(String email) {

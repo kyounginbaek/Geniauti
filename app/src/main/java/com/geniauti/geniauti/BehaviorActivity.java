@@ -1,9 +1,7 @@
 package com.geniauti.geniauti;
 
 import android.content.Context;
-import android.content.Intent;
 import android.net.Uri;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -14,14 +12,8 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-
 import android.view.inputmethod.InputMethodManager;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -35,11 +27,9 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -58,9 +48,11 @@ public class BehaviorActivity extends AppCompatActivity implements BehaviorFirst
     /**
      * The {@link ViewPager} that will host the section contents.
      */
-    private CustomViewPager mViewPager;
-    public Behavior tempBehavior;
-    public static Parcelable state;
+    public static CustomViewPager mViewPager;
+    public static Bookmark tmpBookmark;
+    public static Behavior editBehavior;
+    public static boolean bookmarkState = false;
+    public static boolean editBehaviorState = false;
 
     private FirebaseFirestore db;
     private FirebaseUser user;
@@ -78,7 +70,11 @@ public class BehaviorActivity extends AppCompatActivity implements BehaviorFirst
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-        tempBehavior = (Behavior) getIntent().getSerializableExtra("tempBehavior");
+        // Bookmark
+        tmpBookmark = (Bookmark) getIntent().getSerializableExtra("bookmark");
+        if(tmpBookmark != null){
+            bookmarkState = true;
+        }
 
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
@@ -87,6 +83,7 @@ public class BehaviorActivity extends AppCompatActivity implements BehaviorFirst
         // Set up the ViewPager with the sections adapter.
         mViewPager = (CustomViewPager) findViewById(R.id.behavior_container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
+        mViewPager.setOffscreenPageLimit(8);
 
         toolbar.setNavigationIcon(getResources().getDrawable(R.drawable.ic_close_green_24dp));
         final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.behavior_fab);
@@ -136,7 +133,13 @@ public class BehaviorActivity extends AppCompatActivity implements BehaviorFirst
             }
         });
 
-        // mViewPager.setCurrentItem(getItem(+1), true);
+        // editBehavior
+        editBehavior = (Behavior) getIntent().getSerializableExtra("behaviorEdit");
+        if(editBehavior != null){
+            editBehaviorState = true;
+            int editPage = getIntent().getIntExtra("behaviorEditPage", 0);
+            mViewPager.setCurrentItem(editPage-1);
+        }
 
         db = FirebaseFirestore.getInstance();
         user = FirebaseAuth.getInstance().getCurrentUser();
@@ -217,18 +220,24 @@ public class BehaviorActivity extends AppCompatActivity implements BehaviorFirst
                     if(f4.textInput.getText().toString().equals("")){
                         Toast.makeText(BehaviorActivity.this, "빈칸을 입력해주세요.", Toast.LENGTH_SHORT).show();
                     } else {
+                        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
                         mViewPager.setCurrentItem(getItem(+1), true);
                     }
                 } else if(mViewPager.getCurrentItem()==4){
                     if(f5.textInput.getText().toString().equals("")){
                         Toast.makeText(BehaviorActivity.this, "빈칸을 입력해주세요.", Toast.LENGTH_SHORT).show();
                     } else {
+                        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
                         mViewPager.setCurrentItem(getItem(+1), true);
                     }
                 } else if(mViewPager.getCurrentItem()==5){
                     if(f6.textInput.getText().toString().equals("")){
                         Toast.makeText(BehaviorActivity.this, "빈칸을 입력해주세요.", Toast.LENGTH_SHORT).show();
                     } else {
+                        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
                         mViewPager.setCurrentItem(getItem(+1), true);
                     }
                 } else if(mViewPager.getCurrentItem()==6) {
@@ -247,9 +256,16 @@ public class BehaviorActivity extends AppCompatActivity implements BehaviorFirst
                         fab.setEnabled(false);
                         SimpleDateFormat formatter = new SimpleDateFormat("yyyy년 MM월 dd일 EEE aa hh:mm", Locale.KOREAN);
                         try{
+                            Calendar cal = Calendar.getInstance();
                             Date date_start = formatter.parse(f1.date_start + " " + f1.hour_start);
                             Date date_end = formatter.parse(f1.date_start + " " + f1.hour_end);
-                            Calendar cal = Calendar.getInstance();
+
+                            if(f1.hour_start.substring(0,2).equals("오후") && f1.hour_end.substring(0,2).equals("오전") && Integer.parseInt(f1.hour_end.substring(3,5)) < 4) {
+                                Calendar tmpCal = Calendar.getInstance();
+                                tmpCal.setTime(date_end);
+                                tmpCal.add(Calendar.DATE, 1);
+                                date_end = tmpCal.getTime();
+                            }
 
                             docData = new HashMap<>();
                             docData.put("start_time", date_start);
@@ -261,32 +277,57 @@ public class BehaviorActivity extends AppCompatActivity implements BehaviorFirst
                             docData.put("after_behavior", f6.textInput.getText().toString());
                             docData.put("type", f7.getResult());
                             docData.put("intensity", f8.seekbarValue+1);
-                            docData.put("reason", f9.getResult());
-                            docData.put("reason_detail", "");
-                            docData.put("created_at", cal.getTime());
-                            docData.put("updated_at", "");
+                            docData.put("reason_type", f9.getResult());
+                            docData.put("reason", f9.reasonDetail());
                             docData.put("uid", user.getUid());
                             docData.put("name", user.getDisplayName());
                             docData.put("cid", cid);
 
-                            db.collection("behaviors").document()
-                                    .set(docData)
-                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                        @Override
-                                        public void onSuccess(Void aVoid) {
+                            if(editBehaviorState == true) {
+                                docData.put("updated_at", cal.getTime());
+
+                                db.collection("behaviors").document(editBehavior.bid)
+                                        .update(docData)
+                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(Void aVoid) {
 //                                                                  mProgressView.setVisibility(View.GONE);
-                                            MainActivity.adapter.notifyDataSetChanged();
-                                            finish();
-                                            Toast toast = Toast.makeText(BehaviorActivity.this, "행동 생성이 완료되었습니다.", Toast.LENGTH_SHORT);
-                                            toast.show();
-                                        }
-                                    })
-                                    .addOnFailureListener(new OnFailureListener() {
-                                        @Override
-                                        public void onFailure(@NonNull Exception e) {
-                                            fab.setEnabled(true);
-                                        }
-                                    });
+                                                MainActivity.adapter.notifyDataSetChanged();
+                                                finish();
+
+                                                Toast toast = Toast.makeText(BehaviorActivity.this, "행동이 수정되었습니다.", Toast.LENGTH_SHORT);
+                                                toast.show();
+                                            }
+                                        })
+                                        .addOnFailureListener(new OnFailureListener() {
+                                            @Override
+                                            public void onFailure(@NonNull Exception e) {
+                                                fab.setEnabled(true);
+                                            }
+                                        });
+                            } else {
+                                docData.put("updated_at", "");
+                                docData.put("created_at", cal.getTime());
+
+                                db.collection("behaviors").document()
+                                        .set(docData)
+                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(Void aVoid) {
+//                                                                  mProgressView.setVisibility(View.GONE);
+                                                MainActivity.adapter.notifyDataSetChanged();
+                                                finish();
+                                                Toast toast = Toast.makeText(BehaviorActivity.this, "행동 생성이 완료되었습니다.", Toast.LENGTH_SHORT);
+                                                toast.show();
+                                            }
+                                        })
+                                        .addOnFailureListener(new OnFailureListener() {
+                                            @Override
+                                            public void onFailure(@NonNull Exception e) {
+                                                fab.setEnabled(true);
+                                            }
+                                        });
+                            }
                         } catch (java.text.ParseException e) {
                             // TODO Auto-generated catch block
                             e.printStackTrace();

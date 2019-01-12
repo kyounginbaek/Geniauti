@@ -2,8 +2,10 @@ package com.geniauti.geniauti;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,9 +20,20 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.w3c.dom.Text;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 
 /**
@@ -41,15 +54,16 @@ public class BehaviorSecondFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
+    private FirebaseFirestore db;
+    private FirebaseUser user;
+
     private View v;
     private GridListAdapter adapter;
     private ArrayList<String> arrayList;
     public ListView listView;
 
-    public String location;
     private EditText txtLocation;
 
-    private LinearLayout locationDialog;
     private LinearLayout locationCancel;
     private LinearLayout locationAdd;
 
@@ -97,17 +111,46 @@ public class BehaviorSecondFragment extends Fragment {
         }
         v = inflater.inflate(R.layout.fragment_behavior_second, container, false);
 
-        listView = (ListView) v.findViewById(R.id.radio_listview_first);
+        listView = (ListView) v.findViewById(R.id.radio_listview_second);
         arrayList = new ArrayList<>();
 
         arrayList.add("집");
         arrayList.add("마트");
         arrayList.add("식당");
         arrayList.add("학교");
-        arrayList.add("장소 추가하기");
 
-        adapter = new BehaviorSecondFragment.GridListAdapter(this.getContext(), arrayList, true);
-        listView.setAdapter(adapter);
+        db = FirebaseFirestore.getInstance();
+        user = FirebaseAuth.getInstance().getCurrentUser();
+
+        db.collection("childs").document(MainFragment.cid)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (task.isSuccessful()) {
+                            DocumentSnapshot document = task.getResult();
+                            if(document.exists()) {
+                                HashMap<String, Object> preset = (HashMap<String, Object>)  document.get("preset");
+                                if(preset != null) {
+                                    HashMap<String, Boolean> place = (HashMap<String, Boolean>)  preset.get("place_preset");
+                                    if(place != null){
+                                        Iterator it = place.entrySet().iterator();
+                                        while (it.hasNext()) {
+                                            Map.Entry pair = (Map.Entry)it.next();
+                                            arrayList.add(pair.getKey().toString());
+                                        }
+                                    }
+                                }
+                            }
+
+                            arrayList.add("장소 추가하기");
+                            adapter = new GridListAdapter(getContext(), arrayList);
+                            listView.setAdapter(adapter);
+                        } else {
+//                            Log.d(TAG, "Error getting documents: ", task.getException());
+                        }
+                    }
+                });
 
         // Inflate the layout for this fragment
         return v;
@@ -123,34 +166,15 @@ public class BehaviorSecondFragment extends Fragment {
         }
     }
 
-    private void onClickEvent(View view) {
-        view.findViewById(R.id.rowRadioButton).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //Get the selected position
-//                adapter.getSelectedItem();
-            }
-        });
-//        view.findViewById(R.id.delete_button).setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                //Delete the selected position
-//                adapter.deleteSelectedPosition();
-//            }
-//        });
-    }
-
     public class GridListAdapter extends BaseAdapter {
         private Context context;
         private ArrayList<String> arrayList;
         private LayoutInflater inflater;
-        private boolean isListView;
         private int selectedPosition = -1;
 
-        public GridListAdapter(Context context, ArrayList<String> arrayList, boolean isListView) {
+        public GridListAdapter(Context context, ArrayList<String> arrayList) {
             this.context = context;
             this.arrayList = arrayList;
-            this.isListView = isListView;
             inflater = LayoutInflater.from(context);
         }
 
@@ -171,150 +195,180 @@ public class BehaviorSecondFragment extends Fragment {
 
         @Override
         public View getView(final int i, View view, ViewGroup viewGroup) {
-            ViewHolder viewHolder;
 
-            if(i == arrayList.size()-1){
-                viewHolder = new ViewHolder();
+            if(i == arrayList.size()-1) {
                 view = inflater.inflate(R.layout.list_addlist, viewGroup, false);
-                viewHolder.addListText = (TextView) view.findViewById(R.id.add_list_txt);
-                viewHolder.addListLayout = (LinearLayout) view.findViewById(R.id.add_list_layout);
-
-                view.setTag(viewHolder);
             } else {
-                if (view == null) {
-                    viewHolder = new ViewHolder();
+                view = inflater.inflate(R.layout.list_radio, viewGroup, false);
+            }
 
-                    view = inflater.inflate(R.layout.list_radio, viewGroup, false);
-                    viewHolder.radioButton = (RadioButton) view.findViewById(R.id.rowRadioButton);
-                    if(i > 3) {
-                        viewHolder.radioDelete = (ImageView) view.findViewById(R.id.rowRadioDelete);
-                        viewHolder.radioDelete.setVisibility(View.VISIBLE);
-                    }
+            //check the radio button if both position and selectedPosition matches
+            if(BehaviorActivity.bookmarkState == true && BehaviorActivity.tmpBookmark != null && selectedPosition == -1) {
+                if(arrayList.get(i).equals(BehaviorActivity.tmpBookmark.place)) {
+                    selectedPosition = i;
+                }
+            }
 
-                    view.setTag(viewHolder);
-                } else
-                    viewHolder = (ViewHolder) view.getTag();
+            if(BehaviorActivity.editBehaviorState== true && BehaviorActivity.editBehavior != null && selectedPosition == -1) {
+                if(arrayList.get(i).equals(BehaviorActivity.editBehavior.place)) {
+                    selectedPosition = i;
+                }
+            }
+
+            if(BookmarkActivity.editBookmarkState== true && BookmarkActivity.editBookmark != null && selectedPosition == -1) {
+                if(arrayList.get(i).equals(BookmarkActivity.editBookmark.place)) {
+                    selectedPosition = i;
+                }
             }
 
             if (i == arrayList.size()-1) {
-                viewHolder.addListText.setText("장소 추가하기");
-                viewHolder.addListLayout.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
+                TextView addListText = (TextView) view.findViewById(R.id.add_list_txt);
+                LinearLayout addListLayout = (LinearLayout) view.findViewById(R.id.add_list_layout);
+
+                if(addListText != null && addListLayout != null) {
+                    addListText.setText("장소 추가하기");
+                    addListLayout.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
 //                        itemCheckChanged(v);
 
-                        AlertDialog.Builder mBuilder = new AlertDialog.Builder(getContext());
-                        View mView = getLayoutInflater().inflate(R.layout.dialog_location_add, null);
-                        mBuilder.setView(mView);
-                        final AlertDialog dialog = mBuilder.create();
-                        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+                            AlertDialog.Builder mBuilder = new AlertDialog.Builder(getContext());
+                            View mView = getLayoutInflater().inflate(R.layout.dialog_location_add, null);
+                            mBuilder.setView(mView);
+                            final AlertDialog dialog = mBuilder.create();
+                            dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
 
-                        dialog.show();
+                            dialog.show();
 
-                        txtLocation = (EditText) mView.findViewById(R.id.txt_location);
+                            txtLocation = (EditText) mView.findViewById(R.id.txt_location);
 
-                        locationCancel = (LinearLayout) mView.findViewById(R.id.location_cancel);
-                        locationCancel.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                dialog.dismiss();
-                            }
-                        });
-
-                        locationAdd = (LinearLayout) mView.findViewById(R.id.location_add);
-                        locationAdd.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                boolean cancel = false;
-                                String location = txtLocation.getText().toString().trim();
-
-                                if(location.equals("집") || location.equals("마트") || location.equals("식당") || location.equals("학교")) {
-                                    Toast.makeText(getActivity(), "이미 등록되어 있는 장소입니다.", Toast.LENGTH_SHORT).show();
-                                    cancel = true;
-                                }
-
-                                if(location.equals("")) {
-                                    Toast.makeText(getActivity(), "빈칸을 입력해주세요.", Toast.LENGTH_SHORT).show();
-                                    cancel = true;
-                                }
-
-                                if(cancel){
-
-                                } else {
-                                    adapter.selectedPosition = arrayList.size() - 1;
-                                    arrayList.add(arrayList.size() - 1, txtLocation.getText().toString());
-                                    adapter.notifyDataSetChanged();
+                            locationCancel = (LinearLayout) mView.findViewById(R.id.location_cancel);
+                            locationCancel.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
                                     dialog.dismiss();
                                 }
+                            });
+
+                            locationAdd = (LinearLayout) mView.findViewById(R.id.location_add);
+                            locationAdd.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    boolean cancel = false;
+                                    String location = txtLocation.getText().toString().trim();
+
+//                                if(location.equals("집") || location.equals("마트") || location.equals("식당") || location.equals("학교")) {
+//                                    Toast.makeText(getActivity(), "이미 등록되어 있는 장소입니다.", Toast.LENGTH_SHORT).show();
+//                                    cancel = true;
+//                                }
+
+                                    if(location.equals("")) {
+                                        Toast.makeText(getActivity(), "빈칸을 입력해주세요.", Toast.LENGTH_SHORT).show();
+                                        cancel = true;
+                                    }
+
+                                    if(cancel){
+
+                                    } else {
+
+                                        db.collection("childs").document(MainFragment.cid)
+                                                .update("preset.place_preset."+txtLocation.getText().toString(), true)
+                                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                    @Override
+                                                    public void onSuccess(Void aVoid) {
+//                                                           mProgressView.setVisibility(View.GONE);
+                                                        adapter.selectedPosition = arrayList.size() - 1;
+                                                        arrayList.add(arrayList.size() - 1, txtLocation.getText().toString());
+                                                        adapter.notifyDataSetChanged();
+                                                        listView.invalidateViews();
+                                                        dialog.dismiss();
+                                                    }
+                                                })
+                                                .addOnFailureListener(new OnFailureListener() {
+                                                    @Override
+                                                    public void onFailure(@NonNull Exception e) {
+//                                                          Log.w(TAG, "Error writing document", e);
+                                                    }
+                                                });
+                                    }
+                                }
+                            });
+                        }
+                    });
+                }
+            } else {
+                RadioButton radioButton = (RadioButton) view.findViewById(R.id.rowRadioButton);
+                if(radioButton != null) {
+                    //Set the position tag to both radio button and label
+                    radioButton.setChecked(i == selectedPosition);
+                    radioButton.setText(arrayList.get(i));
+
+                    radioButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            selectedPosition = i;
+                            adapter.notifyDataSetChanged();
+                            listView.invalidateViews();
+                        }
+                    });
+                }
+
+                if(i > 3) {
+                    ImageView radioDelete = (ImageView) view.findViewById(R.id.rowRadioDelete);
+                    if(radioDelete != null) {
+                        radioDelete.setVisibility(View.VISIBLE);
+
+                        AlertDialog.Builder alt_bld = new AlertDialog.Builder(getActivity());
+                        alt_bld.setMessage("장소를 삭제하시겠습니까?").setCancelable(
+                                false).setPositiveButton("확인",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        // Action for 'Yes' Button
+                                        Object delete_data = FieldValue.delete();
+                                        db.collection("childs").document(MainFragment.cid)
+                                                .update("preset.place_preset."+arrayList.get(i), delete_data)
+                                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                    @Override
+                                                    public void onSuccess(Void aVoid) {
+//                                                           mProgressView.setVisibility(View.GONE);
+                                                        if(adapter.selectedPosition == i){
+                                                            adapter.selectedPosition = -1;
+                                                        } else if(adapter.selectedPosition > i) {
+                                                            adapter.selectedPosition += -1;
+                                                        }
+                                                        arrayList.remove(i);
+                                                        adapter.notifyDataSetChanged();
+                                                        listView.invalidateViews();
+                                                    }
+                                                })
+                                                .addOnFailureListener(new OnFailureListener() {
+                                                    @Override
+                                                    public void onFailure(@NonNull Exception e) {
+//                                                          Log.w(TAG, "Error writing document", e);
+                                                    }
+                                                });
+                                    }
+                                }).setNegativeButton("취소",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        // Action for 'NO' Button
+                                        dialog.cancel();
+                                    }
+                                });
+                        final AlertDialog alert = alt_bld.create();
+
+                        radioDelete.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                alert.show();
                             }
                         });
                     }
-                });
-            } else {
-                //check the radio button if both position and selectedPosition matches
-                viewHolder.radioButton.setChecked(i == selectedPosition);
-                viewHolder.radioButton.setText(arrayList.get(i));
-
-                //Set the position tag to both radio button and label
-                viewHolder.radioButton.setTag(i);
-
-                viewHolder.radioButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        itemCheckChanged(v);
-                    }
-                });
-
-                if(i > 3) {
-                    viewHolder.radioDelete.setTag(i);
-                    viewHolder.radioDelete.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            if(adapter.selectedPosition == i){
-                                adapter.selectedPosition = -1;
-                            } else if(adapter.selectedPosition > i) {
-                                adapter.selectedPosition += -1;
-                            }
-                            arrayList.remove(i);
-                            adapter.notifyDataSetChanged();
-                        }
-                    });
                 }
             }
 
             return view;
         }
-
-        //On selecting any view set the current position to selectedPositon and notify adapter
-        private void itemCheckChanged(View v) {
-            selectedPosition = (Integer) v.getTag();
-            notifyDataSetChanged();
-        }
-
-        private class ViewHolder {
-            private TextView addListText;
-            private LinearLayout addListLayout;
-            private RadioButton radioButton;
-            private ImageView radioDelete;
-        }
-
-        //Return the selectedPosition item
-//        public String getSelectedItem() {
-//            if (selectedPosition != -1) {
-//                Toast.makeText(context, "Selected Item : " + arrayList.get(selectedPosition), Toast.LENGTH_SHORT).show();
-//                return arrayList.get(selectedPosition);
-//            }
-//            return "";
-//        }
-
-        //Delete the selected position from the arrayList
-//        public void deleteSelectedPosition() {
-//            if (selectedPosition != -1) {
-//                arrayList.remove(selectedPosition);
-//                selectedPosition = -1;//after removing selectedPosition set it back to -1
-//                notifyDataSetChanged();
-//            }
-//        }
     }
 
     // TODO: Rename method, update argument and hook method into UI event

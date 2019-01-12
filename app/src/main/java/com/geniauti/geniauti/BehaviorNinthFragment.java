@@ -11,12 +11,13 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -38,6 +39,7 @@ public class BehaviorNinthFragment extends Fragment {
     private String mParam2;
 
     HashMap<String,Boolean> checkbox_reason = new HashMap<String,Boolean>();
+    HashMap<String,Boolean> reason_detail = new HashMap<String,Boolean>();
     private Reason[] reasons ;
     private ArrayAdapter<Reason> listAdapter ;
 
@@ -99,21 +101,21 @@ public class BehaviorNinthFragment extends Fragment {
         reasons = (Reason[]) onRetainCustomNonConfigurationInstance() ;
         if ( reasons == null ) {
             reasons = new Reason[] {
-                    new Reason("자신에게 관심을 갖는 것이 좋아서", "관심"),
-                    new Reason("타인에게 주목 받는 것을 즐겨서", "관심"),
-                    new Reason("관심의 대상이 되고 싶어서", "관심"),
-                    new Reason("다른 사람의 관심을 끌려고", "관심"),
-                    new Reason("행동을 통해 얻는 감각이 좋아서", "자기자극"),
-                    new Reason("행동을 하는 것 자체가 좋아서", "자기자극"),
-                    new Reason("행동이 주는 자극을 얻으려고", "자기자극"),
-                    new Reason("원하는 것을 즉각 얻지 못해서", "요구"),
-                    new Reason("원하는 물건을 가질 수 없어서", "요구"),
-                    new Reason("어떤 물건(장난감)을 갖기 위해서", "요구"),
-                    new Reason("본인이 갖고 싶은 물건을 얻으려고", "요구"),
-                    new Reason("시키는 일을 거부하려고", "과제회피"),
-                    new Reason("하려고 한 일이 힘들어서", "과제회피"),
-                    new Reason("주어진 일을 하기 싫어서", "과제회피"),
-                    new Reason("시키는 일이 어려워 피하려고", "과제회피"),
+                    new Reason("자신에게 관심을 갖는 것이 좋아서", "interest", "interest1"),
+                    new Reason("타인에게 주목 받는 것을 즐겨서", "interest", "interest2"),
+                    new Reason("관심의 대상이 되고 싶어서", "interest", "interest3"),
+                    new Reason("다른 사람의 관심을 끌려고", "interest", "interest4"),
+                    new Reason("행동을 통해 얻는 감각이 좋아서", "selfstimulation", "stimulation1"),
+                    new Reason("행동을 하는 것 자체가 좋아서", "selfstimulation", "stimulation2"),
+                    new Reason("행동이 주는 자극을 얻으려고", "selfstimulation", "stimulation3"),
+                    new Reason("원하는 것을 즉각 얻지 못해서", "demand", "demand1"),
+                    new Reason("원하는 물건을 가질 수 없어서", "demand", "demand2"),
+                    new Reason("어떤 물건(장난감)을 갖기 위해서", "demand", "demand3"),
+                    new Reason("본인이 갖고 싶은 물건을 얻으려고", "demand", "demand4"),
+                    new Reason("시키는 일을 거부하려고", "taskevation", "taskevation1"),
+                    new Reason("하려고 한 일이 힘들어서", "taskevation", "taskevation2"),
+                    new Reason("주어진 일을 하기 싫어서", "taskevation", "taskevation3"),
+                    new Reason("시키는 일이 어려워 피하려고", "taskevation", "taskevation4")
             };
         }
         ArrayList<Reason> reasonList = new ArrayList<Reason>();
@@ -133,9 +135,7 @@ public class BehaviorNinthFragment extends Fragment {
 
         for (int i=0; i < listAdapter.getCount(); i++) {
             if (listAdapter.getItem(i).isChecked()) {
-                if(checkbox_reason.get(listAdapter.getItem(i).reason)!=null){
-
-                } else {
+                if(checkbox_reason.get(listAdapter.getItem(i).reason)==null){
                     checkbox_reason.put(listAdapter.getItem(i).reason, true);
                 }
             }
@@ -143,19 +143,28 @@ public class BehaviorNinthFragment extends Fragment {
         return checkbox_reason;
     }
 
+    public HashMap<String, Boolean> reasonDetail() {
+        reason_detail.clear();
+
+        for (int i=0; i < listAdapter.getCount(); i++) {
+            if (listAdapter.getItem(i).isChecked()) {
+                reason_detail.put(listAdapter.getItem(i).detail, true);
+            }
+        }
+        return reason_detail;
+    }
+
     /** Holds checkbox data. */
     private static class Reason {
         private String name = "" ;
         private String reason = "";
+        private String detail = "";
         private boolean checked = false ;
-        public Reason() {}
-        public Reason( String name, String reason ) {
+
+        public Reason( String name, String reason, String detail) {
             this.name = name ;
             this.reason = reason;
-        }
-        public Reason( String name, boolean checked ) {
-            this.name = name ;
-            this.checked = checked ;
+            this.detail = detail;
         }
         public String getName() {
             return name;
@@ -180,23 +189,12 @@ public class BehaviorNinthFragment extends Fragment {
     /** Holds child views for one row. */
     private static class ReasonViewHolder {
         private CheckBox checkBox ;
-        private TextView textView ;
-        public ReasonViewHolder() {}
+
         public ReasonViewHolder(CheckBox checkBox ) {
             this.checkBox = checkBox ;
-//            this.textView = textView ;
         }
         public CheckBox getCheckBox() {
             return checkBox;
-        }
-        public void setCheckBox(CheckBox checkBox) {
-            this.checkBox = checkBox;
-        }
-        public TextView getTextView() {
-            return textView;
-        }
-        public void setTextView(TextView textView) {
-            this.textView = textView;
         }
     }
 
@@ -246,6 +244,36 @@ public class BehaviorNinthFragment extends Fragment {
                 // Because we use a ViewHolder, we avoid having to call findViewById().
                 ReasonViewHolder viewHolder = (ReasonViewHolder) convertView.getTag();
                 checkBox = viewHolder.getCheckBox() ;
+
+                if(BehaviorActivity.bookmarkState == true && BehaviorActivity.tmpBookmark != null) {
+                    Iterator it = BehaviorActivity.tmpBookmark.reason.entrySet().iterator();
+                    while (it.hasNext()) {
+                        Map.Entry pair = (Map.Entry)it.next();
+                        if(reason.detail.equals(pair.getKey().toString())) {
+                            reason.setChecked(true);
+                        }
+                    }
+                }
+
+                if(BehaviorActivity.editBehaviorState == true && BehaviorActivity.editBehavior != null) {
+                    Iterator it = BehaviorActivity.editBehavior.reason.entrySet().iterator();
+                    while (it.hasNext()) {
+                        Map.Entry pair = (Map.Entry)it.next();
+                        if(reason.detail.equals(pair.getKey().toString())) {
+                            reason.setChecked(true);
+                        }
+                    }
+                }
+
+                if(BookmarkActivity.editBookmarkState == true && BookmarkActivity.editBookmark != null) {
+                    Iterator it = BookmarkActivity.editBookmark.reason.entrySet().iterator();
+                    while (it.hasNext()) {
+                        Map.Entry pair = (Map.Entry)it.next();
+                        if(reason.detail.equals(pair.getKey().toString())) {
+                            reason.setChecked(true);
+                        }
+                    }
+                }
 //                textView = viewHolder.getTextView() ;
             }
 

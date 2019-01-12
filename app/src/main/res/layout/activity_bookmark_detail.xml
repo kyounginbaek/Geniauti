@@ -4,10 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".BehaviorDetailActivity">
+    tools:context=".BookmarkDetailActivity">
 
     <ProgressBar
-        android:id="@+id/behavior_detail_progress"
+        android:id="@+id/bookmark_detail_progress"
         style="?android:attr/progressBarStyleLarge"
         android:layout_width="wrap_content"
         android:layout_height="fill_parent"
@@ -22,7 +22,7 @@
         >
 
         <android.support.v7.widget.Toolbar
-            android:id="@+id/behavior_detail_toolbar"
+            android:id="@+id/bookmark_detail_toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/coolGreen"
@@ -41,7 +41,7 @@
                 android:orientation="vertical">
 
                 <LinearLayout
-                    android:id="@+id/behavior_edit_layout1"
+                    android:id="@+id/behavior_bookmark_edit_layout1"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="16dp"
@@ -64,7 +64,7 @@
                             />
 
                         <TextView
-                            android:id="@+id/behavior_edit_text1"
+                            android:id="@+id/bookmark_edit_text1"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_centerInParent="true"
@@ -78,7 +78,7 @@
                     </RelativeLayout>
 
                     <TextView
-                        android:id="@+id/txt_behavior_categorization"
+                        android:id="@+id/txt_bookmark_categorization"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textSize="22sp"
@@ -91,14 +91,14 @@
                 </LinearLayout>
 
                 <View
-                    android:id="@+id/behavior_line1"
+                    android:id="@+id/bookmark_line1"
                     android:layout_width="match_parent"
                     android:layout_marginTop="14dp"
                     android:layout_height="2dp"
                     />
 
                 <View
-                    android:id="@+id/behavior_edit_line1"
+                    android:id="@+id/bookmark_edit_line1"
                     android:layout_width="match_parent"
                     android:layout_marginTop="14dp"
                     android:layout_height="2dp"
@@ -108,7 +108,7 @@
                     />
 
                 <LinearLayout
-                    android:id="@+id/behavior_edit_layout2"
+                    android:id="@+id/behavior_bookmark_edit_layout2"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="16dp"
@@ -132,7 +132,7 @@
                             />
 
                         <TextView
-                            android:id="@+id/behavior_edit_text2"
+                            android:id="@+id/bookmark_edit_text2"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_centerInParent="true"
@@ -146,27 +146,27 @@
                     </RelativeLayout>
 
                     <TextView
-                        android:id="@+id/txt_behavior_time"
+                        android:id="@+id/txt_bookmark_time"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
                         android:textSize="16sp"
                         android:textColor="#3b3b3b"
                         android:lineSpacingExtra="8sp"
-                        android:text="2018.07.20 오후 5:10 ~ 5:30"
+                        android:text="..."
                         />
 
                 </LinearLayout>
 
                 <View
-                    android:id="@+id/behavior_line2"
+                    android:id="@+id/bookmark_line2"
                     android:layout_width="match_parent"
                     android:layout_marginTop="12dp"
                     android:layout_height="2dp"
                     />
 
                 <View
-                    android:id="@+id/behavior_edit_line2"
+                    android:id="@+id/bookmark_edit_line2"
                     android:layout_width="match_parent"
                     android:layout_marginTop="12dp"
                     android:layout_height="2dp"
@@ -176,7 +176,7 @@
                     />
 
                 <LinearLayout
-                    android:id="@+id/behavior_edit_layout3"
+                    android:id="@+id/behavior_bookmark_edit_layout3"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="16dp"
@@ -200,7 +200,7 @@
                             />
 
                         <TextView
-                            android:id="@+id/behavior_edit_text3"
+                            android:id="@+id/bookmark_edit_text3"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_centerInParent="true"
@@ -214,7 +214,7 @@
                     </RelativeLayout>
 
                     <TextView
-                        android:id="@+id/txt_behavior_place"
+                        android:id="@+id/txt_bookmark_place"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
@@ -227,14 +227,14 @@
                 </LinearLayout>
 
                 <View
-                    android:id="@+id/behavior_line3"
+                    android:id="@+id/bookmark_line3"
                     android:layout_width="match_parent"
                     android:layout_marginTop="11dp"
                     android:layout_height="2dp"
                     />
 
                 <View
-                    android:id="@+id/behavior_edit_line3"
+                    android:id="@+id/bookmark_edit_line3"
                     android:layout_width="match_parent"
                     android:layout_marginTop="11dp"
                     android:layout_height="2dp"
@@ -244,7 +244,7 @@
                     />
 
                 <LinearLayout
-                    android:id="@+id/behavior_edit_layout4"
+                    android:id="@+id/behavior_bookmark_edit_layout4"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="16dp"
@@ -268,7 +268,7 @@
                             />
 
                         <TextView
-                            android:id="@+id/behavior_edit_text4"
+                            android:id="@+id/bookmark_edit_text4"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_centerInParent="true"
@@ -282,7 +282,7 @@
                     </RelativeLayout>
 
                     <TextView
-                        android:id="@+id/txt_behavior_type"
+                        android:id="@+id/txt_bookmark_type"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
@@ -295,14 +295,14 @@
                 </LinearLayout>
 
                 <View
-                    android:id="@+id/behavior_line4"
+                    android:id="@+id/bookmark_line4"
                     android:layout_width="match_parent"
                     android:layout_marginTop="14dp"
                     android:layout_height="2dp"
                     />
 
                 <View
-                    android:id="@+id/behavior_edit_line4"
+                    android:id="@+id/bookmark_edit_line4"
                     android:layout_width="match_parent"
                     android:layout_marginTop="14dp"
                     android:layout_height="2dp"
@@ -312,7 +312,7 @@
                     />
 
                 <LinearLayout
-                    android:id="@+id/behavior_edit_layout5"
+                    android:id="@+id/behavior_bookmark_edit_layout5"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginTop="18dp"
@@ -336,7 +336,7 @@
                             />
 
                         <TextView
-                            android:id="@+id/behavior_edit_text5"
+                            android:id="@+id/bookmark_edit_text5"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_centerInParent="true"
@@ -358,7 +358,7 @@
                         android:orientation="horizontal">
 
                         <LinearLayout
-                            android:id="@+id/behavior_interest"
+                            android:id="@+id/bookmark_interest"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:gravity="center_vertical"
@@ -384,7 +384,7 @@
                         </LinearLayout>
 
                         <LinearLayout
-                            android:id="@+id/behavior_self_stimulation"
+                            android:id="@+id/bookmark_self_stimulation"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:gravity="center_vertical"
@@ -410,7 +410,7 @@
                         </LinearLayout>
 
                         <LinearLayout
-                            android:id="@+id/behavior_task_evation"
+                            android:id="@+id/bookmark_task_evation"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:gravity="center_vertical"
@@ -436,7 +436,7 @@
                         </LinearLayout>
 
                         <LinearLayout
-                            android:id="@+id/behavior_demand"
+                            android:id="@+id/bookmark_demand"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:gravity="center_vertical"
@@ -462,7 +462,7 @@
                         </LinearLayout>
 
                         <LinearLayout
-                            android:id="@+id/behavior_etc"
+                            android:id="@+id/bookmark_etc"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:gravity="center_vertical"
@@ -491,14 +491,14 @@
                 </LinearLayout>
 
                 <View
-                    android:id="@+id/behavior_line5"
+                    android:id="@+id/bookmark_line5"
                     android:layout_width="match_parent"
                     android:layout_marginTop="15dp"
                     android:layout_height="2dp"
                     />
 
                 <View
-                    android:id="@+id/behavior_edit_line5"
+                    android:id="@+id/bookmark_edit_line5"
                     android:layout_width="match_parent"
                     android:layout_marginTop="15dp"
                     android:layout_height="2dp"
@@ -508,7 +508,7 @@
                     />
 
                 <LinearLayout
-                    android:id="@+id/behavior_edit_layout6"
+                    android:id="@+id/behavior_bookmark_edit_layout6"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginTop="15dp"
@@ -532,7 +532,7 @@
                             />
 
                         <TextView
-                            android:id="@+id/behavior_edit_text6"
+                            android:id="@+id/bookmark_edit_text6"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_centerInParent="true"
@@ -546,7 +546,7 @@
                     </RelativeLayout>
 
                     <SeekBar
-                        android:id="@+id/behavior_seekbar"
+                        android:id="@+id/bookmark_seekbar"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="35dp"
@@ -566,7 +566,7 @@
                         android:orientation="horizontal">
 
                         <TextView
-                            android:id="@+id/txt_behavior_detail_intensity_one"
+                            android:id="@+id/txt_bookmark_detail_intensity_one"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textSize="12sp"
@@ -578,7 +578,7 @@
                             />
 
                         <TextView
-                            android:id="@+id/txt_behavior_detail_intensity_two"
+                            android:id="@+id/txt_bookmark_detail_intensity_two"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textSize="12sp"
@@ -590,7 +590,7 @@
                             />
 
                         <TextView
-                            android:id="@+id/txt_behavior_detail_intensity_three"
+                            android:id="@+id/txt_bookmark_detail_intensity_three"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textSize="12sp"
@@ -602,7 +602,7 @@
                             />
 
                         <TextView
-                            android:id="@+id/txt_behavior_detail_intensity_four"
+                            android:id="@+id/txt_bookmark_detail_intensity_four"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textSize="12sp"
@@ -614,7 +614,7 @@
                             />
 
                         <TextView
-                            android:id="@+id/txt_behavior_detail_intensity_five"
+                            android:id="@+id/txt_bookmark_detail_intensity_five"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textSize="12sp"
@@ -630,14 +630,14 @@
                 </LinearLayout>
 
                 <View
-                    android:id="@+id/behavior_line6"
+                    android:id="@+id/bookmark_line6"
                     android:layout_width="match_parent"
                     android:layout_marginTop="16dp"
                     android:layout_height="2dp"
                     />
 
                 <View
-                    android:id="@+id/behavior_edit_line6"
+                    android:id="@+id/bookmark_edit_line6"
                     android:layout_width="match_parent"
                     android:layout_marginTop="16dp"
                     android:layout_height="2dp"
@@ -647,7 +647,7 @@
                     />
 
                 <LinearLayout
-                    android:id="@+id/behavior_edit_layout7"
+                    android:id="@+id/behavior_bookmark_edit_layout7"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="16dp"
@@ -671,7 +671,7 @@
                             />
 
                         <TextView
-                            android:id="@+id/behavior_edit_text7"
+                            android:id="@+id/bookmark_edit_text7"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_centerInParent="true"
@@ -685,26 +685,26 @@
                     </RelativeLayout>
 
                     <TextView
-                        android:id="@+id/txt_behavior_before"
+                        android:id="@+id/txt_bookmark_before"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textSize="16sp"
                         android:textColor="#3b3b3b"
                         android:lineSpacingExtra="8sp"
-                        android:text="남편 보러 서울대 왔다가 같이 소담마루에서 늦게 저녁 먹었다. 식사 도중 다솔이가 나한테 뭘 말했는데 대답을 못 해줬다."
+                        android:text="..."
                         />
 
                 </LinearLayout>
 
                 <View
-                    android:id="@+id/behavior_line7"
+                    android:id="@+id/bookmark_line7"
                     android:layout_width="match_parent"
                     android:layout_marginTop="18dp"
                     android:layout_height="2dp"
                     />
 
                 <View
-                    android:id="@+id/behavior_edit_line7"
+                    android:id="@+id/bookmark_edit_line7"
                     android:layout_width="match_parent"
                     android:layout_marginTop="18dp"
                     android:layout_height="2dp"
@@ -714,7 +714,7 @@
                     />
 
                 <LinearLayout
-                    android:id="@+id/behavior_edit_layout8"
+                    android:id="@+id/behavior_bookmark_edit_layout8"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="16dp"
@@ -738,7 +738,7 @@
                             />
 
                         <TextView
-                            android:id="@+id/behavior_edit_text8"
+                            android:id="@+id/bookmark_edit_text8"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_centerInParent="true"
@@ -752,26 +752,26 @@
                     </RelativeLayout>
 
                     <TextView
-                        android:id="@+id/txt_behavior_current"
+                        android:id="@+id/txt_bookmark_current"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textSize="16sp"
                         android:textColor="#3b3b3b"
                         android:lineSpacingExtra="8sp"
-                        android:text="다솔이가 밥을 먹다 말고 갑자기 나를 숟가락으로 세 번 정도 아! 네 번인가 하여튼 머리를 쳤다."
+                        android:text="..."
                         />
 
                 </LinearLayout>
 
                 <View
-                    android:id="@+id/behavior_line8"
+                    android:id="@+id/bookmark_line8"
                     android:layout_width="match_parent"
                     android:layout_marginTop="17dp"
                     android:layout_height="2dp"
                     />
 
                 <View
-                    android:id="@+id/behavior_edit_line8"
+                    android:id="@+id/bookmark_edit_line8"
                     android:layout_width="match_parent"
                     android:layout_marginTop="17dp"
                     android:layout_height="2dp"
@@ -781,7 +781,7 @@
                     />
 
                 <LinearLayout
-                    android:id="@+id/behavior_edit_layout9"
+                    android:id="@+id/behavior_bookmark_edit_layout9"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="16dp"
@@ -806,7 +806,7 @@
                             />
 
                         <TextView
-                            android:id="@+id/behavior_edit_text9"
+                            android:id="@+id/bookmark_edit_text9"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_centerInParent="true"
@@ -820,13 +820,13 @@
                     </RelativeLayout>
 
                     <TextView
-                        android:id="@+id/txt_behavior_after"
+                        android:id="@+id/txt_bookmark_after"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textSize="16sp"
                         android:textColor="#3b3b3b"
                         android:lineSpacingExtra="8sp"
-                        android:text="공공장소에서 이러면 안 된다고 말하다가 안 돼서 남편이 화장실로 다솔이를 데리고 가서 타일렀더니 갑자기 괜찮아졌다."
+                        android:text="..."
                         />
 
                 </LinearLayout>

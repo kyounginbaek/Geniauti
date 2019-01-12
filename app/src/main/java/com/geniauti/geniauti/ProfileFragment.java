@@ -2,18 +2,15 @@ package com.geniauti.geniauti;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
-import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -24,6 +21,7 @@ import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -35,12 +33,14 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.Transaction;
 
 
 import java.io.IOException;
@@ -48,16 +48,11 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
-import static com.geniauti.geniauti.SearchFragment.adapterBookmark;
-import static com.geniauti.geniauti.SearchFragment.bookmark;
 
 
 /**
@@ -98,11 +93,13 @@ public class ProfileFragment extends Fragment {
     private FirebaseUser user;
 
     private ListView parentListView;
-    private ListView bookmarkListView;
+    public static ListView bookmarkListView;
     private ArrayList<Parent> parentData;
-    private ArrayList<Bookmark> bookmarkData;
+    public static ArrayList<Bookmark> bookmarkData;
     private ParentListviewAdapter parentAdapter;
-    private BookmarkListviewAdapter bookmarkAdapter;
+    public static BookmarkListviewAdapter bookmarkAdapter;
+
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -234,6 +231,7 @@ public class ProfileFragment extends Fragment {
                             }
                             parentAdapter = new ParentListviewAdapter(getContext(), R.layout.list_parent, parentData);
                             parentListView.setAdapter(parentAdapter);
+                            setListViewHeightBasedOnChildren(parentListView);
                         }
                     }
                 });
@@ -262,15 +260,17 @@ public class ProfileFragment extends Fragment {
                             if(document.exists()) {
 
                                 HashMap<String, Object> preset = (HashMap<String, Object>) document.getData().get("preset");
-                                List<HashMap<String, Object>> behavior_preset = (List<HashMap<String,Object>>) preset.get("behavior_preset");
+                                if(preset != null) {
+                                    List<HashMap<String, Object>> behavior_preset = (List<HashMap<String,Object>>) preset.get("behavior_preset");
+                                    for(int i=0; i<behavior_preset.size(); i++) {
+                                        Bookmark item = new Bookmark(i, behavior_preset.get(i).get("title").toString(), behavior_preset.get(i).get("place").toString(), behavior_preset.get(i).get("categorization").toString(), (HashMap<String, Object>) behavior_preset.get(i).get("type"), Integer.parseInt(behavior_preset.get(i).get("intensity").toString()), (HashMap<String, Object>) behavior_preset.get(i).get("reason_type"), (HashMap<String, Object>) behavior_preset.get(i).get("reason"));
+                                        bookmarkData.add(item);
+                                    }
 
-                                for(int i=0; i<behavior_preset.size(); i++) {
-                                    Bookmark item = new Bookmark(behavior_preset.get(i).get("title").toString());
-                                    bookmarkData.add(item);
+                                    bookmarkAdapter = new BookmarkListviewAdapter(getContext(), R.layout.list_bookmark_profile, bookmarkData);
+                                    bookmarkListView.setAdapter(bookmarkAdapter);
+                                    setListViewHeightBasedOnChildren(bookmarkListView);
                                 }
-
-                                bookmarkAdapter = new BookmarkListviewAdapter(getContext(), R.layout.list_bookmark, bookmarkData);
-                                bookmarkListView.setAdapter(bookmarkAdapter);
                             } else {
 
                             }
@@ -377,6 +377,25 @@ public class ProfileFragment extends Fragment {
         return v;
     }
 
+    public static void setListViewHeightBasedOnChildren(ListView listView) {
+        ListAdapter listAdapter = listView.getAdapter();
+        if (listAdapter == null) {
+            // pre-condition
+            return;
+        }
+
+        int totalHeight = 0;
+        for (int i = 0; i < listAdapter.getCount(); i++) {
+            View listItem = listAdapter.getView(i, null, listView);
+            listItem.measure(0, 0);
+            totalHeight += listItem.getMeasuredHeight();
+        }
+
+        ViewGroup.LayoutParams params = listView.getLayoutParams();
+        params.height = totalHeight + (listView.getDividerHeight() * (listAdapter.getCount() - 1));
+        listView.setLayoutParams(params);
+    }
+
     public class Parent {
         public Parent(String name, String profile_pic, String relationship, String uid) {
             this.name = name;
@@ -388,13 +407,6 @@ public class ProfileFragment extends Fragment {
         private String profile_pic;
         private String relationship;
         private String uid;
-    }
-
-    public class Bookmark {
-        public Bookmark(String title) {
-            this.title = title;
-        }
-        private String title;
     }
 
     public class ParentListviewAdapter extends BaseAdapter {
@@ -465,16 +477,83 @@ public class ProfileFragment extends Fragment {
         @Override
         public View getView(final int position, View convertView, ViewGroup parent){
             if(convertView == null){
-                convertView = inflater.inflate(R.layout.list_bookmark, parent, false);
+                convertView = inflater.inflate(R.layout.list_bookmark_profile, parent, false);
             }
 
-            Bookmark bookmarkData = data.get(position);
+            final Bookmark bookmarkDataTmp = data.get(position);
 
-            TextView bookmarkTitle = (TextView) convertView.findViewById(R.id.list_bookmark_title);
-            TextView bookmarkSub = (TextView) convertView.findViewById(R.id.list_bookmark_sub);
-
-            bookmarkTitle.setText(bookmarkData.title);
+            TextView bookmarkTitle = (TextView) convertView.findViewById(R.id.list_bookmark_profile_title);
+            TextView bookmarkSub = (TextView) convertView.findViewById(R.id.list_bookmark_profile_sub);
+            bookmarkTitle.setText(bookmarkDataTmp.title);
             bookmarkSub.setText("저장된 기록" + String.valueOf(position + 1));
+
+            LinearLayout bookmarkLayout = (LinearLayout) convertView.findViewById(R.id.list_bookmark_profile_layout);
+            bookmarkLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(getActivity(), BookmarkDetailActivity.class);
+                    intent.putExtra("temp", (Bookmark) bookmarkDataTmp);
+                    startActivity(intent);
+                }
+            });
+
+            AlertDialog.Builder alt_bld = new AlertDialog.Builder(getActivity());
+            final DocumentReference sfDocRef = db.collection("users").document(user.getUid());
+            alt_bld.setMessage("자주 쓰는 기록을 삭제하시겠습니까?").setCancelable(
+                    false).setPositiveButton("확인",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            // Action for 'Yes' Button
+                            db.runTransaction(new Transaction.Function<Void>() {
+                                @Override
+                                public Void apply(Transaction transaction) throws FirebaseFirestoreException {
+                                    DocumentSnapshot snapshot = transaction.get(sfDocRef);
+                                    List<Map<String, Object>> behaviorPresetArray = (List<Map<String, Object>>) snapshot.get("preset.behavior_preset");
+                                    behaviorPresetArray.remove(position);
+                                    transaction.update(sfDocRef, "preset.behavior_preset", behaviorPresetArray);
+
+                                    // Success
+                                    return null;
+                                }
+                            }).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+//                        mProgressView.setVisibility(View.GONE);
+                                    bookmarkData.remove(position);
+                                    setListViewHeightBasedOnChildren(bookmarkListView);
+                                    MainFragment.bookmarkData.remove(position);
+
+                                    bookmarkAdapter.notifyDataSetChanged();
+                                    MainFragment.bookmarkAdapter.notifyDataSetChanged();
+                                    Toast toast = Toast.makeText(getActivity(), "자주 쓰는 기록이 삭제되었습니다.", Toast.LENGTH_SHORT);
+                                    toast.show();
+
+                                }
+                            })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+
+                                        }
+                                    });
+
+                        }
+                    }).setNegativeButton("취소",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            // Action for 'NO' Button
+                            dialog.cancel();
+                        }
+                    });
+            final AlertDialog alert = alt_bld.create();
+
+            LinearLayout bookmarkDelete = (LinearLayout) convertView.findViewById(R.id.list_bookmark_profile_delete);
+            bookmarkDelete.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    alert.show();
+                }
+            });
 
             return convertView;
         }

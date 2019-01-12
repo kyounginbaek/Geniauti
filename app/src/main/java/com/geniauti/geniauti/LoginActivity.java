@@ -21,7 +21,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -40,7 +39,6 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
-import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -74,6 +72,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
+    private Button mEmailSignInButton;
 
     private EditText passwordFindEmail;
     private LinearLayout passwordFindCancel;
@@ -106,7 +105,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             }
         });
 
-        Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
+        mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -242,6 +241,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      * errors are presented and no actual login attempt is made.
      */
     private void attemptLogin() {
+        mEmailSignInButton.setEnabled(false);
         mProgressView.setVisibility(View.VISIBLE);
 
         if (mAuthTask != null) {
@@ -284,6 +284,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             // There was an error; don't attempt login and focus the first
             // form field with an error.
             focusView.requestFocus();
+            mEmailSignInButton.setEnabled(true);
         } else {
             mAuth.signInWithEmailAndPassword(email, password)
                     .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -299,6 +300,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                                 // updateUI(user);
                             } else {
                                 mProgressView.setVisibility(View.GONE);
+                                mEmailSignInButton.setEnabled(true);
                                 FirebaseAuthException e = (FirebaseAuthException )task.getException();
                                 if(e.getErrorCode()=="ERROR_INVALID_EMAIL") {
                                     mEmailView.setError("잘못된 이메일 형식입니다.");

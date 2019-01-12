@@ -1,7 +1,5 @@
 package com.geniauti.geniauti;
 
-import android.content.Context;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -12,27 +10,22 @@ import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.github.mikephil.charting.data.BarData;
-import com.github.mikephil.charting.data.BarDataSet;
-import com.github.mikephil.charting.data.BarEntry;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
@@ -60,17 +53,17 @@ public class ChartDayFragment extends Fragment implements TemplateChartDayFragme
     private String cid;
 
     private View v;
-    private ArrayList<Behavior> behaviorData;
+    public static HashMap<String, Statistics> statisticsHashMap;
 
     private OnFragmentInteractionListener mListener;
     public static ViewPager viewPager;
     public static ViewPagerAdapter adapter;
     private TextView todayDate;
-    private Calendar cal, tmpcal;
-    private SimpleDateFormat sdf;
+    private Calendar cal, tmpcal, dateCal;
+    private SimpleDateFormat sdf, sdfNew;
     private ImageView forwardButton;
     private String todayDateandTime;
-    private String yesterdayDateandTime;
+    private String previousDateandTime;
     private int lastPage;
 
     public ChartDayFragment() {
@@ -112,13 +105,14 @@ public class ChartDayFragment extends Fragment implements TemplateChartDayFragme
 
         todayDate = v.findViewById(R.id.txt_chart_day);
         sdf = new SimpleDateFormat("yyyy년 MM월 dd일 E요일", Locale.KOREAN);
+        sdfNew = new SimpleDateFormat("yyyyMMdd", Locale.KOREAN);
         cal = Calendar.getInstance();
         todayDateandTime = sdf.format(cal.getTime());
         todayDate.setText(todayDateandTime);
 
         tmpcal = Calendar.getInstance();
         tmpcal.add(Calendar.DATE, -1);
-        yesterdayDateandTime = sdf.format(tmpcal.getTime());
+        previousDateandTime = sdf.format(tmpcal.getTime());
 
         ImageView backButton = v.findViewById(R.id.chart_day_back);
         forwardButton = v.findViewById(R.id.chart_day_forward);
@@ -141,7 +135,7 @@ public class ChartDayFragment extends Fragment implements TemplateChartDayFragme
         user = FirebaseAuth.getInstance().getCurrentUser();
         db = FirebaseFirestore.getInstance();
 
-        behaviorData = new ArrayList<>();
+        statisticsHashMap = new HashMap<>();
 
         db.collection("childs")
                 .whereGreaterThanOrEqualTo("users."+user.getUid()+".name", "")
@@ -154,69 +148,142 @@ public class ChartDayFragment extends Fragment implements TemplateChartDayFragme
                                 cid = document.getId();
                             }
 
-                            db.collection("behaviors")
-                                    .whereEqualTo("cid", cid)
-                                    .get()
-                                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                            if (task.isSuccessful()) {
-                                                for (QueryDocumentSnapshot document : task.getResult()) {
-                                                    Behavior item = new Behavior((Date) document.getDate("start_time"), (Date) document.getDate("end_time"), document.get("place").toString(), document.get("categorization").toString(), document.get("current_behavior").toString(), document.get("before_behavior").toString(), document.get("after_behavior").toString(), (HashMap<String, Object>) document.get("type"), Integer.parseInt(document.get("intensity").toString()), (HashMap<String, Object>) document.get("reason"), document.get("created_at").toString(),  document.get("updated_at").toString(), document.get("uid").toString(), document.get("name").toString(), document.get("cid").toString(), "");
-                                                    behaviorData.add(item);
-                                                }
+                            CollectionReference docRef = db
+                                    .collection("statistics").document(cid).collection("day");
 
-                                                // Setting ViewPager for each Tabs
-                                                viewPager = (ViewPager) v.findViewById(R.id.chart_day_viewpager);
-                                                setupViewPager(viewPager);
-                                                lastPage = adapter.getCount()-1;
-
-                                                viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener()
-                                                {
-                                                    @Override
-                                                    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels)
-                                                    {
-
-                                                    }
-
-                                                    @Override
-                                                    public void onPageSelected(int position)
-                                                    {
-                                                        if(position < lastPage) {
-                                                            cal.add(Calendar.DATE, -1);
-                                                            todayDate.setText(sdf.format(cal.getTime()));
-
-                                                            if(sdf.format(cal.getTime()).equals(yesterdayDateandTime)) {
-                                                                forwardButton.setVisibility(View.VISIBLE);
-                                                            }
-                                                        } else if(position > lastPage) {
-                                                            cal.add(Calendar.DATE, 1);
-                                                            todayDate.setText(sdf.format(cal.getTime()));
-
-                                                            if(sdf.format(cal.getTime()).equals(todayDateandTime)) {
-                                                                forwardButton.setVisibility(View.GONE);
-                                                            }
-                                                        }
-
-                                                        lastPage = position;
-                                                    }
-
-                                                    @Override
-                                                    public void onPageScrollStateChanged(int state) {
-
-                                                    }
-                                                });
-
-                                            } else {
-
+                            docRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                @Override
+                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                    if (task.isSuccessful()) {
+                                        for (QueryDocumentSnapshot document : task.getResult()) {
+                                            if(document.exists()) {
+                                                Statistics item = new Statistics(document.getId(), (HashMap<String, Object>) document.get("behavior_freq"), (HashMap<String, Object>) document.get("summary"), (HashMap<String, Object>) document.get("type"), (HashMap<String, Object>) document.get("reason_type"), (HashMap<String, Object>) document.get("place"));
+                                                statisticsHashMap.put(document.getId(), item);
                                             }
                                         }
-                                    });
-                        } else {
-//                                Log.d(TAG, "Error getting documents: ", task.getException());
+                                        // Setting ViewPager for each Tabs
+                                        viewPager = (ViewPager) v.findViewById(R.id.chart_day_viewpager);
+                                        setupViewPager(viewPager);
+                                        lastPage = adapter.getCount()-1;
+
+                                        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener()
+                                        {
+                                            @Override
+                                            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels)
+                                            {
+
+                                            }
+
+                                            @Override
+                                            public void onPageSelected(int position)
+                                            {
+                                                if(position < lastPage) {
+                                                    cal.add(Calendar.DATE, -1);
+                                                    todayDate.setText(sdf.format(cal.getTime()));
+
+                                                    if(sdf.format(cal.getTime()).equals(previousDateandTime)) {
+                                                        forwardButton.setVisibility(View.VISIBLE);
+                                                    }
+                                                } else if(position > lastPage) {
+                                                    cal.add(Calendar.DATE, 1);
+                                                    todayDate.setText(sdf.format(cal.getTime()));
+
+                                                    if(sdf.format(cal.getTime()).equals(todayDateandTime)) {
+                                                        forwardButton.setVisibility(View.GONE);
+                                                    }
+                                                }
+
+                                                lastPage = position;
+                                            }
+
+                                            @Override
+                                            public void onPageScrollStateChanged(int state) {
+
+                                            }
+                                        });
+                                    } else {
+//                    Log.d(TAG, "get failed with ", task.getException());
+                                    }
+                                }
+                            });
                         }
                     }
                 });
+
+//        db.collection("childs")
+//                .whereGreaterThanOrEqualTo("users."+user.getUid()+".name", "")
+//                .get()
+//                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+//                    @Override
+//                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+//                        if (task.isSuccessful()) {
+//                            for (QueryDocumentSnapshot document : task.getResult()) {
+//                                cid = document.getId();
+//                            }
+//
+//                            db.collection("behaviors")
+//                                    .whereEqualTo("cid", cid)
+//                                    .get()
+//                                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+//                                        @Override
+//                                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+//                                            if (task.isSuccessful()) {
+//                                                for (QueryDocumentSnapshot document : task.getResult()) {
+//                                                    Behavior item = new Behavior(document.getId(), (Date) document.getDate("start_time"), (Date) document.getDate("end_time"), document.get("place").toString(), document.get("categorization").toString(), document.get("current_behavior").toString(), document.get("before_behavior").toString(), document.get("after_behavior").toString(), (HashMap<String, Object>) document.get("type"), Integer.parseInt(document.get("intensity").toString()), (HashMap<String, Object>) document.get("reason_type"), (HashMap<String, Object>) document.get("reason"), document.get("created_at").toString(),  document.get("updated_at").toString(), document.get("uid").toString(), document.get("name").toString(), document.get("cid").toString(), "");
+//                                                    behaviorData.add(item);
+//                                                }
+//
+//                                                // Setting ViewPager for each Tabs
+//                                                viewPager = (ViewPager) v.findViewById(R.id.chart_day_viewpager);
+//                                                setupViewPager(viewPager);
+//                                                lastPage = adapter.getCount()-1;
+//
+//                                                viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener()
+//                                                {
+//                                                    @Override
+//                                                    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels)
+//                                                    {
+//
+//                                                    }
+//
+//                                                    @Override
+//                                                    public void onPageSelected(int position)
+//                                                    {
+//                                                        if(position < lastPage) {
+//                                                            cal.add(Calendar.DATE, -1);
+//                                                            todayDate.setText(sdf.format(cal.getTime()));
+//
+//                                                            if(sdf.format(cal.getTime()).equals(previousDateandTime)) {
+//                                                                forwardButton.setVisibility(View.VISIBLE);
+//                                                            }
+//                                                        } else if(position > lastPage) {
+//                                                            cal.add(Calendar.DATE, 1);
+//                                                            todayDate.setText(sdf.format(cal.getTime()));
+//
+//                                                            if(sdf.format(cal.getTime()).equals(todayDateandTime)) {
+//                                                                forwardButton.setVisibility(View.GONE);
+//                                                            }
+//                                                        }
+//
+//                                                        lastPage = position;
+//                                                    }
+//
+//                                                    @Override
+//                                                    public void onPageScrollStateChanged(int state) {
+//
+//                                                    }
+//                                                });
+//
+//                                            } else {
+//
+//                                            }
+//                                        }
+//                                    });
+//                        } else {
+////                                Log.d(TAG, "Error getting documents: ", task.getException());
+//                        }
+//                    }
+//                });
 
 
         return v;
@@ -226,7 +293,6 @@ public class ChartDayFragment extends Fragment implements TemplateChartDayFragme
         adapter = new ViewPagerAdapter(getFragmentManager());
         viewPager.setAdapter(adapter);
         viewPager.setCurrentItem(adapter.getCount()-1);
-
     }
 
     public class ViewPagerAdapter extends FragmentStatePagerAdapter {
@@ -240,7 +306,9 @@ public class ChartDayFragment extends Fragment implements TemplateChartDayFragme
 
         @Override
         public Fragment getItem(int position) {
-            return TemplateChartDayFragment.newInstance(position, behaviorData);
+
+            return TemplateChartDayFragment.newInstance(position);
+
         }
 
         @Override
