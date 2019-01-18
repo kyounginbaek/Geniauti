@@ -110,6 +110,7 @@ public class BehaviorFourthFragment extends Fragment {
         voiceRecognition.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                voiceRecognition.setEnabled(false);
                 mRecognizer=SpeechRecognizer.createSpeechRecognizer(getContext());
                 mRecognizer.setRecognitionListener(listener);
                 mRecognizer.startListening(intent);
@@ -140,6 +141,7 @@ public class BehaviorFourthFragment extends Fragment {
 
         @Override
         public void onEndOfSpeech() {
+            voiceRecognition.setEnabled(true);
             rippleBackground.stopRippleAnimation();
             textInput.append(audioText);
         }
@@ -181,6 +183,7 @@ public class BehaviorFourthFragment extends Fragment {
                     break;
             }
 
+            voiceRecognition.setEnabled(true);
             rippleBackground.stopRippleAnimation();
             Toast.makeText(getContext(), "다시 시도해주세요.",Toast.LENGTH_SHORT).show();
         }

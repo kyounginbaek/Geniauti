@@ -632,13 +632,13 @@ public class TemplateChartYearFragment extends Fragment {
         if(number != 0) {
             switch (Math.round(intensity / number)) {
                 case 1:
-                    return colorIntensity1;
+                    return colorIntensity5;
                 case 2:
-                    return colorIntensity2;
+                    return colorIntensity5;
                 case 3:
-                    return colorIntensity3;
+                    return colorIntensity5;
                 case 4:
-                    return colorIntensity4;
+                    return colorIntensity5;
                 case 5:
                     return colorIntensity5;
                 default:

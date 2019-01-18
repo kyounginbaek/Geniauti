@@ -1,5 +1,6 @@
 package com.geniauti.geniauti;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -13,18 +14,13 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.Transaction;
 
 import java.text.SimpleDateFormat;
@@ -53,10 +49,7 @@ public class BookmarkActivity extends AppCompatActivity implements BehaviorFirst
     public static Bookmark editBookmark;
     public static boolean editBookmarkState = false;
 
-    private FirebaseFirestore db;
-    private FirebaseUser user;
     private Map<String, Object> docData;
-    private String cid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -134,26 +127,6 @@ public class BookmarkActivity extends AppCompatActivity implements BehaviorFirst
             mViewPager.setCurrentItem(editPage-1);
         }
 
-        db = FirebaseFirestore.getInstance();
-        user = FirebaseAuth.getInstance().getCurrentUser();
-
-        db.collection("childs")
-                .whereGreaterThanOrEqualTo("users."+user.getUid()+".name", "")
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                cid = document.getId();
-                            }
-                        } else {
-//                                Log.d(TAG, "Error getting documents: ", task.getException());
-                        }
-                    }
-                });
-
-
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -203,16 +176,15 @@ public class BookmarkActivity extends AppCompatActivity implements BehaviorFirst
                         Toast.makeText(BookmarkActivity.this, "행동 원인을 골라주세요.", Toast.LENGTH_SHORT).show();
                     } else {
                         fab.setEnabled(false);
-                        SimpleDateFormat formatter = new SimpleDateFormat("yyyy년 MM월 dd일 EEE aa hh:mm", Locale.KOREAN);
+//                        SimpleDateFormat formatter = new SimpleDateFormat("yyyy년 MM월 dd일 EEE aa hh:mm", Locale.KOREAN);
 
 //                        Date date_start = formatter.parse(f1.date_start + " " + f1.hour_start);
 //                        Date date_end = formatter.parse(f1.date_start + " " + f1.hour_end);
-                        Calendar cal = Calendar.getInstance();
+//                        Calendar cal = Calendar.getInstance();
 
                         docData = new HashMap<>();
 //                            docData.put("start_time", date_start);
 //                            docData.put("end_time", date_end);
-                        docData.put("title", editBookmark.title);
                         docData.put("place", f2.getResult());
                         docData.put("categorization", f3.getResult());
 //                            docData.put("current_behavior", f4.textInput.getText().toString());
@@ -223,40 +195,114 @@ public class BookmarkActivity extends AppCompatActivity implements BehaviorFirst
                         docData.put("reason_type", f9.getResult());
                         docData.put("reason", f9.reasonDetail());
 
-                        final DocumentReference sfDocRef = db.collection("users").document(user.getUid());
-                        db.runTransaction(new Transaction.Function<Void>() {
-                            @Override
-                            public Void apply(Transaction transaction) throws FirebaseFirestoreException {
-                                DocumentSnapshot snapshot = transaction.get(sfDocRef);
-                                List<Map<String, Object>> behaviorPresetArray = (List<Map<String, Object>>) snapshot.get("preset.behavior_preset");
-                                behaviorPresetArray.set(editBookmark.position, docData);
-                                transaction.update(sfDocRef, "preset.behavior_preset", behaviorPresetArray);
+                        if(editBookmarkState == true) {
+                            docData.put("title", editBookmark.title);
 
-                                // Success
-                                return null;
-                            }
-                        }).addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void aVoid) {
+                            final DocumentReference sfDocRef = MainActivity.db.collection("users").document(MainActivity.user.getUid());
+                            MainActivity.db.runTransaction(new Transaction.Function<Void>() {
+                                @Override
+                                public Void apply(Transaction transaction) throws FirebaseFirestoreException {
+                                    DocumentSnapshot snapshot = transaction.get(sfDocRef);
+                                    List<Map<String, Object>> behaviorPresetArray = (List<Map<String, Object>>) snapshot.get("preset.behavior_preset");
+                                    behaviorPresetArray.set(editBookmark.position, docData);
+                                    transaction.update(sfDocRef, "preset.behavior_preset", behaviorPresetArray);
+
+                                    // Success
+                                    return null;
+                                }
+                            }).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
 //                        mProgressView.setVisibility(View.GONE);
-                                MainActivity.adapter.notifyDataSetChanged();
-                                finish();
-                                Toast toast = Toast.makeText(BookmarkActivity.this, "자주 쓰는 기록이 수정되었습니다.", Toast.LENGTH_SHORT);
-                                toast.show();
+                                    MainActivity.adapter.notifyDataSetChanged();
 
-                            }
-                        })
-                                .addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        fab.setEnabled(true);
-                                    }
-                                });
+                                    BookmarkDetailActivity.selectedBookmark.categorization = docData.get("categorization").toString();
+                                    BookmarkDetailActivity.selectedBookmark.place = docData.get("place").toString();
+                                    BookmarkDetailActivity.selectedBookmark.type = (HashMap<String, Object>) docData.get("type");
+                                    BookmarkDetailActivity.selectedBookmark.reason_type = (HashMap<String, Object>) docData.get("reason_type");
+                                    BookmarkDetailActivity.selectedBookmark.reason = (HashMap<String, Object>) docData.get("reason");
+                                    BookmarkDetailActivity.selectedBookmark.intensity = (int) docData.get("intensity");
+
+                                    BookmarkDetailActivity.bookmark_categorization.setText(docData.get("categorization").toString());
+                                    BookmarkDetailActivity.bookmark_place.setText(docData.get("place").toString());
+                                    BookmarkDetailActivity.setType((HashMap<String, Object>) docData.get("type"));
+                                    BookmarkDetailActivity.setReasonType((HashMap<String, Object>) docData.get("reason_type"));
+                                    BookmarkDetailActivity.setIntensity((int) docData.get("intensity"));
+                                    BookmarkDetailActivity.editModeOff();
+
+                                    finish();
+                                    Toast toast = Toast.makeText(BookmarkActivity.this, "자주 쓰는 기록이 수정되었습니다.", Toast.LENGTH_SHORT);
+                                    toast.show();
+
+                                }
+                            })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            fab.setEnabled(true);
+                                        }
+                                    });
+                        } else {
+                            docData.put("title", f2.getResult() + " / " + f3.getResult() + " / " + reasonTypeSerialize(f9.getResult()));
+
+                            final DocumentReference sfDocRef = MainActivity.db.collection("users").document(MainActivity.user.getUid());
+                            MainActivity.db.runTransaction(new Transaction.Function<Void>() {
+                                @Override
+                                public Void apply(Transaction transaction) throws FirebaseFirestoreException {
+                                    DocumentSnapshot snapshot = transaction.get(sfDocRef);
+                                    List<Map<String, Object>> behaviorPresetArray = (List<Map<String, Object>>) snapshot.get("preset.behavior_preset");
+                                    behaviorPresetArray.add(docData);
+                                    transaction.update(sfDocRef, "preset.behavior_preset", behaviorPresetArray);
+
+                                    // Success
+                                    return null;
+                                }
+                            }).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+//                        mProgressView.setVisibility(View.GONE);
+                                    MainActivity.adapter.notifyDataSetChanged();
+                                    finish();
+                                    Toast toast = Toast.makeText(BookmarkActivity.this, "자주 쓰는 기록이 추가되었습니다.", Toast.LENGTH_SHORT);
+                                    toast.show();
+
+                                }
+                            })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            fab.setEnabled(true);
+                                        }
+                                    });
+                        }
                     }
                 }
             }
         });
 
+    }
+
+    public String reasonTypeSerialize(HashMap<String, Boolean> hashMap) {
+
+        String tmp_reason = "";
+
+        if(hashMap.get("interest")!=null) {
+            tmp_reason = tmp_reason + "관심, ";
+        }
+        if(hashMap.get("selfstimulation")!=null) {
+            tmp_reason = tmp_reason + "자기자극, ";
+        }
+        if(hashMap.get("taskevation")!=null) {
+            tmp_reason = tmp_reason + "과제회피, ";
+        }
+        if(hashMap.get("demand")!=null) {
+            tmp_reason = tmp_reason + "요구, ";
+        }
+        if(hashMap.get("etc")!=null){
+            tmp_reason = tmp_reason + "기타, ";
+        }
+
+        return tmp_reason.substring(0, tmp_reason.length()-2);
     }
 
     @Override

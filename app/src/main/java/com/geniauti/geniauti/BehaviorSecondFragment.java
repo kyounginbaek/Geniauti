@@ -54,9 +54,6 @@ public class BehaviorSecondFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    private FirebaseFirestore db;
-    private FirebaseUser user;
-
     private View v;
     private GridListAdapter adapter;
     private ArrayList<String> arrayList;
@@ -119,16 +116,14 @@ public class BehaviorSecondFragment extends Fragment {
         arrayList.add("식당");
         arrayList.add("학교");
 
-        db = FirebaseFirestore.getInstance();
-        user = FirebaseAuth.getInstance().getCurrentUser();
-
-        db.collection("childs").document(MainFragment.cid)
+        MainActivity.db.collection("childs").document(MainActivity.cid)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                         if (task.isSuccessful()) {
                             DocumentSnapshot document = task.getResult();
+
                             if(document.exists()) {
                                 HashMap<String, Object> preset = (HashMap<String, Object>)  document.get("preset");
                                 if(preset != null) {
@@ -140,6 +135,24 @@ public class BehaviorSecondFragment extends Fragment {
                                             arrayList.add(pair.getKey().toString());
                                         }
                                     }
+                                }
+                            }
+
+                            if(BehaviorActivity.bookmarkState == true && BehaviorActivity.tmpBookmark != null) {
+                                if(!arrayList.contains(BehaviorActivity.tmpBookmark.place)) {
+                                    arrayList.add(BehaviorActivity.tmpBookmark.place);
+                                }
+                            }
+
+                            if(BehaviorActivity.editBehaviorState== true && BehaviorActivity.editBehavior != null) {
+                                if(!arrayList.contains(BehaviorActivity.editBehavior.place)) {
+                                    arrayList.add(BehaviorActivity.editBehavior.place);
+                                }
+                            }
+
+                            if(BookmarkActivity.editBookmarkState== true && BookmarkActivity.editBookmark != null) {
+                                if(!arrayList.contains(BookmarkActivity.editBookmark.place)) {
+                                    arrayList.add(BookmarkActivity.editBookmark.place);
                                 }
                             }
 
@@ -202,19 +215,21 @@ public class BehaviorSecondFragment extends Fragment {
                 view = inflater.inflate(R.layout.list_radio, viewGroup, false);
             }
 
-            //check the radio button if both position and selectedPosition matches
+            // 자주 쓰는 기록을 사용하는 경우
             if(BehaviorActivity.bookmarkState == true && BehaviorActivity.tmpBookmark != null && selectedPosition == -1) {
                 if(arrayList.get(i).equals(BehaviorActivity.tmpBookmark.place)) {
                     selectedPosition = i;
                 }
             }
 
+            // 행동 기록을 수정하는 경우
             if(BehaviorActivity.editBehaviorState== true && BehaviorActivity.editBehavior != null && selectedPosition == -1) {
                 if(arrayList.get(i).equals(BehaviorActivity.editBehavior.place)) {
                     selectedPosition = i;
                 }
             }
 
+            // 자주 쓰는 기록을 수정하는 경우
             if(BookmarkActivity.editBookmarkState== true && BookmarkActivity.editBookmark != null && selectedPosition == -1) {
                 if(arrayList.get(i).equals(BookmarkActivity.editBookmark.place)) {
                     selectedPosition = i;
@@ -257,10 +272,10 @@ public class BehaviorSecondFragment extends Fragment {
                                     boolean cancel = false;
                                     String location = txtLocation.getText().toString().trim();
 
-//                                if(location.equals("집") || location.equals("마트") || location.equals("식당") || location.equals("학교")) {
-//                                    Toast.makeText(getActivity(), "이미 등록되어 있는 장소입니다.", Toast.LENGTH_SHORT).show();
-//                                    cancel = true;
-//                                }
+                                    if(arrayList.contains(location)) {
+                                        Toast.makeText(getActivity(), "이미 등록되어 있는 장소입니다.", Toast.LENGTH_SHORT).show();
+                                        cancel = true;
+                                    }
 
                                     if(location.equals("")) {
                                         Toast.makeText(getActivity(), "빈칸을 입력해주세요.", Toast.LENGTH_SHORT).show();
@@ -271,7 +286,7 @@ public class BehaviorSecondFragment extends Fragment {
 
                                     } else {
 
-                                        db.collection("childs").document(MainFragment.cid)
+                                        MainActivity.db.collection("childs").document(MainActivity.cid)
                                                 .update("preset.place_preset."+txtLocation.getText().toString(), true)
                                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                                     @Override
@@ -325,7 +340,7 @@ public class BehaviorSecondFragment extends Fragment {
                                     public void onClick(DialogInterface dialog, int id) {
                                         // Action for 'Yes' Button
                                         Object delete_data = FieldValue.delete();
-                                        db.collection("childs").document(MainFragment.cid)
+                                        MainActivity.db.collection("childs").document(MainActivity.cid)
                                                 .update("preset.place_preset."+arrayList.get(i), delete_data)
                                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                                     @Override

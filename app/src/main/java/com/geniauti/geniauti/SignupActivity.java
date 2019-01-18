@@ -83,6 +83,7 @@ public class SignupActivity extends AppCompatActivity implements LoaderCallbacks
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         firebaseAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
 

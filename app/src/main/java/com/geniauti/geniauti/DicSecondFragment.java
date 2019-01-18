@@ -14,7 +14,6 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -29,11 +28,10 @@ import static com.geniauti.geniauti.SearchFragment.adapterBookmark;
 import static com.geniauti.geniauti.SearchFragment.bookmark;
 
 public class DicSecondFragment extends Fragment {
+
     private static ExpandableListView expandableListView;
     private static ExpandableListAdapter adapter;
 
-    private FirebaseFirestore db;
-    private FirebaseUser user;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -48,9 +46,6 @@ public class DicSecondFragment extends Fragment {
 
         // Setting group indicator null for custom indicator
         expandableListView.setGroupIndicator(null);
-
-        db = FirebaseFirestore.getInstance();
-        user = FirebaseAuth.getInstance().getCurrentUser();
 
         setItems();
         setListener();
@@ -101,7 +96,9 @@ public class DicSecondFragment extends Fragment {
                                 HashMap<String,String> case_tags = new HashMap<String,String>();
                                 case_tags = (HashMap<String,String>) document.get("case_tags");
 
-                                Cases c = new Cases(document.get("case_title").toString(), document.get("case_backgroundInfo").toString(), document.get("case_behavior").toString(), (List<HashMap<String, String>>) document.get("case_cause"), (List<HashMap<String, String>>) document.get("case_solution"), document.get("case_effect").toString(), (HashMap<String, String>) document.get("case_tags"), document.getId());
+                                Cases c = new Cases(document.get("case_title").toString(), document.get("case_backgroundInfo").toString(), document.get("case_behavior").toString(),
+                                        (List<HashMap<String, String>>) document.get("case_cause"), (List<HashMap<String, String>>) document.get("case_solution"), document.get("case_effect").toString(),
+                                        (HashMap<String, String>) document.get("case_tags"), document.getId());
 
                                 if(case_tags.get("harm")!=null) {
                                     c_harm.add(c);
@@ -190,7 +187,7 @@ public class DicSecondFragment extends Fragment {
             public boolean onChildClick(ExpandableListView listview, View view,
                                         final int groupPos, final int childPos, long id) {
 
-                db.collection("users").document(user.getUid())
+                MainActivity.db.collection("users").document(MainActivity.user.getUid())
                         .get()
                         .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                             @Override
@@ -215,7 +212,7 @@ public class DicSecondFragment extends Fragment {
                                         if(!bookmark_check) {
                                             Object docData = tmp.firebase_input_data();
 
-                                            db.collection("users").document(user.getUid())
+                                            MainActivity.db.collection("users").document(MainActivity.user.getUid())
                                                     .update("cases."+tmp.case_id, docData)
                                                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                                                         @Override

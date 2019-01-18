@@ -100,4 +100,6 @@
     <string name="title_activity_invited">InvitedActivity</string>
 
     <string name="invited_message">조현지 님이 <font color="#2dc76d">이다솔</font>의 보호자로 회원님을 초대하셨습니다. 하단의 수락 버튼을 눌러 <font color="#2dc76d">이다솔</font>을 우리 아이로 추가해보세요.</string>
+    <string name="appwidget_text">EXAMPLE</string>
+    <string name="add_widget">Add widget</string>
 </resources>

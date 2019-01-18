@@ -13,6 +13,7 @@
     </ListView>
 
     <View
+        android:id="@+id/behavior_add_line"
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="#d9d9d9"/>

@@ -50,15 +50,16 @@
                 android:gravity="center">
 
                 <RelativeLayout
+                    android:id="@+id/child_add_image_layout"
                     android:layout_width="102dp"
                     android:layout_height="102dp"
                     >
 
-                    <ImageView
-                        android:id="@+id/child_image"
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:id="@+id/child_add_image"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        app:srcCompat="@drawable/ic_profile_default"
+                        android:src="@drawable/ic_profile_default"
                         />
 
                     <ImageView
@@ -135,18 +136,25 @@
 
             </RadioGroup>
 
-            <EditText
-                android:id="@+id/txt_child_age"
+            <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="16sp"
-                android:textColor="#de000000"
-                app:backgroundTint="#1e000000"
-                android:lineSpacingExtra="8sp"
-                android:hint="아이 나이(개월)"
-                android:maxLines="1"
-                android:singleLine="true"
-                android:inputType="number"/>
+                >
+
+                <EditText
+                    android:id="@+id/txt_child_age"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    android:textColor="#de000000"
+                    app:backgroundTint="#1e000000"
+                    android:lineSpacingExtra="8sp"
+                    android:hint="아이 나이"
+                    android:maxLines="1"
+                    android:singleLine="true"
+                    android:inputType="number"/>
+
+            </android.support.design.widget.TextInputLayout>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -189,17 +197,24 @@
 
             </RadioGroup>
 
-            <EditText
-                android:id="@+id/txt_child_relation"
+            <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="16sp"
-                android:textColor="#de000000"
-                app:backgroundTint="#1e000000"
-                android:lineSpacingExtra="8sp"
-                android:hint="아이와의 관계"
-                android:maxLines="1"
-                android:singleLine="true" />
+                >
+
+                <EditText
+                    android:id="@+id/txt_child_relation"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    android:textColor="#de000000"
+                    app:backgroundTint="#1e000000"
+                    android:lineSpacingExtra="8sp"
+                    android:hint="아이와의 관계"
+                    android:maxLines="1"
+                    android:singleLine="true" />
+
+            </android.support.design.widget.TextInputLayout>
 
             <Button
                 android:id="@+id/child_add_button"

@@ -57,14 +57,12 @@ public class SearchFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    private FirebaseUser user;
-    private FirebaseFirestore db;
-
     private LinearLayout recentSearch;
     private ListView listView_bookmark;
     private ListView listView_all;
     public static SearchFragment.ListviewAdapter adapterBookmark;
     private static SearchFragment.ListviewAdapter adapterAll;
+    private View searchLine;
 
     public static ArrayList<Cases> bookmark;
     private static ArrayList<Cases> allCases;
@@ -115,15 +113,14 @@ public class SearchFragment extends Fragment {
         listView_bookmark = (ListView) v.findViewById(R.id.search_listview_bookmark);
         listView_all = (ListView) v.findViewById(R.id.search_listview_all);
 
+        searchLine = (View) v.findViewById(R.id.search_line);
+
         bookmark = new ArrayList<>();
         allCases = new ArrayList<>();
         tmpCases = new ArrayList<>();
 
-        user = FirebaseAuth.getInstance().getCurrentUser();
-        db = FirebaseFirestore.getInstance();
-
         // Get User's Bookmark Data
-        db.collection("users").document(user.getUid().toString())
+        MainActivity.db.collection("users").document(MainActivity.user.getUid())
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                     @Override
@@ -136,13 +133,17 @@ public class SearchFragment extends Fragment {
                                 if(result != null) {
                                     for(Map.Entry me : result.entrySet()) {
                                         Object i = me.getKey();
-                                        Cases item = new Cases(result.get(i).get("case_title").toString(), result.get(i).get("case_backgroundInfo").toString(), result.get(i).get("case_behavior").toString(), (List<HashMap<String, String>>) result.get(i).get("case_cause"), (List<HashMap<String, String>>) result.get(i).get("case_solution"), result.get(i).get("case_effect").toString(), (HashMap<String, String>) result.get(i).get("case_tags"), (String) me.getKey());
+                                        Cases item = new Cases(result.get(i).get("case_title").toString(), result.get(i).get("case_backgroundInfo").toString(), result.get(i).get("case_behavior").toString(),
+                                                (List<HashMap<String, String>>) result.get(i).get("case_cause"), (List<HashMap<String, String>>) result.get(i).get("case_solution"),
+                                                result.get(i).get("case_effect").toString(), (HashMap<String, String>) result.get(i).get("case_tags"), (String) me.getKey());
                                         bookmark.add(item);
                                     }
+                                } else {
+                                    searchLine.setVisibility(View.GONE);
                                 }
 
                             } else {
-
+                                searchLine.setVisibility(View.GONE);
                             }
                         } else {
 //                            Log.d(TAG, "Error getting documents: ", task.getException());
@@ -162,14 +163,16 @@ public class SearchFragment extends Fragment {
         });
 
         // Get All Cases Data
-        db.collection("cases")
+        MainActivity.db.collection("cases")
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : task.getResult()) {
-                                Cases item = new Cases(document.get("case_title").toString(), document.get("case_backgroundInfo").toString(), document.get("case_behavior").toString(), (List<HashMap<String, String>>) document.get("case_cause"), (List<HashMap<String, String>>) document.get("case_solution"), document.get("case_effect").toString(), (HashMap<String, String>) document.get("case_tags"), document.getId());
+                                Cases item = new Cases(document.get("case_title").toString(), document.get("case_backgroundInfo").toString(), document.get("case_behavior").toString(),
+                                        (List<HashMap<String, String>>) document.get("case_cause"), (List<HashMap<String, String>>) document.get("case_solution"), document.get("case_effect").toString(),
+                                        (HashMap<String, String>) document.get("case_tags"), document.getId());
                                 allCases.add(item);
                             }
                             tmpCases.addAll(allCases);
@@ -185,7 +188,7 @@ public class SearchFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
 
-                db.collection("users").document(user.getUid().toString())
+                MainActivity.db.collection("users").document(MainActivity.user.getUid().toString())
                         .get()
                         .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                             @Override
@@ -210,7 +213,7 @@ public class SearchFragment extends Fragment {
                                         if(!bookmark_check) {
                                             Object docData = tmp.firebase_input_data();
 
-                                            db.collection("users").document(user.getUid())
+                                            MainActivity.db.collection("users").document(MainActivity.user.getUid())
                                                     .update("cases."+tmp.case_id, docData)
                                                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                                                         @Override
@@ -299,6 +302,7 @@ public class SearchFragment extends Fragment {
         private ArrayList<Cases> data;
         private int layout;
         private String kind;
+
         public ListviewAdapter(Context context, int layout, ArrayList<Cases> data, String kind){
             this.inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             this.data = data;
@@ -382,7 +386,7 @@ public class SearchFragment extends Fragment {
                                         Object delete_data = FieldValue.delete();
                                         Cases tmp = (Cases) adapterBookmark.getItem(position);
 
-                                        db.collection("users").document(user.getUid())
+                                        MainActivity.db.collection("users").document(MainActivity.user.getUid())
                                                 .update("cases."+tmp.case_id, delete_data)
                                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                                     @Override
@@ -415,7 +419,6 @@ public class SearchFragment extends Fragment {
                 });
             } else {
                 bookmark_delete.setVisibility(convertView.GONE);
-
             }
 
             return convertView;

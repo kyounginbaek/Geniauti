@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -27,27 +26,22 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.Transaction;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -65,6 +59,9 @@ import java.util.Map;
  */
 public class ProfileFragment extends Fragment {
 
+    private FirebaseStorage storage;
+    private StorageReference storageRef;
+
     private RelativeLayout childEdit;
     private RelativeLayout profileEdit;
     private LinearLayout parentAdd;
@@ -74,6 +71,8 @@ public class ProfileFragment extends Fragment {
     private LinearLayout inviteCancel;
     private LinearLayout parentInvite;
     private LinearLayout bookmarkAdd;
+
+    private TextView dialogChildName;
     Bitmap bitmap;
     Uri filePath;
 
@@ -86,11 +85,13 @@ public class ProfileFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
+    private String child;
+
     private View v;
-    private TextView childName;
-    private TextView childParent;
+    private TextView childNameView;
+    public static String childName;
+    private TextView childParentView;
     private OnFragmentInteractionListener mListener;
-    private FirebaseUser user;
 
     private ListView parentListView;
     public static ListView bookmarkListView;
@@ -98,8 +99,6 @@ public class ProfileFragment extends Fragment {
     public static ArrayList<Bookmark> bookmarkData;
     private ParentListviewAdapter parentAdapter;
     public static BookmarkListviewAdapter bookmarkAdapter;
-
-    private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -167,45 +166,14 @@ public class ProfileFragment extends Fragment {
         }
         v = inflater.inflate(R.layout.fragment_profile, container, false);
 
-        Thread mThread = new Thread() {
-            @Override
-            public void run(){
-                try{
-                    URL url = new URL("https://cdn4.iconfinder.com/data/icons/evil-icons-user-interface/64/avatar-128.png");
+        storage = FirebaseStorage.getInstance();
+        storageRef = storage.getReference();
 
-                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                    conn.setDoInput(true);
-                    conn.connect();
+        childNameView = (TextView) v.findViewById(R.id.profile_child_name);
+        childParentView = (TextView) v.findViewById(R.id.txt_child_parent);
 
-                    InputStream is = conn.getInputStream();
-                    bitmap = BitmapFactory.decodeStream(is);
-
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        };
-
-        mThread.start();
-
-        try {
-            mThread.join();
-//            mProfileImage.setImageBitmap(bitmap);
-
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        user = FirebaseAuth.getInstance().getCurrentUser();
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-        childName = (TextView) v.findViewById(R.id.profile_child_name);
-        childParent = (TextView) v.findViewById(R.id.txt_child_parent);
-
-        db.collection("childs")
-                .whereGreaterThanOrEqualTo("users."+user.getUid()+".name", "")
+        MainActivity.db.collection("childs")
+                .whereGreaterThanOrEqualTo("users."+MainActivity.user.getUid()+".name", "")
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(@Nullable QuerySnapshot value,
@@ -216,23 +184,31 @@ public class ProfileFragment extends Fragment {
                         }
 
                         for (QueryDocumentSnapshot doc : value) {
-                            childName.setText(doc.getData().get("name").toString());
-                            childParent.setText(doc.getData().get("name").toString()+"의 보호자");
+                            child = doc.getData().get("name").toString();
+                            dialogChildName.setText("이메일로 " + child +  "의 새로운 보호자에게 초대장을 보낼 수 있습니다.");
+
+                            childName = doc.getData().get("name").toString();
+
+                            childNameView.setText(childName);
+                            childParentView.setText(childName+"의 보호자");
 
                             HashMap<String, Object> users = (HashMap<String, Object>) doc.getData().get("users");
                             Iterator it = users.entrySet().iterator();
                             while(it.hasNext()){
                                 Map.Entry pair = (Map.Entry)it.next();
                                 HashMap<String, Object> data = (HashMap<String, Object>) pair.getValue();
-                                if(!pair.getKey().toString().equals(user.getUid())){
-                                    Parent item = new Parent(data.get("name").toString(), data.get("profile_pic").toString(), data.get("relationship").toString(), pair.getKey().toString());
-                                    parentData.add(item);
-                                }
+//                                if(!pair.getKey().toString().equals(MainActivity.user.getUid())){
+//                                    Parent item = new Parent(data.get("name").toString(), data.get("profile_pic").toString(), data.get("relationship").toString(), pair.getKey().toString());
+//                                    parentData.add(item);
+//                                }
+                                Parent item = new Parent(data.get("name").toString(), data.get("profile_pic").toString(), data.get("relationship").toString(), pair.getKey().toString());
+                                parentData.add(item);
                             }
-                            parentAdapter = new ParentListviewAdapter(getContext(), R.layout.list_parent, parentData);
-                            parentListView.setAdapter(parentAdapter);
-                            setListViewHeightBasedOnChildren(parentListView);
                         }
+
+                        parentAdapter = new ParentListviewAdapter(getContext(), R.layout.list_parent, parentData);
+                        parentListView.setAdapter(parentAdapter);
+                        setListViewHeightBasedOnChildren(parentListView);
                     }
                 });
 
@@ -250,7 +226,7 @@ public class ProfileFragment extends Fragment {
         bookmarkListView = (ListView) v.findViewById(R.id.bookmark_listview);
         bookmarkData = new ArrayList<>();
 
-        db.collection("users").document(user.getUid())
+        MainActivity.db.collection("users").document(MainActivity.user.getUid())
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                     @Override
@@ -263,7 +239,10 @@ public class ProfileFragment extends Fragment {
                                 if(preset != null) {
                                     List<HashMap<String, Object>> behavior_preset = (List<HashMap<String,Object>>) preset.get("behavior_preset");
                                     for(int i=0; i<behavior_preset.size(); i++) {
-                                        Bookmark item = new Bookmark(i, behavior_preset.get(i).get("title").toString(), behavior_preset.get(i).get("place").toString(), behavior_preset.get(i).get("categorization").toString(), (HashMap<String, Object>) behavior_preset.get(i).get("type"), Integer.parseInt(behavior_preset.get(i).get("intensity").toString()), (HashMap<String, Object>) behavior_preset.get(i).get("reason_type"), (HashMap<String, Object>) behavior_preset.get(i).get("reason"));
+                                        Bookmark item = new Bookmark(i, behavior_preset.get(i).get("title").toString(), behavior_preset.get(i).get("place").toString(),
+                                                behavior_preset.get(i).get("categorization").toString(), (HashMap<String, Object>) behavior_preset.get(i).get("type"),
+                                                Integer.parseInt(behavior_preset.get(i).get("intensity").toString()), (HashMap<String, Object>) behavior_preset.get(i).get("reason_type"),
+                                                (HashMap<String, Object>) behavior_preset.get(i).get("reason"));
                                         bookmarkData.add(item);
                                     }
 
@@ -291,6 +270,7 @@ public class ProfileFragment extends Fragment {
         parentAdd = (LinearLayout) v.findViewById(R.id.parent_add);
         AlertDialog.Builder mBuilder = new AlertDialog.Builder(getContext());
         View mView = getLayoutInflater().inflate(R.layout.dialog_parent_invite, null);
+        dialogChildName = (TextView) mView.findViewById(R.id.parent_invite_childname);
         mBuilder.setView(mView);
         final AlertDialog dialog = mBuilder.create();
 
@@ -327,7 +307,7 @@ public class ProfileFragment extends Fragment {
         bookmarkAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(getActivity().getApplication(), BehaviorActivity.class));
+                startActivity(new Intent(getActivity().getApplication(), BookmarkActivity.class));
             }
         });
 
@@ -440,7 +420,21 @@ public class ProfileFragment extends Fragment {
 
             Parent parentData = data.get(position);
 
-            ImageView parentImage = (ImageView) v.findViewById(R.id.list_parent_image);
+            final ImageView parentImage = (ImageView) v.findViewById(R.id.list_parent_image);
+            StorageReference pathReference = storageRef.child("users/"+parentData.uid);
+            pathReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                @Override
+                public void onSuccess(Uri uri) {
+                    // Got the download URL for 'users/me/profile.png'
+                    Glide.with(getContext()).load(uri).into(parentImage);
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                    // Handle any errors
+                }
+            });
+
             TextView parentName = (TextView) v.findViewById(R.id.list_parent_name);
             TextView parentRelationship = (TextView) v.findViewById(R.id.list_parent_relationship);
 
@@ -498,13 +492,13 @@ public class ProfileFragment extends Fragment {
             });
 
             AlertDialog.Builder alt_bld = new AlertDialog.Builder(getActivity());
-            final DocumentReference sfDocRef = db.collection("users").document(user.getUid());
+            final DocumentReference sfDocRef = MainActivity.db.collection("users").document(MainActivity.user.getUid());
             alt_bld.setMessage("자주 쓰는 기록을 삭제하시겠습니까?").setCancelable(
                     false).setPositiveButton("확인",
                     new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             // Action for 'Yes' Button
-                            db.runTransaction(new Transaction.Function<Void>() {
+                            MainActivity.db.runTransaction(new Transaction.Function<Void>() {
                                 @Override
                                 public Void apply(Transaction transaction) throws FirebaseFirestoreException {
                                     DocumentSnapshot snapshot = transaction.get(sfDocRef);

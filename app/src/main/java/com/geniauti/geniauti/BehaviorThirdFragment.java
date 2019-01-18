@@ -54,9 +54,6 @@ public class BehaviorThirdFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    private FirebaseFirestore db;
-    private FirebaseUser user;
-
     private View v;
     private GridListAdapter adapter;
     private ArrayList<String> arrayList;
@@ -119,10 +116,7 @@ public class BehaviorThirdFragment extends Fragment {
         arrayList.add("떼쓰기");
         arrayList.add("물건 던지기");
 
-        db = FirebaseFirestore.getInstance();
-        user = FirebaseAuth.getInstance().getCurrentUser();
-
-        db.collection("childs").document(MainFragment.cid)
+        MainActivity.db.collection("childs").document(MainActivity.cid)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                     @Override
@@ -140,6 +134,24 @@ public class BehaviorThirdFragment extends Fragment {
                                             arrayList.add(pair.getKey().toString());
                                         }
                                     }
+                                }
+                            }
+
+                            if(BehaviorActivity.bookmarkState == true && BehaviorActivity.tmpBookmark != null) {
+                                if(!arrayList.contains(BehaviorActivity.tmpBookmark.categorization)) {
+                                    arrayList.add(BehaviorActivity.tmpBookmark.categorization);
+                                }
+                            }
+
+                            if(BehaviorActivity.editBehaviorState== true && BehaviorActivity.editBehavior != null) {
+                                if(!arrayList.contains(BehaviorActivity.editBehavior.categorization)) {
+                                    arrayList.add(BehaviorActivity.editBehavior.categorization);
+                                }
+                            }
+
+                            if(BookmarkActivity.editBookmarkState== true && BookmarkActivity.editBookmark != null) {
+                                if(!arrayList.contains(BookmarkActivity.editBookmark.categorization)) {
+                                    arrayList.add(BookmarkActivity.editBookmark.categorization);
                                 }
                             }
 
@@ -202,12 +214,21 @@ public class BehaviorThirdFragment extends Fragment {
                 view = inflater.inflate(R.layout.list_radio, viewGroup, false);
             }
 
+            // 자주 쓰는 기록을 사용하는 경우
             if(BehaviorActivity.bookmarkState == true && BehaviorActivity.tmpBookmark != null && selectedPosition == -1) {
                 if(arrayList.get(i).equals(BehaviorActivity.tmpBookmark.categorization)) {
                     selectedPosition = i;
                 }
             }
 
+            // 행동 기록을 수정하는 경우
+            if(BehaviorActivity.editBehaviorState== true && BehaviorActivity.editBehavior != null && selectedPosition == -1) {
+                if(arrayList.get(i).equals(BehaviorActivity.editBehavior.categorization)) {
+                    selectedPosition = i;
+                }
+            }
+
+            // 자주 쓰는 기록을 수정하는 경우
             if(BookmarkActivity.editBookmarkState== true && BookmarkActivity.editBookmark != null && selectedPosition == -1) {
                 if(arrayList.get(i).equals(BookmarkActivity.editBookmark.categorization)) {
                     selectedPosition = i;
@@ -250,10 +271,10 @@ public class BehaviorThirdFragment extends Fragment {
                                     boolean cancel = false;
                                     String title = txtTitle.getText().toString().trim();
 
-//                                if(location.equals("집") || location.equals("마트") || location.equals("식당") || location.equals("학교")) {
-//                                    Toast.makeText(getActivity(), "이미 등록되어 있는 장소입니다.", Toast.LENGTH_SHORT).show();
-//                                    cancel = true;
-//                                }
+                                    if(arrayList.contains(title)) {
+                                        Toast.makeText(getActivity(), "이미 등록되어 있는 행동입니다.", Toast.LENGTH_SHORT).show();
+                                        cancel = true;
+                                    }
 
                                     if(title.equals("")) {
                                         Toast.makeText(getActivity(), "빈칸을 입력해주세요.", Toast.LENGTH_SHORT).show();
@@ -264,7 +285,7 @@ public class BehaviorThirdFragment extends Fragment {
 
                                     } else {
 
-                                        db.collection("childs").document(MainFragment.cid)
+                                        MainActivity.db.collection("childs").document(MainActivity.cid)
                                                 .update("preset.categorization_preset."+txtTitle.getText().toString(), true)
                                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                                     @Override
@@ -318,7 +339,7 @@ public class BehaviorThirdFragment extends Fragment {
                                     public void onClick(DialogInterface dialog, int id) {
                                         // Action for 'Yes' Button
                                         Object delete_data = FieldValue.delete();
-                                        db.collection("childs").document(MainFragment.cid)
+                                        MainActivity.db.collection("childs").document(MainActivity.cid)
                                                 .update("preset.categorization_preset."+arrayList.get(i), delete_data)
                                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                                     @Override

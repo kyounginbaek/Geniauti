@@ -54,10 +54,7 @@ public class BehaviorActivity extends AppCompatActivity implements BehaviorFirst
     public static boolean bookmarkState = false;
     public static boolean editBehaviorState = false;
 
-    private FirebaseFirestore db;
-    private FirebaseUser user;
     private Map<String, Object> docData;
-    private String cid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -140,26 +137,6 @@ public class BehaviorActivity extends AppCompatActivity implements BehaviorFirst
             int editPage = getIntent().getIntExtra("behaviorEditPage", 0);
             mViewPager.setCurrentItem(editPage-1);
         }
-
-        db = FirebaseFirestore.getInstance();
-        user = FirebaseAuth.getInstance().getCurrentUser();
-
-        db.collection("childs")
-                .whereGreaterThanOrEqualTo("users."+user.getUid()+".name", "")
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                cid = document.getId();
-                            }
-                        } else {
-//                                Log.d(TAG, "Error getting documents: ", task.getException());
-                        }
-                    }
-                });
-
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -279,22 +256,46 @@ public class BehaviorActivity extends AppCompatActivity implements BehaviorFirst
                             docData.put("intensity", f8.seekbarValue+1);
                             docData.put("reason_type", f9.getResult());
                             docData.put("reason", f9.reasonDetail());
-                            docData.put("uid", user.getUid());
-                            docData.put("name", user.getDisplayName());
-                            docData.put("cid", cid);
+                            docData.put("uid", MainActivity.user.getUid());
+                            docData.put("name", MainActivity.user.getDisplayName());
+                            docData.put("relationship", MainActivity.relationship);
+                            docData.put("cid", MainActivity.cid);
 
                             if(editBehaviorState == true) {
                                 docData.put("updated_at", cal.getTime());
 
-                                db.collection("behaviors").document(editBehavior.bid)
+                                MainActivity.db.collection("behaviors").document(editBehavior.bid)
                                         .update(docData)
                                         .addOnSuccessListener(new OnSuccessListener<Void>() {
                                             @Override
                                             public void onSuccess(Void aVoid) {
 //                                                                  mProgressView.setVisibility(View.GONE);
-                                                MainActivity.adapter.notifyDataSetChanged();
-                                                finish();
 
+                                                BehaviorDetailActivity.selectedBehavior.start_time = (Date) docData.get("start_time");
+                                                BehaviorDetailActivity.selectedBehavior.end_time = (Date) docData.get("end_time");
+                                                BehaviorDetailActivity.selectedBehavior.place = docData.get("place").toString();
+                                                BehaviorDetailActivity.selectedBehavior.categorization = docData.get("categorization").toString();
+                                                BehaviorDetailActivity.selectedBehavior.current_behavior = docData.get("current_behavior").toString();
+                                                BehaviorDetailActivity.selectedBehavior.before_behavior = docData.get("before_behavior").toString();
+                                                BehaviorDetailActivity.selectedBehavior.after_behavior = docData.get("after_behavior").toString();
+                                                BehaviorDetailActivity.selectedBehavior.type = (HashMap<String, Object>) docData.get("type");
+                                                BehaviorDetailActivity.selectedBehavior.intensity = (int) docData.get("intensity");
+                                                BehaviorDetailActivity.selectedBehavior.reason_type = (HashMap<String, Object>) docData.get("reason_type");
+                                                BehaviorDetailActivity.selectedBehavior.reason = (HashMap<String, Object>) docData.get("reason");
+
+                                                MainActivity.adapter.notifyDataSetChanged();
+                                                BehaviorDetailActivity.behavior_categorization.setText(docData.get("categorization").toString());
+                                                BehaviorDetailActivity.setTime((Date) docData.get("start_time"), (Date) docData.get("end_time"));
+                                                BehaviorDetailActivity.behavior_place.setText(docData.get("place").toString());
+                                                BehaviorDetailActivity.setType((HashMap<String, Object>) docData.get("type"));
+                                                BehaviorDetailActivity.setReasonType((HashMap<String, Object>) docData.get("reason_type"));
+                                                BehaviorDetailActivity.setIntensity((int) docData.get("intensity"));
+                                                BehaviorDetailActivity.behavior_current.setText(docData.get("current_behavior").toString());
+                                                BehaviorDetailActivity.behavior_before.setText(docData.get("before_behavior").toString());
+                                                BehaviorDetailActivity.behavior_after.setText(docData.get("after_behavior").toString());
+                                                BehaviorDetailActivity.editModeOff();
+
+                                                finish();
                                                 Toast toast = Toast.makeText(BehaviorActivity.this, "행동이 수정되었습니다.", Toast.LENGTH_SHORT);
                                                 toast.show();
                                             }
@@ -309,7 +310,7 @@ public class BehaviorActivity extends AppCompatActivity implements BehaviorFirst
                                 docData.put("updated_at", "");
                                 docData.put("created_at", cal.getTime());
 
-                                db.collection("behaviors").document()
+                                MainActivity.db.collection("behaviors").document()
                                         .set(docData)
                                         .addOnSuccessListener(new OnSuccessListener<Void>() {
                                             @Override

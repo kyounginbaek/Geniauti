@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
@@ -26,6 +27,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -109,6 +111,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
+                InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
                 attemptLogin();
             }
         });
@@ -311,7 +315,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                                 } else if(e.getErrorCode()=="ERROR_WRONG_PASSWORD") {
                                     mPasswordView.setError("비밀번호를 다시 한번 확인해주세요.");
                                 } else {
-                                    Toast.makeText(LoginActivity.this, "오류가 발생했습니다.", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(LoginActivity.this, "오류가 발생했습니다. snu.dxd.lab@gmail.com으로 문의 바랍니다.", Toast.LENGTH_SHORT).show();
                                     return;
                                 }
                                 // If sign in fails, display a message to the user.

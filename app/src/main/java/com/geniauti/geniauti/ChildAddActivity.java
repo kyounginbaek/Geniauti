@@ -1,6 +1,10 @@
 package com.geniauti.geniauti;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.media.ExifInterface;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -11,8 +15,11 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.esafirm.imagepicker.features.ImagePicker;
+import com.esafirm.imagepicker.model.Image;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -31,6 +38,7 @@ public class ChildAddActivity extends AppCompatActivity {
 
     private View mProgressView;
 
+    private ImageView childImage;
     private TextView mChildName;
     private TextView mChildAge;
     private RadioGroup radioGroupAge;
@@ -53,15 +61,10 @@ public class ChildAddActivity extends AppCompatActivity {
         setContentView(R.layout.activity_child_add);
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
-        ImageView childImaage = (ImageView) findViewById(R.id.child_image);
-        childImaage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-            }
-        });
 
         mProgressView = findViewById(R.id.child_add_progress);
+
+        childImage = (ImageView) findViewById(R.id.child_add_image);
 
         mChildName = (TextView) findViewById(R.id.txt_child_name);
         mChildAge= (TextView) findViewById(R.id.txt_child_age);
@@ -70,11 +73,11 @@ public class ChildAddActivity extends AppCompatActivity {
         {
             public void onCheckedChanged(RadioGroup group, int checkedId)
             {
-                if(checkedId == R.id.radio_btn_month) {
-                    mChildAge.setHint("아이 나이(개월)");
-                } else {
-                    mChildAge.setHint("아이 나이(세)");
-                }
+//                if(checkedId == R.id.radio_btn_month) {
+//                    mChildAge.setHint("아이 나이(개월)");
+//                } else {
+//                    mChildAge.setHint("아이 나이(세)");
+//                }
                 radioYear.setError(null);
             }
         });
@@ -94,6 +97,17 @@ public class ChildAddActivity extends AppCompatActivity {
 
         db = FirebaseFirestore.getInstance();
         user = FirebaseAuth.getInstance().getCurrentUser();
+
+        RelativeLayout childImageLayout = (RelativeLayout) findViewById(R.id.child_add_image_layout);
+        childImageLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ImagePicker.create(ChildAddActivity.this)
+                        .limit(1)
+                        .theme(R.style.AppTheme)
+                        .start();
+            }
+        });
 
         mChildAddButton = (Button) findViewById(R.id.child_add_button);
         mChildAddButton.setOnClickListener(new View.OnClickListener() {
@@ -245,6 +259,36 @@ public class ChildAddActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, final int resultCode, Intent data) {
+        if (ImagePicker.shouldHandle(requestCode, resultCode, data)) {
+            // or get a single image only
+            Image image = ImagePicker.getFirstImageOrNull(data);
+            Bitmap myBitmap = BitmapFactory.decodeFile(image.getPath());
+
+            try {
+                ExifInterface exif = new ExifInterface(image.getPath());
+                int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, 1);
+                Matrix matrix = new Matrix();
+                if (orientation == 6) {
+                    matrix.postRotate(90);
+                }
+                else if (orientation == 3) {
+                    matrix.postRotate(180);
+                }
+                else if (orientation == 8) {
+                    matrix.postRotate(270);
+                }
+                myBitmap = Bitmap.createBitmap(myBitmap, 0, 0, myBitmap.getWidth(), myBitmap.getHeight(), matrix, true); // rotating bitmap
+                childImage.setImageBitmap(myBitmap);
+            }
+            catch (Exception e) {
+
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override

@@ -10,6 +10,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -17,8 +18,7 @@
         android:label="지니어티 Geniauti"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        tools:replace="icon, label"
-        >
+        tools:replace="icon, label">
         <activity
             android:name=".LoginActivity"
             android:label="LoginActivity" />
@@ -60,7 +60,17 @@
             android:theme="@style/AppTheme" />
         <activity android:name=".BehaviorDetailActivity" />
         <activity android:name=".BookmarkDetailActivity" />
-        <activity android:name=".RalationshipAddActivity"></activity>
+        <activity android:name=".RalationshipAddActivity" />
+
+        <receiver android:name=".GeniautiWidget">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/geniauti_widget_info" />
+        </receiver>
     </application>
 
 </manifest>

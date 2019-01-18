@@ -21,7 +21,6 @@ import com.google.firebase.auth.FirebaseUser;
 
 public class PasswordEditActivity extends AppCompatActivity {
 
-    private FirebaseUser user;
     private View mProgressView;
     private Button btnPasswordEdit;
 
@@ -43,7 +42,6 @@ public class PasswordEditActivity extends AppCompatActivity {
 
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
-        user = FirebaseAuth.getInstance().getCurrentUser();
         mProgressView = findViewById(R.id.password_edit_progress);
 
         final EditText currentPassword = (EditText) findViewById(R.id.txt_current_password);
@@ -115,14 +113,14 @@ public class PasswordEditActivity extends AppCompatActivity {
                     mProgressView.setVisibility(View.GONE);
                     btnPasswordEdit.setEnabled(true);
                 } else {
-                    AuthCredential credential = EmailAuthProvider.getCredential(user.getEmail(), mCurrentPassword);
+                    AuthCredential credential = EmailAuthProvider.getCredential(MainActivity.user.getEmail(), mCurrentPassword);
 
-                    user.reauthenticate(credential)
+                    MainActivity.user.reauthenticate(credential)
                             .addOnCompleteListener(new OnCompleteListener<Void>() {
                                 @Override
                                 public void onComplete(@NonNull Task<Void> task) {
                                     if (task.isSuccessful()) {
-                                        user.updatePassword(mNewPassword)
+                                        MainActivity.user.updatePassword(mNewPassword)
                                                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                                                     @Override
                                                     public void onComplete(@NonNull Task<Void> task) {

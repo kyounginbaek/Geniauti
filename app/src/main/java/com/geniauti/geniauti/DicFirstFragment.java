@@ -13,10 +13,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -29,11 +26,9 @@ import static com.geniauti.geniauti.SearchFragment.adapterBookmark;
 import static com.geniauti.geniauti.SearchFragment.bookmark;
 
 public class DicFirstFragment extends Fragment {
+
     private static ExpandableListView expandableListView;
     private static ExpandableListAdapter adapter;
-
-    private FirebaseFirestore db;
-    private FirebaseUser user;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -83,10 +78,7 @@ public class DicFirstFragment extends Fragment {
         final List<Cases> c_interest = new ArrayList<Cases>();
         final List<Cases> c_demand = new ArrayList<Cases>();
 
-        db = FirebaseFirestore.getInstance();
-        user = FirebaseAuth.getInstance().getCurrentUser();
-
-        db.collection("cases")
+        MainActivity.db.collection("cases")
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
@@ -96,7 +88,9 @@ public class DicFirstFragment extends Fragment {
                                 HashMap<String,String> case_tags = new HashMap<String,String>();
                                 case_tags = (HashMap<String,String>) document.get("case_tags");
 
-                                Cases c = new Cases(document.get("case_title").toString(), document.get("case_backgroundInfo").toString(), document.get("case_behavior").toString(), (List<HashMap<String, String>>) document.get("case_cause"), (List<HashMap<String, String>>) document.get("case_solution"), document.get("case_effect").toString(), (HashMap<String, String>) document.get("case_tags"), document.getId());
+                                Cases c = new Cases(document.get("case_title").toString(), document.get("case_backgroundInfo").toString(), document.get("case_behavior").toString(),
+                                        (List<HashMap<String, String>>) document.get("case_cause"), (List<HashMap<String, String>>) document.get("case_solution"), document.get("case_effect").toString(),
+                                        (HashMap<String, String>) document.get("case_tags"), document.getId());
 
                                 if(case_tags.get("taskEvation")!=null) {
                                     c_taskEvation.add(c);
@@ -181,7 +175,7 @@ public class DicFirstFragment extends Fragment {
             public boolean onChildClick(ExpandableListView listview, View view,
                                         final int groupPos, final int childPos, long id) {
 
-                db.collection("users").document(user.getUid())
+                MainActivity.db.collection("users").document(MainActivity.user.getUid())
                         .get()
                         .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                             @Override
@@ -206,7 +200,7 @@ public class DicFirstFragment extends Fragment {
                                         if(!bookmark_check) {
                                             Object docData = tmp.firebase_input_data();
 
-                                            db.collection("users").document(user.getUid())
+                                            MainActivity.db.collection("users").document(MainActivity.user.getUid())
                                                     .update("cases."+tmp.case_id, docData)
                                                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                                                         @Override

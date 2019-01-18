@@ -1,5 +1,10 @@
 package com.geniauti.geniauti;
 
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.media.ExifInterface;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -10,10 +15,15 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.esafirm.imagepicker.features.ImagePicker;
+import com.esafirm.imagepicker.model.Image;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -31,10 +41,6 @@ import static java.lang.Integer.parseInt;
 
 public class ChildEditActivity extends AppCompatActivity {
 
-    FirebaseUser user;
-    FirebaseFirestore db;
-
-    String cid;
     EditText mChildName;
     EditText mChildAge;
     EditText mChildRelationship;
@@ -43,6 +49,9 @@ public class ChildEditActivity extends AppCompatActivity {
     RadioButton radioBoy, radioGirl;
     private View mProgressView;
     private Button childEditButton;
+    private RelativeLayout childImageLayout;
+    private ImageView childImage;
+    private TextView mChildAgeText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +74,7 @@ public class ChildEditActivity extends AppCompatActivity {
         mChildName = (EditText) findViewById(R.id.edit_child_name);
         mChildAge = (EditText) findViewById(R.id.edit_child_age);
         mChildRelationship = (EditText) findViewById(R.id.edit_child_relationship);
+        mChildAgeText = (TextView) findViewById(R.id.edit_child_age_txt);
 
         radioGroupAge = (RadioGroup) findViewById(R.id.edit_radio_child_age);
         radioGroupAge.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
@@ -72,9 +82,9 @@ public class ChildEditActivity extends AppCompatActivity {
             public void onCheckedChanged(RadioGroup group, int checkedId)
             {
                 if(checkedId == R.id.edit_radio_btn_month) {
-                    mChildAge.setHint("아이 나이(개월)");
+                    mChildAgeText.setText("아이 나이(개월)");
                 } else {
-                    mChildAge.setHint("아이 나이(세)");
+                    mChildAgeText.setText("아이 나이(세)");
                 }
             }
         });
@@ -87,20 +97,29 @@ public class ChildEditActivity extends AppCompatActivity {
         radioBoy = (RadioButton) findViewById(R.id.edit_radio_btn_boy);
         radioGirl = (RadioButton) findViewById(R.id.edit_radio_btn_girl);
 
-        user = FirebaseAuth.getInstance().getCurrentUser();
-        db = FirebaseFirestore.getInstance();
+        childImageLayout = (RelativeLayout) findViewById(R.id.child_edit_image_layout);
+        childImageLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ImagePicker.create(ChildEditActivity.this)
+                        .limit(1)
+                        .theme(R.style.AppTheme)
+                        .start();
+            }
+        });
+
+        childImage = (ImageView) findViewById(R.id.child_edit_image);
 
         mProgressView = findViewById(R.id.child_edit_progress);
         mProgressView.setVisibility(View.VISIBLE);
-        db.collection("childs")
-                .whereGreaterThanOrEqualTo("users."+user.getUid()+".name", "")
+        MainActivity.db.collection("childs")
+                .whereGreaterThanOrEqualTo("users."+MainActivity.user.getUid()+".name", "")
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : task.getResult()) {
-                                cid = document.getId();
 
                                 mChildName.setText(document.getData().get("name").toString());
                                 if(parseInt(document.getData().get("age").toString()) % 12 == 0) {
@@ -119,7 +138,7 @@ public class ChildEditActivity extends AppCompatActivity {
                                 }
 
                                 HashMap<String, Object> child = (HashMap<String, Object>)  document.getData().get("users");
-                                HashMap<String, Object> users = (HashMap<String, Object>)  child.get(user.getUid());
+                                HashMap<String, Object> users = (HashMap<String, Object>)  child.get(MainActivity.user.getUid());
 
                                 mChildRelationship.setText(users.get("relationship").toString());
                                 mProgressView.setVisibility(View.GONE);
@@ -181,12 +200,12 @@ public class ChildEditActivity extends AppCompatActivity {
                     RadioButton radioBtnSex = (RadioButton) findViewById(selectedSex);
 
                     Map<String, Object> nestedNestedData = new HashMap<>();
-                    nestedNestedData.put("name", user.getDisplayName());
+                    nestedNestedData.put("name", MainActivity.user.getDisplayName());
                     nestedNestedData.put("profile_pic", "");
                     nestedNestedData.put("relationship", mChildRelationship.getText().toString());
 
                     Map<String, Object> nestedData = new HashMap<>();
-                    nestedData.put(user.getUid(), nestedNestedData);
+                    nestedData.put(MainActivity.user.getUid(), nestedNestedData);
 
                     Map<String, Object> docData = new HashMap<>();
                     docData.put("name", mChildName.getText().toString());
@@ -195,16 +214,16 @@ public class ChildEditActivity extends AppCompatActivity {
                     docData.put("sex", radioBtnSex.getText().toString().substring(0,2));
                     docData.put("users", nestedData);
 
-                    db.collection("childs").document(cid)
+                    MainActivity.db.collection("childs").document(MainActivity.cid)
                             .update(docData)
                             .addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void aVoid) {
 
                                     Map<String, Object> userData = new HashMap<>();
-                                    userData.put("name", user.getDisplayName());
+                                    userData.put("name", MainActivity.user.getDisplayName());
 
-                                    db.collection("users").document(user.getUid())
+                                    MainActivity.db.collection("users").document(MainActivity.user.getUid())
                                             .set(userData)
                                             .addOnSuccessListener(new OnSuccessListener<Void>() {
                                                 @Override
@@ -235,7 +254,38 @@ public class ChildEditActivity extends AppCompatActivity {
             }
         });
 
+    }
 
+
+
+    @Override
+    protected void onActivityResult(int requestCode, final int resultCode, Intent data) {
+        if (ImagePicker.shouldHandle(requestCode, resultCode, data)) {
+            // or get a single image only
+            Image image = ImagePicker.getFirstImageOrNull(data);
+            Bitmap myBitmap = BitmapFactory.decodeFile(image.getPath());
+
+            try {
+                ExifInterface exif = new ExifInterface(image.getPath());
+                int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, 1);
+                Matrix matrix = new Matrix();
+                if (orientation == 6) {
+                    matrix.postRotate(90);
+                }
+                else if (orientation == 3) {
+                    matrix.postRotate(180);
+                }
+                else if (orientation == 8) {
+                    matrix.postRotate(270);
+                }
+                myBitmap = Bitmap.createBitmap(myBitmap, 0, 0, myBitmap.getWidth(), myBitmap.getHeight(), matrix, true); // rotating bitmap
+                childImage.setImageBitmap(myBitmap);
+            }
+            catch (Exception e) {
+
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
