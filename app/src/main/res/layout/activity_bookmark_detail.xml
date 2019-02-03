@@ -108,74 +108,6 @@
                     />
 
                 <LinearLayout
-                    android:id="@+id/behavior_bookmark_edit_layout2"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginRight="16dp"
-                    android:layout_marginTop="13dp"
-                    android:orientation="vertical">
-
-                    <RelativeLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textSize="14sp"
-                            android:textColor="#ababab"
-                            android:lineSpacingExtra="6sp"
-                            android:text="행동 일시"
-                            />
-
-                        <TextView
-                            android:id="@+id/bookmark_edit_text2"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_centerInParent="true"
-                            android:layout_alignParentRight="true"
-                            android:textSize="10sp"
-                            android:textColor="#ababab"
-                            android:lineSpacingExtra="10sp"
-                            android:text="수정"
-                            android:visibility="gone"
-                            />
-                    </RelativeLayout>
-
-                    <TextView
-                        android:id="@+id/txt_bookmark_time"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:textSize="16sp"
-                        android:textColor="#3b3b3b"
-                        android:lineSpacingExtra="8sp"
-                        android:text="..."
-                        />
-
-                </LinearLayout>
-
-                <View
-                    android:id="@+id/bookmark_line2"
-                    android:layout_width="match_parent"
-                    android:layout_marginTop="12dp"
-                    android:layout_height="2dp"
-                    />
-
-                <View
-                    android:id="@+id/bookmark_edit_line2"
-                    android:layout_width="match_parent"
-                    android:layout_marginTop="12dp"
-                    android:layout_height="2dp"
-                    android:background="@drawable/dotted_line"
-                    android:layerType="software"
-                    android:visibility="gone"
-                    />
-
-                <LinearLayout
                     android:id="@+id/behavior_bookmark_edit_layout3"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -461,31 +393,6 @@
 
                         </LinearLayout>
 
-                        <LinearLayout
-                            android:id="@+id/bookmark_etc"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:gravity="center_vertical"
-                            android:layout_marginLeft="12dp">
-
-                            <ImageView
-                                android:layout_width="9dp"
-                                android:layout_height="9dp"
-                                android:backgroundTint="#93c7ff"
-                                android:background="@drawable/dot"/>
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginLeft="4dp"
-                                android:textSize="16sp"
-                                android:textColor="#3b3b3b"
-                                android:letterSpacing="-0.03"
-                                android:gravity="center_horizontal"
-                                android:text="기타"
-                                />
-
-                        </LinearLayout>
-
                     </LinearLayout>
 
                 </LinearLayout>
@@ -632,204 +539,19 @@
                 <View
                     android:id="@+id/bookmark_line6"
                     android:layout_width="match_parent"
-                    android:layout_marginTop="16dp"
+                    android:layout_marginTop="18dp"
                     android:layout_height="2dp"
                     />
 
                 <View
                     android:id="@+id/bookmark_edit_line6"
                     android:layout_width="match_parent"
-                    android:layout_marginTop="16dp"
-                    android:layout_height="2dp"
-                    android:background="@drawable/dotted_line"
-                    android:layerType="software"
-                    android:visibility="gone"
-                    />
-
-                <LinearLayout
-                    android:id="@+id/behavior_bookmark_edit_layout7"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginRight="16dp"
-                    android:layout_marginTop="15dp"
-                    android:orientation="vertical">
-
-                    <RelativeLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textSize="14sp"
-                            android:textColor="#2bc76d"
-                            android:lineSpacingExtra="10sp"
-                            android:text="행동 이전의 상황"
-                            />
-
-                        <TextView
-                            android:id="@+id/bookmark_edit_text7"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_centerInParent="true"
-                            android:layout_alignParentRight="true"
-                            android:textSize="10sp"
-                            android:textColor="#ababab"
-                            android:lineSpacingExtra="10sp"
-                            android:text="수정"
-                            android:visibility="gone"
-                            />
-                    </RelativeLayout>
-
-                    <TextView
-                        android:id="@+id/txt_bookmark_before"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textSize="16sp"
-                        android:textColor="#3b3b3b"
-                        android:lineSpacingExtra="8sp"
-                        android:text="..."
-                        />
-
-                </LinearLayout>
-
-                <View
-                    android:id="@+id/bookmark_line7"
-                    android:layout_width="match_parent"
-                    android:layout_marginTop="18dp"
-                    android:layout_height="2dp"
-                    />
-
-                <View
-                    android:id="@+id/bookmark_edit_line7"
-                    android:layout_width="match_parent"
                     android:layout_marginTop="18dp"
                     android:layout_height="2dp"
                     android:background="@drawable/dotted_line"
                     android:layerType="software"
                     android:visibility="gone"
                     />
-
-                <LinearLayout
-                    android:id="@+id/behavior_bookmark_edit_layout8"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginRight="16dp"
-                    android:layout_marginTop="14dp"
-                    android:orientation="vertical">
-
-                    <RelativeLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textSize="14sp"
-                            android:textColor="#2bc76d"
-                            android:lineSpacingExtra="10sp"
-                            android:text="아이의 행동"
-                            />
-
-                        <TextView
-                            android:id="@+id/bookmark_edit_text8"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_centerInParent="true"
-                            android:layout_alignParentRight="true"
-                            android:textSize="10sp"
-                            android:textColor="#ababab"
-                            android:lineSpacingExtra="10sp"
-                            android:text="수정"
-                            android:visibility="gone"
-                            />
-                    </RelativeLayout>
-
-                    <TextView
-                        android:id="@+id/txt_bookmark_current"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textSize="16sp"
-                        android:textColor="#3b3b3b"
-                        android:lineSpacingExtra="8sp"
-                        android:text="..."
-                        />
-
-                </LinearLayout>
-
-                <View
-                    android:id="@+id/bookmark_line8"
-                    android:layout_width="match_parent"
-                    android:layout_marginTop="17dp"
-                    android:layout_height="2dp"
-                    />
-
-                <View
-                    android:id="@+id/bookmark_edit_line8"
-                    android:layout_width="match_parent"
-                    android:layout_marginTop="17dp"
-                    android:layout_height="2dp"
-                    android:background="@drawable/dotted_line"
-                    android:layerType="software"
-                    android:visibility="gone"
-                    />
-
-                <LinearLayout
-                    android:id="@+id/behavior_bookmark_edit_layout9"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginRight="16dp"
-                    android:layout_marginTop="15dp"
-                    android:layout_marginBottom="67dp"
-                    android:orientation="vertical">
-
-                    <RelativeLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textSize="14sp"
-                            android:textColor="#2bc76d"
-                            android:lineSpacingExtra="10sp"
-                            android:text="행동 후 아이에게 한 일"
-                            />
-
-                        <TextView
-                            android:id="@+id/bookmark_edit_text9"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_centerInParent="true"
-                            android:layout_alignParentRight="true"
-                            android:textSize="10sp"
-                            android:textColor="#ababab"
-                            android:lineSpacingExtra="10sp"
-                            android:text="수정"
-                            android:visibility="gone"
-                            />
-                    </RelativeLayout>
-
-                    <TextView
-                        android:id="@+id/txt_bookmark_after"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textSize="16sp"
-                        android:textColor="#3b3b3b"
-                        android:lineSpacingExtra="8sp"
-                        android:text="..."
-                        />
-
-                </LinearLayout>
 
             </LinearLayout>
 

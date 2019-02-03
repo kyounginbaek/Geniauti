@@ -217,22 +217,22 @@ public class TemplateChartWeekFragment extends Fragment {
                 while (it_type.hasNext()) {
                     Map.Entry pair = (Map.Entry)it_type.next();
                     switch(pair.getKey().toString()) {
-                        case "selfharm":
+                        case "self-injury":
                             selfharm += Integer.parseInt(pair.getValue().toString());
                             break;
-                        case "harm":
+                        case "aggression":
                             harm += Integer.parseInt(pair.getValue().toString());
                             break;
-                        case "destruction":
+                        case "disruption":
                             destruction += Integer.parseInt(pair.getValue().toString());
                             break;
-                        case "breakaway":
+                        case "elopement":
                             breakaway += Integer.parseInt(pair.getValue().toString());
                             break;
-                        case "sexual":
+                        case "sexual behaviors":
                             sexual += Integer.parseInt(pair.getValue().toString());
                             break;
-                        case "etc":
+                        case "other behaviors":
                             typeEtc += Integer.parseInt(pair.getValue().toString());
                             break;
                     }
@@ -241,22 +241,30 @@ public class TemplateChartWeekFragment extends Fragment {
                 HashMap<String, Object> reason_type = statisticData.reason_type;
                 Iterator it_reason_type = reason_type.entrySet().iterator();
                 while (it_reason_type.hasNext()) {
-                    Map.Entry pair = (Map.Entry)it_reason_type.next();
-                    switch(pair.getKey().toString()) {
-                        case "interest":
+                    Map.Entry pair = (Map.Entry) it_reason_type.next();
+                    switch (pair.getKey().toString()) {
+                        case "attention1":
+                        case "attention2":
+                        case "attention3":
+                        case "attention4":
                             interest += Integer.parseInt(pair.getValue().toString());
                             break;
-                        case "selfstimulation":
+                        case "self-stimulatory behaviour1":
+                        case "self-stimulatory behaviour2":
+                        case "self-stimulatory behaviour3":
                             selfstimulation += Integer.parseInt(pair.getValue().toString());
                             break;
-                        case "taskevation":
+                        case "escape1":
+                        case "escape2":
+                        case "escape3":
+                        case "escape4":
                             taskevation += Integer.parseInt(pair.getValue().toString());
                             break;
-                        case "demand":
+                        case "tangibles1":
+                        case "tangibles2":
+                        case "tangibles3":
+                        case "tangibles4":
                             demand += Integer.parseInt(pair.getValue().toString());
-                            break;
-                        case "etc":
-                            reasonEtc += Integer.parseInt(pair.getValue().toString());
                             break;
                     }
                 }
@@ -418,10 +426,17 @@ public class TemplateChartWeekFragment extends Fragment {
         yAxisLeftFrequency.setEnabled(false);
         yAxisLeftFrequency.setStartAtZero(true);
 
+        List<Integer> list = Arrays.asList(sunday, monday, tuesday, wednesday, thursday, friday, saturday, sunday);
+        int maxFrequency = Collections.max(list);
+
+        yAxisLeftFrequency.setLabelCount(maxFrequency, false);
+        yAxisLeftFrequency.setAxisMaxValue(maxFrequency);
+
         YAxis yAxisRightFrequency = chartFrequency.getAxisRight();
         yAxisRightFrequency.setEnabled(true);
-        yAxisRightFrequency.mAxisMinimum = 0;
         yAxisRightFrequency.setStartAtZero(true);
+        yAxisRightFrequency.setLabelCount(maxFrequency, false);
+        yAxisRightFrequency.setAxisMaxValue(maxFrequency);
 
 //        if(weekNumber == 0) {
 //            yAxisRightFrequency.mAxisMaximum = 1;
@@ -458,11 +473,11 @@ public class TemplateChartWeekFragment extends Fragment {
 
         });
 
-        int[] colors = new int[] {colorIntensity(sundayIntensity, sunday), colorIntensity(mondayIntensity, monday), colorIntensity(tuesdayIntensity, tuesday), colorIntensity(wednesdayIntensity, wednesday), colorIntensity(thursdayIntensity, thursday), colorIntensity(fridayIntensity, friday), colorIntensity(saturdayIntensity, saturday)};
+//        int[] colors = new int[] {colorIntensity(sundayIntensity, sunday), colorIntensity(mondayIntensity, monday), colorIntensity(tuesdayIntensity, tuesday), colorIntensity(wednesdayIntensity, wednesday), colorIntensity(thursdayIntensity, thursday), colorIntensity(fridayIntensity, friday), colorIntensity(saturdayIntensity, saturday)};
 
         BarDataSet setFrequency = new BarDataSet(yFrequency, "");
         setFrequency.setDrawValues(false);
-        setFrequency.setColors(colors);
+        setFrequency.setColors(colorIntensity5);
         BarData dataFrequency = new BarData(setFrequency);
         chartFrequency.setData(dataFrequency);
 
@@ -532,13 +547,14 @@ public class TemplateChartWeekFragment extends Fragment {
         YAxis yAxisLeftReasons = chartReasons.getAxisLeft();
         yAxisLeftReasons.setStartAtZero(true);
         yAxisLeftReasons.setEnabled(false);
-        yAxisLeftReasons.setLabelCount(5, false);
-        yAxisLeftReasons.setAxisMaxValue(5);
+        int maxReason = maxNumber5(reasonEtc, taskevation, selfstimulation, demand, interest);
+        yAxisLeftReasons.setLabelCount(maxReason, false);
+        yAxisLeftReasons.setAxisMaxValue(maxReason);
 
         YAxis yAxisRightReasons = chartReasons.getAxisRight();
         yAxisRightReasons.setStartAtZero(true);
-        yAxisRightReasons.setLabelCount(5, false);
-        yAxisRightReasons.setAxisMaxValue(5);
+        yAxisRightReasons.setLabelCount(maxReason, false);
+        yAxisRightReasons.setAxisMaxValue(maxReason);
 
         yReasons.add(new BarEntry(0, reasonEtc));
         yReasons.add(new BarEntry(1, taskevation));
@@ -582,13 +598,14 @@ public class TemplateChartWeekFragment extends Fragment {
         YAxis yAxisLeftTypes = chartTypes.getAxisLeft();
         yAxisLeftTypes.setStartAtZero(true);
         yAxisLeftTypes.setEnabled(false);
-        yAxisLeftTypes.setLabelCount(5, false);
-        yAxisLeftTypes.setAxisMaxValue(5);
+        int maxType = maxNumber6(typeEtc, sexual, breakaway, destruction, harm, selfharm);
+        yAxisLeftTypes.setLabelCount(maxType, false);
+        yAxisLeftTypes.setAxisMaxValue(maxType);
 
         YAxis yAxisRightTypes = chartTypes.getAxisRight();
         yAxisRightTypes.setStartAtZero(true);
-        yAxisRightTypes.setLabelCount(5, false);
-        yAxisRightTypes.setAxisMaxValue(5);
+        yAxisRightTypes.setLabelCount(maxType, false);
+        yAxisRightTypes.setAxisMaxValue(maxType);
 
         yTypes.add(new BarEntry(0, typeEtc));
         yTypes.add(new BarEntry(1, sexual));
@@ -632,13 +649,14 @@ public class TemplateChartWeekFragment extends Fragment {
         YAxis yAxisLeftLocations = chartLocations.getAxisLeft();
         yAxisLeftLocations.setStartAtZero(true);
         yAxisLeftLocations.setEnabled(false);
-        yAxisLeftLocations.setLabelCount(5, false);
-        yAxisLeftLocations.setAxisMaxValue(5);
+        int maxLocation = maxNumber5(locationEtc, school, restaurant, mart, home);
+        yAxisLeftLocations.setLabelCount(maxLocation, false);
+        yAxisLeftLocations.setAxisMaxValue(maxLocation);
 
         YAxis yAxisRightLocations = chartLocations.getAxisRight();
         yAxisRightLocations.setStartAtZero(true);
-        yAxisRightLocations.setLabelCount(5, false);
-        yAxisRightLocations.setAxisMaxValue(5);
+        yAxisRightLocations.setLabelCount(maxLocation, false);
+        yAxisRightLocations.setAxisMaxValue(maxLocation);
 
         yLocations.add(new BarEntry(0, locationEtc));
         yLocations.add(new BarEntry(1, school));
@@ -785,6 +803,16 @@ public class TemplateChartWeekFragment extends Fragment {
             }
         }
 
+    }
+
+    public int maxNumber5(int n1, int n2, int n3, int n4, int n5) {
+        List<Integer> list = Arrays.asList(n1, n2, n3, n4, n5);
+        return Collections.max(list);
+    }
+
+    public int maxNumber6(int n1, int n2, int n3, int n4, int n5, int n6) {
+        List<Integer> list = Arrays.asList(n1, n2, n3, n4, n5, n6);
+        return Collections.max(list);
     }
 
     @Override

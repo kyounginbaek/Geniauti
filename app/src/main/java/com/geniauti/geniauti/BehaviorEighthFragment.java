@@ -30,7 +30,7 @@ public class BehaviorEighthFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    int seekbarValue;
+    public static int seekbarValue;
     SeekBar seek;
     private TextView intensityOne;
     private TextView intensityTwo;
@@ -75,7 +75,7 @@ public class BehaviorEighthFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View v = inflater.inflate(R.layout.fragment_behavior_eighth, container, false);;
+        View v = inflater.inflate(R.layout.fragment_behavior_eighth, container, false);
 
         // Inflate the layout for this fragment
         seek = (SeekBar) v.findViewById(R.id.seekBar);
@@ -134,8 +134,6 @@ public class BehaviorEighthFragment extends Fragment {
 
         return v;
     }
-
-
 
     private class yourListener implements SeekBar.OnSeekBarChangeListener {
 

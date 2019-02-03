@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
@@ -7,37 +7,57 @@
     android:background="#ffffff"
     >
 
-    <TextView
+    <ProgressBar
+        android:id="@+id/dic_second_progress"
+        style="?android:attr/progressBarStyleLarge"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingTop="23dp"
-        android:paddingLeft="16dp"
-        android:paddingBottom="6dp"
-        android:textSize="14sp"
-        android:textColor="#deababab"
-        android:lineSpacingExtra="10sp"
-        android:text="행동 종류별 사례"
-        android:divider="#d9d9d9"
-        android:dividerHeight="1dp"
+        android:layout_height="fill_parent"
+        android:layout_gravity="center"
+        android:indeterminate="true"
+        android:layout_centerInParent="true"
+        android:layout_marginBottom="8dp"
+        android:visibility="gone"
         />
 
-    <View
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="#d9d9d9"/>
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        >
 
-    <ExpandableListView
-        android:id="@+id/simple_expandable_listview2"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:divider="#d9d9d9"
-        android:dividerHeight="1dp" >
-    </ExpandableListView>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="23dp"
+            android:paddingLeft="16dp"
+            android:paddingBottom="6dp"
+            android:textSize="14sp"
+            android:textColor="#deababab"
+            android:lineSpacingExtra="10sp"
+            android:text="행동 종류별 사례"
+            android:divider="#d9d9d9"
+            android:dividerHeight="1dp"
+            />
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="#d9d9d9"/>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#d9d9d9"/>
 
-</LinearLayout>
+        <ExpandableListView
+            android:id="@+id/simple_expandable_listview2"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:divider="#d9d9d9"
+            android:dividerHeight="1dp" >
+        </ExpandableListView>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#d9d9d9"/>
+
+    </LinearLayout>
+
+</RelativeLayout>
 

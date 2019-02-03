@@ -1,10 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".RalationshipAddActivity">
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    tools:context=".RelationshipAddActivity">
+
+    <ProgressBar
+        android:id="@+id/relationship_add_progress"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:layout_gravity="center"
+        android:indeterminate="true"
+        android:layout_centerInParent="true"
+        android:layout_marginBottom="8dp"
+        android:visibility="gone"
+        />
 
     <ScrollView
         android:layout_width="match_parent"
@@ -16,6 +30,7 @@
             android:orientation="vertical">
 
             <TextView
+                android:id="@+id/relationship_title_txt"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
@@ -25,7 +40,7 @@
                 android:textStyle="bold"
                 android:lineSpacingExtra="4dp"
                 android:letterSpacing="-0.02"
-                tools:text="이다솔과의 관계를\n입력해주세요"
+                android:text="이다솔과의 관계를\n입력해주세요"
                 />
 
             <LinearLayout
@@ -34,15 +49,16 @@
                 android:gravity="center_horizontal"
                 android:orientation="vertical">
 
-                <ImageView
-                    android:id="@+id/child_image"
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/relationship_child_image"
                     android:layout_width="105dp"
                     android:layout_height="105dp"
                     android:layout_marginTop="50dp"
-                    app:srcCompat="@drawable/ic_profile_default"
+                    android:src="@drawable/ic_profile_default"
                     />
 
                 <TextView
+                    android:id="@+id/relationship_child_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
@@ -75,7 +91,7 @@
                 android:paddingTop="30dp">
 
                 <EditText
-                    android:id="@+id/parent_relationship"
+                    android:id="@+id/relationship_parent_relation"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textSize="16sp"
@@ -107,7 +123,6 @@
 
         </LinearLayout>
 
-
     </ScrollView>
 
-</android.support.constraint.ConstraintLayout>
+</RelativeLayout>

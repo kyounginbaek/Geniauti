@@ -7,7 +7,9 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.ExpandableListView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -32,6 +34,7 @@ public class DicSecondFragment extends Fragment {
     private static ExpandableListView expandableListView;
     private static ExpandableListAdapter adapter;
 
+    private View mProgressView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -42,6 +45,10 @@ public class DicSecondFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_item_second, container, false);
+
+        mProgressView = (View) view.findViewById(R.id.dic_second_progress);
+        mProgressView.bringToFront();
+
         expandableListView = (ExpandableListView) view.findViewById(R.id.simple_expandable_listview2);
 
         // Setting group indicator null for custom indicator
@@ -69,11 +76,12 @@ public class DicSecondFragment extends Fragment {
         // Hash map for both header and child
         final HashMap<String, List<String>> hashMap = new HashMap<String, List<String>>();
 
-        header.add("타해 사례");
         header.add("자해 사례");
+        header.add("타해 사례");
         header.add("파괴 사례");
         header.add("이탈 사례");
         header.add("성적 사례");
+        header.add("기타 사례");
 
         // Hash map for both header and child
         final List<List<Cases>> c_Array = new ArrayList<List<Cases>>();
@@ -83,6 +91,7 @@ public class DicSecondFragment extends Fragment {
         final List<Cases> c_destruction = new ArrayList<Cases>();
         final List<Cases> c_leave = new ArrayList<Cases>();
         final List<Cases> c_sexual = new ArrayList<Cases>();
+        final List<Cases> c_etc = new ArrayList<Cases>();
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -100,20 +109,23 @@ public class DicSecondFragment extends Fragment {
                                         (List<HashMap<String, String>>) document.get("case_cause"), (List<HashMap<String, String>>) document.get("case_solution"), document.get("case_effect").toString(),
                                         (HashMap<String, String>) document.get("case_tags"), document.getId());
 
-                                if(case_tags.get("harm")!=null) {
-                                    c_harm.add(c);
-                                }
-                                if(case_tags.get("selfHArm")!=null) {
+                                if(case_tags.get("self-injury")!=null) {
                                     c_selfHarm.add(c);
                                 }
-                                if(case_tags.get("destruction")!=null) {
+                                if(case_tags.get("aggression")!=null) {
+                                    c_harm.add(c);
+                                }
+                                if(case_tags.get("disruption")!=null) {
                                     c_destruction.add(c);
                                 }
-                                if(case_tags.get("leave")!=null) {
+                                if(case_tags.get("elopement")!=null) {
                                     c_leave.add(c);
                                 }
-                                if(case_tags.get("sexual")!=null) {
+                                if(case_tags.get("sexual behaviors")!=null) {
                                     c_sexual.add(c);
+                                }
+                                if(case_tags.get("other behaviors")!=null) {
+                                    c_etc.add(c);
                                 }
 //                                (TAG, document.getId() + " => " + document.getData());
 
@@ -123,6 +135,7 @@ public class DicSecondFragment extends Fragment {
                                 c_Array.add(c_destruction);
                                 c_Array.add(c_leave);
                                 c_Array.add(c_sexual);
+                                c_Array.add(c_etc);
 
                                 adapter = new ExpandableListAdapter(getActivity(), header, hashMap, c_Array);
 
@@ -187,6 +200,10 @@ public class DicSecondFragment extends Fragment {
             public boolean onChildClick(ExpandableListView listview, View view,
                                         final int groupPos, final int childPos, long id) {
 
+                mProgressView.setVisibility(View.VISIBLE);
+                getActivity().getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                        WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+
                 MainActivity.db.collection("users").document(MainActivity.user.getUid())
                         .get()
                         .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -217,10 +234,11 @@ public class DicSecondFragment extends Fragment {
                                                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                                                         @Override
                                                         public void onSuccess(Void aVoid) {
-//                                                           mProgressView.setVisibility(View.GONE);
                                                             bookmark.add(0, tmp);
                                                             adapterBookmark.notifyDataSetChanged();
 
+                                                            mProgressView.setVisibility(View.GONE);
+                                                            getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
                                                             Intent intent = new Intent(getActivity(), CaseDetailActivity.class);
                                                             intent.putExtra("temp", tmp);
                                                             startActivity(intent);
@@ -229,10 +247,17 @@ public class DicSecondFragment extends Fragment {
                                                     .addOnFailureListener(new OnFailureListener() {
                                                         @Override
                                                         public void onFailure(@NonNull Exception e) {
-//                                                          Log.w(TAG, "Error writing document", e);
+                                                            mProgressView.setVisibility(View.GONE);
+                                                            getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+
+                                                            Toast toast = Toast.makeText(getActivity(), "오류가 발생했습니다. 다시 한번 시도해주세요.", Toast.LENGTH_SHORT);
+                                                            toast.show();
                                                         }
                                                     });
                                         } else {
+                                            mProgressView.setVisibility(View.GONE);
+                                            getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+
                                             Intent intent = new Intent(getActivity(), CaseDetailActivity.class);
                                             intent.putExtra("temp", (Cases) adapter.getChild(groupPos, childPos));
                                             startActivity(intent);
@@ -241,7 +266,11 @@ public class DicSecondFragment extends Fragment {
 
                                     }
                                 } else {
-//                            Log.d(TAG, "Error getting documents: ", task.getException());
+                                    mProgressView.setVisibility(View.GONE);
+                                    getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+
+                                    Toast toast = Toast.makeText(getActivity(), "오류가 발생했습니다. 다시 한번 시도해주세요.", Toast.LENGTH_SHORT);
+                                    toast.show();
                                 }
                             }
                         });

@@ -144,6 +144,7 @@ public class ChartYearFragment extends Fragment {
                             statisticsHashMap.put(document.getId(), item);
                         }
                     }
+
                     // Setting ViewPager for each Tabs
                     viewPager = (ViewPager) v.findViewById(R.id.chart_year_viewpager);
                     setupViewPager(viewPager);
@@ -184,6 +185,7 @@ public class ChartYearFragment extends Fragment {
 
                         }
                     });
+
                 } else {
 //                    Log.d(TAG, "get failed with ", task.getException());
                 }
@@ -272,7 +274,6 @@ public class ChartYearFragment extends Fragment {
         adapter = new ViewPagerAdapter(getFragmentManager());
         viewPager.setAdapter(adapter);
         viewPager.setCurrentItem(adapter.getCount()-1);
-
     }
 
     public class ViewPagerAdapter extends FragmentStatePagerAdapter {

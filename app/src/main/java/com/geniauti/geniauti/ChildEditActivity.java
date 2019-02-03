@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -22,6 +23,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.esafirm.imagepicker.features.ImagePicker;
 import com.esafirm.imagepicker.model.Image;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -30,13 +32,23 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.Transaction;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.geniauti.geniauti.MainActivity.storage;
+import static com.geniauti.geniauti.MainActivity.storageRef;
 import static java.lang.Integer.parseInt;
 
 public class ChildEditActivity extends AppCompatActivity {
@@ -47,11 +59,19 @@ public class ChildEditActivity extends AppCompatActivity {
     RadioGroup radioGroupAge, radioGroupSex;
     RadioButton radioMonth, radioYear;
     RadioButton radioBoy, radioGirl;
+
     private View mProgressView;
     private Button childEditButton;
     private RelativeLayout childImageLayout;
     private ImageView childImage;
     private TextView mChildAgeText;
+
+    private Image image = null;
+    private UploadTask uploadTask;
+
+    private long currentTime;
+    private int childAge;
+    private RadioButton radioBtnSex;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -111,7 +131,11 @@ public class ChildEditActivity extends AppCompatActivity {
         childImage = (ImageView) findViewById(R.id.child_edit_image);
 
         mProgressView = findViewById(R.id.child_edit_progress);
+        mProgressView.bringToFront();
         mProgressView.setVisibility(View.VISIBLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+
         MainActivity.db.collection("childs")
                 .whereGreaterThanOrEqualTo("users."+MainActivity.user.getUid()+".name", "")
                 .get()
@@ -141,7 +165,25 @@ public class ChildEditActivity extends AppCompatActivity {
                                 HashMap<String, Object> users = (HashMap<String, Object>)  child.get(MainActivity.user.getUid());
 
                                 mChildRelationship.setText(users.get("relationship").toString());
-                                mProgressView.setVisibility(View.GONE);
+
+                                StorageReference pathReference = storageRef.child("childs/"+MainActivity.cid);
+                                pathReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                    @Override
+                                    public void onSuccess(Uri uri) {
+                                        // Got the download URL for 'users/me/profile.png'
+                                        Glide.with(getApplication()).load(uri).into(childImage);
+                                        mProgressView.setVisibility(View.GONE);
+                                        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                                    }
+                                }).addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception exception) {
+                                        // Handle any errors
+                                        mProgressView.setVisibility(View.GONE);
+                                        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                                    }
+                                });
+
                             }
                         } else {
 //                                Log.d(TAG, "Error getting documents: ", task.getException());
@@ -153,8 +195,11 @@ public class ChildEditActivity extends AppCompatActivity {
         childEditButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mProgressView.setVisibility(View.VISIBLE);
+
                 childEditButton.setEnabled(false);
+                mProgressView.setVisibility(View.VISIBLE);
+                getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                        WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
 
                 // Reset errors.
                 mChildName.setError(null);
@@ -162,107 +207,198 @@ public class ChildEditActivity extends AppCompatActivity {
                 mChildRelationship.setError(null);
 
                 boolean cancel = false;
-                View focusView = null;
 
                 if(TextUtils.isEmpty(mChildName.getText().toString())) {
                     mChildName.setError("아이 이름을 입력해주세요.");
-                    focusView = mChildName;
                     cancel = true;
                 }
 
                 if(TextUtils.isEmpty(mChildAge.getText().toString())) {
                     mChildAge.setError("아이 나이를 입력해주세요.");
-                    focusView = mChildAge;
                     cancel = true;
                 }
 
                 if(TextUtils.isEmpty(mChildRelationship.getText().toString())) {
                     mChildRelationship.setError("아이와의 관계를 입력해주세요.");
-                    focusView = mChildRelationship;
                     cancel = true;
                 }
 
                 if(cancel){
                     childEditButton.setEnabled(true);
+                    mProgressView.setVisibility(View.GONE);
+                    getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
                 } else {
-                    int selectedAge = radioGroupAge.getCheckedRadioButtonId();
-                    // find the radiobutton by returned id
-                    RadioButton radioBtnAge = (RadioButton) findViewById(selectedAge);
-
-                    int childAge = parseInt(mChildAge.getText().toString());
-
-                    if(radioBtnAge.getText().equals("세")) {
-                        childAge = parseInt(mChildAge.getText().toString()) * 12;
+                    if(image != null) {
+                        childImageEdit();
+                    } else {
+                        childInfoEdit();
                     }
-
-                    int selectedSex = radioGroupSex.getCheckedRadioButtonId();
-                    // find the radiobutton by returned id
-                    RadioButton radioBtnSex = (RadioButton) findViewById(selectedSex);
-
-                    Map<String, Object> nestedNestedData = new HashMap<>();
-                    nestedNestedData.put("name", MainActivity.user.getDisplayName());
-                    nestedNestedData.put("profile_pic", "");
-                    nestedNestedData.put("relationship", mChildRelationship.getText().toString());
-
-                    Map<String, Object> nestedData = new HashMap<>();
-                    nestedData.put(MainActivity.user.getUid(), nestedNestedData);
-
-                    Map<String, Object> docData = new HashMap<>();
-                    docData.put("name", mChildName.getText().toString());
-                    docData.put("profile_pic", "");
-                    docData.put("age", childAge);
-                    docData.put("sex", radioBtnSex.getText().toString().substring(0,2));
-                    docData.put("users", nestedData);
-
-                    MainActivity.db.collection("childs").document(MainActivity.cid)
-                            .update(docData)
-                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                @Override
-                                public void onSuccess(Void aVoid) {
-
-                                    Map<String, Object> userData = new HashMap<>();
-                                    userData.put("name", MainActivity.user.getDisplayName());
-
-                                    MainActivity.db.collection("users").document(MainActivity.user.getUid())
-                                            .set(userData)
-                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                @Override
-                                                public void onSuccess(Void aVoid) {
-                                                    mProgressView.setVisibility(View.GONE);
-                                                    finish();
-                                                    Toast toast = Toast.makeText(ChildEditActivity.this, "아이 정보가 수정되었습니다.", Toast.LENGTH_SHORT);
-                                                    toast.show();
-                                                }
-                                            })
-                                            .addOnFailureListener(new OnFailureListener() {
-                                                @Override
-                                                public void onFailure(@NonNull Exception e) {
-                                                    childEditButton.setEnabled(true);
-                                                }
-                                            });
-//                                Log.d(TAG, "DocumentSnapshot successfully written!");
-                                }
-                            })
-                            .addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-//                                Log.w(TAG, "Error writing document", e);
-                                    childEditButton.setEnabled(true);
-                                }
-                            });
                 }
             }
         });
 
     }
 
+    private void childImageEdit() {
 
+        Uri file = Uri.fromFile(new File(image.getPath()));
+        StorageReference riversRef = MainActivity.storageRef.child("childs/"+MainActivity.cid);
+        uploadTask = riversRef.putFile(file);
+
+        // Register observers to listen for when the download is done or if it fails
+        uploadTask.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                // Handle unsuccessful uploads
+                childEditButton.setEnabled(true);
+                mProgressView.setVisibility(View.GONE);
+                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                Toast toast = Toast.makeText(ChildEditActivity.this, "오류가 발생했습니다. 다시 한번 시도해주세요.", Toast.LENGTH_SHORT);
+                toast.show();
+            }
+        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
+                childInfoEdit();
+            }
+        });
+    }
+
+    private void childInfoEdit() {
+
+        currentTime = System.currentTimeMillis();
+
+        int selectedAge = radioGroupAge.getCheckedRadioButtonId();
+        // find the radiobutton by returned id
+        RadioButton radioBtnAge = (RadioButton) findViewById(selectedAge);
+
+        childAge = parseInt(mChildAge.getText().toString());
+
+        if(radioBtnAge.getText().equals("세")) {
+            childAge = parseInt(mChildAge.getText().toString()) * 12;
+        }
+
+        int selectedSex = radioGroupSex.getCheckedRadioButtonId();
+        // find the radiobutton by returned id
+        radioBtnSex = (RadioButton) findViewById(selectedSex);
+
+//        Map<String, Object> nestedNestedData = new HashMap<>();
+//        nestedNestedData.put("name", MainActivity.user.getDisplayName());
+//        nestedNestedData.put("profile_pic", "");
+//        nestedNestedData.put("relationship", mChildRelationship.getText().toString());
+
+//        Map<String, Object> nestedData = new HashMap<>();
+//        nestedData.put(MainActivity.user.getUid(), nestedNestedData);
+
+//        Map<String, Object> docData = new HashMap<>();
+//        docData.put("name", mChildName.getText().toString());
+//        docData.put("profile_pic", "childs/"+MainActivity.cid+"_"+String.valueOf(currentTime));
+//        docData.put("age", childAge);
+//        docData.put("sex", radioBtnSex.getText().toString().substring(0,2));
+//        docData.put("users", nestedData);
+
+        final DocumentReference sfDocRef = MainActivity.db.collection("childs").document(MainActivity.cid);
+        MainActivity.db.runTransaction(new Transaction.Function<Void>() {
+            @Override
+            public Void apply(Transaction transaction) throws FirebaseFirestoreException {
+                DocumentSnapshot snapshot = transaction.get(sfDocRef);
+                Map<String, Object> childsMap = (Map<String, Object>) snapshot.getData();
+                childsMap.put("name", mChildName.getText().toString());
+
+                if(image != null) {
+                    childsMap.put("profile_pic", "childs/"+MainActivity.cid+"_"+String.valueOf(currentTime));
+                }
+                childsMap.put("age", childAge);
+                childsMap.put("sex", radioBtnSex.getText().toString().substring(0,2));
+
+                transaction.update(sfDocRef, childsMap);
+
+                // Success
+                return null;
+            }
+        }).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                mProgressView.setVisibility(View.GONE);
+                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                finish();
+                Toast toast = Toast.makeText(ChildEditActivity.this, "아이 정보가 수정되었습니다.", Toast.LENGTH_SHORT);
+                toast.show();
+            }
+        })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        childEditButton.setEnabled(true);
+                        mProgressView.setVisibility(View.GONE);
+                        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                        Toast toast = Toast.makeText(ChildEditActivity.this, "오류가 발생했습니다. 다시 한번 시도해주세요.", Toast.LENGTH_SHORT);
+                        toast.show();
+                    }
+                });
+
+
+//        MainActivity.db.collection("childs").document(MainActivity.cid)
+//                .update(docData)
+//                .addOnSuccessListener(new OnSuccessListener<Void>() {
+//                    @Override
+//                    public void onSuccess(Void aVoid) {
+//
+//                        Map<String, Object> childNestedData = new HashMap<>();
+//                        childNestedData.put("name", mChildName.getText().toString());
+//                        childNestedData.put("profile_pic", "childs/"+MainActivity.cid+"_"+String.valueOf(currentTime));
+//                        childNestedData.put("age", childAge);
+//                        childNestedData.put("sex", radioBtnSex.getText().toString().substring(0,2));
+//
+//                        Map<String, Object> nestedData = new HashMap<>();
+//                        nestedData.put(MainActivity.cid, childNestedData);
+//
+//                        Map<String, Object> userData = new HashMap<>();
+//                        userData.put("childs", nestedData);
+//                        userData.put("relationship", mChildRelationship.getText().toString());
+//
+//                        MainActivity.db.collection("users").document(MainActivity.user.getUid())
+//                                .update(userData)
+//                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+//                                    @Override
+//                                    public void onSuccess(Void aVoid) {
+//
+//                                        if(image != null) {
+//                                            childImageEdit();
+//                                        } else {
+//                                            mProgressView.setVisibility(View.GONE);
+//                                            finish();
+//                                            Toast toast = Toast.makeText(ChildEditActivity.this, "아이 정보가 수정되었습니다.", Toast.LENGTH_SHORT);
+//                                            toast.show();
+//                                        }
+//                                    }
+//                                })
+//                                .addOnFailureListener(new OnFailureListener() {
+//                                    @Override
+//                                    public void onFailure(@NonNull Exception e) {
+//                                        childEditButton.setEnabled(true);
+//                                        mProgressView.setVisibility(View.GONE);
+//                                    }
+//                                });
+////                                Log.d(TAG, "DocumentSnapshot successfully written!");
+//                    }
+//                })
+//                .addOnFailureListener(new OnFailureListener() {
+//                    @Override
+//                    public void onFailure(@NonNull Exception e) {
+////                                Log.w(TAG, "Error writing document", e);
+//                        childEditButton.setEnabled(true);
+//                        mProgressView.setVisibility(View.GONE);
+//                    }
+//                });
+    }
 
     @Override
     protected void onActivityResult(int requestCode, final int resultCode, Intent data) {
         if (ImagePicker.shouldHandle(requestCode, resultCode, data)) {
             // or get a single image only
-            Image image = ImagePicker.getFirstImageOrNull(data);
+            image = ImagePicker.getFirstImageOrNull(data);
             Bitmap myBitmap = BitmapFactory.decodeFile(image.getPath());
 
             try {

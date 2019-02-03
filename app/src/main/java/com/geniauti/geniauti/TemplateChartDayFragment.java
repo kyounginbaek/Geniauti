@@ -3,6 +3,7 @@ package com.geniauti.geniauti;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,6 +19,12 @@ import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -236,22 +243,22 @@ public class TemplateChartDayFragment extends Fragment {
             while (it_type.hasNext()) {
                 Map.Entry pair = (Map.Entry)it_type.next();
                 switch(pair.getKey().toString()) {
-                    case "selfharm":
+                    case "self-injury":
                         selfharm = Integer.parseInt(pair.getValue().toString());
                         break;
-                    case "harm":
+                    case "aggression":
                         harm = Integer.parseInt(pair.getValue().toString());
                         break;
-                    case "destruction":
+                    case "disruption":
                         destruction = Integer.parseInt(pair.getValue().toString());
                         break;
-                    case "breakaway":
+                    case "elopement":
                         breakaway = Integer.parseInt(pair.getValue().toString());
                         break;
-                    case "sexual":
+                    case "sexual behaviors":
                         sexual = Integer.parseInt(pair.getValue().toString());
                         break;
-                    case "etc":
+                    case "other behaviors":
                         typeEtc = Integer.parseInt(pair.getValue().toString());
                         break;
                 }
@@ -262,20 +269,28 @@ public class TemplateChartDayFragment extends Fragment {
             while (it_reason_type.hasNext()) {
                 Map.Entry pair = (Map.Entry)it_reason_type.next();
                 switch(pair.getKey().toString()) {
-                    case "interest":
-                        interest = Integer.parseInt(pair.getValue().toString());
+                    case "attention1":
+                    case "attention2":
+                    case "attention3":
+                    case "attention4":
+                        interest += Integer.parseInt(pair.getValue().toString());
                         break;
-                    case "selfstimulation":
-                        selfstimulation = Integer.parseInt(pair.getValue().toString());
+                    case "self-stimulatory behaviour1":
+                    case "self-stimulatory behaviour2":
+                    case "self-stimulatory behaviour3":
+                        selfstimulation += Integer.parseInt(pair.getValue().toString());
                         break;
-                    case "taskevation":
-                        taskevation = Integer.parseInt(pair.getValue().toString());
+                    case "escape1":
+                    case "escape2":
+                    case "escape3":
+                    case "escape4":
+                        taskevation += Integer.parseInt(pair.getValue().toString());
                         break;
-                    case "demand":
-                        demand = Integer.parseInt(pair.getValue().toString());
-                        break;
-                    case "etc":
-                        reasonEtc = Integer.parseInt(pair.getValue().toString());
+                    case "tangibles1":
+                    case "tangibles2":
+                    case "tangibles3":
+                    case "tangibles4":
+                        demand += Integer.parseInt(pair.getValue().toString());
                         break;
                 }
             }
@@ -299,8 +314,278 @@ public class TemplateChartDayFragment extends Fragment {
                         break;
                 }
             }
-
         }
+
+        // Frequency
+        chartFrequency = v.findViewById(R.id.chart_day_frequency);
+        chartFrequency.getDescription().setEnabled(false);
+        chartFrequency.getLegend().setEnabled(false);
+        chartFrequency.setScaleEnabled(false);
+        chartFrequency.setTouchEnabled(false);
+
+        XAxis xAxisFrequency = chartFrequency.getXAxis();
+        xAxisFrequency.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxisFrequency.setDrawGridLines(false);
+
+        YAxis yAxisLeftFrequency = chartFrequency.getAxisLeft();
+        yAxisLeftFrequency.setEnabled(false);
+        yAxisLeftFrequency.setStartAtZero(true);
+
+        List<Integer> list = Arrays.asList(hour0, hour1, hour2, hour3, hour4, hour5, hour6, hour7, hour8, hour9, hour10,
+                hour11, hour12, hour13, hour14, hour15, hour16, hour17, hour18, hour19, hour20, hour21, hour22, hour23);
+        int maxFrequency = Collections.max(list);
+
+        yAxisLeftFrequency.setLabelCount(maxFrequency, false);
+        yAxisLeftFrequency.setAxisMaxValue(maxFrequency);
+
+        YAxis yAxisRightFrequency = chartFrequency.getAxisRight();
+        yAxisRightFrequency.setEnabled(true);
+        yAxisRightFrequency.setStartAtZero(true);
+        yAxisRightFrequency.setLabelCount(maxFrequency, false);
+        yAxisRightFrequency.setAxisMaxValue(maxFrequency);
+
+//        if(dayNumber == 0) {
+//            yAxisRightFrequency.mAxisMaximum = 2;
+//        } else {
+//            List<Integer> list = Arrays.asList(hour0, hour1, hour2, hour3, hour4, hour5, hour6, hour7, hour8, hour9, hour10,
+//                    hour11, hour12, hour13, hour14, hour15, hour16, hour17, hour18, hour19, hour20, hour21, hour22, hour23);
+//
+//            int max = Collections.max(list);
+//            if(max == 1) {
+//                yAxisRightFrequency.setAxisMaximum(2);
+//            } else {
+//                yAxisRightFrequency.mAxisMaximum = max;
+//                yAxisRightFrequency.setLabelCount(max);
+//            }
+//        }
+
+        yFrequency.add(new BarEntry(0, hour0));
+        yFrequency.add(new BarEntry(1, hour1));
+        yFrequency.add(new BarEntry(2, hour2));
+        yFrequency.add(new BarEntry(3, hour3));
+        yFrequency.add(new BarEntry(4, hour4));
+        yFrequency.add(new BarEntry(5, hour5));
+        yFrequency.add(new BarEntry(6, hour6));
+        yFrequency.add(new BarEntry(7, hour7));
+        yFrequency.add(new BarEntry(8, hour8));
+        yFrequency.add(new BarEntry(9, hour9));
+        yFrequency.add(new BarEntry(10, hour10));
+        yFrequency.add(new BarEntry(11, hour11));
+        yFrequency.add(new BarEntry(12, hour12));
+        yFrequency.add(new BarEntry(13, hour13));
+        yFrequency.add(new BarEntry(14, hour14));
+        yFrequency.add(new BarEntry(15, hour15));
+        yFrequency.add(new BarEntry(16, hour16));
+        yFrequency.add(new BarEntry(17, hour17));
+        yFrequency.add(new BarEntry(18, hour18));
+        yFrequency.add(new BarEntry(19, hour19));
+        yFrequency.add(new BarEntry(20, hour20));
+        yFrequency.add(new BarEntry(21, hour21));
+        yFrequency.add(new BarEntry(22, hour22));
+        yFrequency.add(new BarEntry(23, hour23));
+
+//        int[] colors = new int[] {colorIntensity(intensity0, hour0), colorIntensity(intensity1, hour1), colorIntensity(intensity2, hour2), colorIntensity(intensity3, hour3), colorIntensity(intensity4, hour4), colorIntensity(intensity5, hour5), colorIntensity(intensity6, hour6), colorIntensity(intensity7, hour7), colorIntensity(intensity8, hour8), colorIntensity(intensity9, hour9),
+//                colorIntensity(intensity10, hour10), colorIntensity(intensity11, hour11), colorIntensity(intensity12, hour12), colorIntensity(intensity13, hour13), colorIntensity(intensity14, hour14), colorIntensity(intensity15, hour15), colorIntensity(intensity16, hour16), colorIntensity(intensity17, hour17), colorIntensity(intensity18, hour18), colorIntensity(intensity19, hour19),
+//                colorIntensity(intensity20, hour20), colorIntensity(intensity21, hour21), colorIntensity(intensity22, hour22), colorIntensity(intensity23, hour23)};
+
+        BarDataSet setFrequency = new BarDataSet(yFrequency, "");
+        setFrequency.setDrawValues(false);
+        setFrequency.setColors(colorIntensity5);
+        BarData dataFrequency = new BarData(setFrequency);
+        chartFrequency.setData(dataFrequency);
+
+        // Textview
+        TextView dayDate = v.findViewById(R.id.chart_day_date);
+        dayDate.setText(DateandTime);
+
+        mDayNumber = v.findViewById(R.id.chart_day_number);
+        mDayTime = v.findViewById(R.id.chart_day_time);
+        mDayIntensity = v.findViewById(R.id.chart_day_intensity);
+        mDayNumber.setText(String.valueOf(dayNumber));
+
+        if(dayNumber != 0) {
+            mDayTime.setText(String.valueOf(Math.round((dayTime / dayNumber)*10)/10.0));
+        } else {
+            mDayTime.setText("0");
+        }
+
+        if(dayNumber == 0) {
+            intensity = "없음";
+        } else {
+            switch(Math.round(dayIntensity / dayNumber)) {
+                case 1:
+                    intensity = "매우 약함";
+                    break;
+                case 2:
+                    intensity = "약함";
+                    break;
+                case 3:
+                    intensity = "보통";
+                    break;
+                case 4:
+                    intensity = "강함";
+                    break;
+                case 5:
+                    intensity = "매우 강함";
+                    break;
+            }
+        }
+        mDayIntensity.setText(intensity);
+
+        // Reasons
+        chartReasons = v.findViewById(R.id.chart_day_reasons);
+        chartReasons.getDescription().setEnabled(false);
+        chartReasons.getLegend().setEnabled(false);
+        chartReasons.setScaleEnabled(false);
+        chartReasons.setTouchEnabled(false);
+
+        xLabelsReasons = new ArrayList<>();
+        xLabelsReasons.add("기타");
+        xLabelsReasons.add("과제회피");
+        xLabelsReasons.add("자기자극");
+        xLabelsReasons.add("요구");
+        xLabelsReasons.add("관심");
+
+        XAxis xAxisReasons = chartReasons.getXAxis();
+        xAxisReasons.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxisReasons.setDrawGridLines(false);
+        xAxisReasons.setValueFormatter(new IAxisValueFormatter() {
+            @Override
+            public String getFormattedValue(float value, AxisBase axis) {
+                return xLabelsReasons.get((int) value);
+            }
+
+        });
+
+        YAxis yAxisLeftReasons = chartReasons.getAxisLeft();
+        yAxisLeftReasons.setStartAtZero(true);
+        yAxisLeftReasons.setEnabled(false);
+        int maxReason = maxNumber5(reasonEtc, taskevation, selfstimulation, demand, interest);
+        yAxisLeftReasons.setLabelCount(maxReason, false);
+        yAxisLeftReasons.setAxisMaxValue(maxReason);
+
+        YAxis yAxisRightReasons = chartReasons.getAxisRight();
+        yAxisRightReasons.setStartAtZero(true);
+        yAxisRightReasons.setLabelCount(maxReason, false);
+        yAxisRightReasons.setAxisMaxValue(maxReason);
+
+        yReasons.add(new BarEntry(0, reasonEtc));
+        yReasons.add(new BarEntry(1, taskevation));
+        yReasons.add(new BarEntry(2, selfstimulation));
+        yReasons.add(new BarEntry(3, demand));
+        yReasons.add(new BarEntry(4, interest));
+
+        BarDataSet setReasons = new BarDataSet(yReasons, "");
+        setReasons.setColors(Color.parseColor("#2dc76d"));
+        setReasons.setDrawValues(false);
+        setReasons.setValueTextSize(12);
+        BarData dataReasons = new BarData(setReasons);
+        chartReasons.setData(dataReasons);
+        chartReasons.setFitBars(true);
+
+        // Types
+        chartTypes = v.findViewById(R.id.chart_day_types);
+        chartTypes.getDescription().setEnabled(false);
+        chartTypes.getLegend().setEnabled(false);
+        chartTypes.setScaleEnabled(false);
+        chartTypes.setTouchEnabled(false);
+
+        xLabelsTypes = new ArrayList<>();
+        xLabelsTypes.add("기타");
+        xLabelsTypes.add("성적");
+        xLabelsTypes.add("이탈");
+        xLabelsTypes.add("파괴");
+        xLabelsTypes.add("타해");
+        xLabelsTypes.add("자해");
+
+        XAxis xAxisTypes = chartTypes.getXAxis();
+        xAxisTypes.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxisTypes.setDrawGridLines(false);
+        xAxisTypes.setValueFormatter(new IAxisValueFormatter() {
+            @Override
+            public String getFormattedValue(float value, AxisBase axis) {
+                return xLabelsTypes.get((int) value);
+            }
+
+        });
+
+        YAxis yAxisLeftTypes = chartTypes.getAxisLeft();
+        yAxisLeftTypes.setStartAtZero(true);
+        yAxisLeftTypes.setEnabled(false);
+        int maxType = maxNumber6(typeEtc, sexual, breakaway, destruction, harm, selfharm);
+        yAxisLeftTypes.setLabelCount(maxType, false);
+        yAxisLeftTypes.setAxisMaxValue(maxType);
+
+        YAxis yAxisRightTypes = chartTypes.getAxisRight();
+        yAxisRightTypes.setStartAtZero(true);
+        yAxisRightTypes.setLabelCount(maxType, false);
+        yAxisRightTypes.setAxisMaxValue(maxType);
+
+        yTypes.add(new BarEntry(0, typeEtc));
+        yTypes.add(new BarEntry(1, sexual));
+        yTypes.add(new BarEntry(2, breakaway));
+        yTypes.add(new BarEntry(3, destruction));
+        yTypes.add(new BarEntry(4, harm));
+        yTypes.add(new BarEntry(5, selfharm));
+
+        BarDataSet setTypes = new BarDataSet(yTypes, "");
+        setTypes.setColors(Color.parseColor("#2dc76d"));
+        setTypes.setDrawValues(false);
+        setTypes.setValueTextSize(12);
+        BarData dataTypes = new BarData(setTypes);
+        chartTypes.setData(dataTypes);
+        chartTypes.setFitBars(true);
+
+        // Locations
+        chartLocations = v.findViewById(R.id.chart_day_locations);
+        chartLocations.getDescription().setEnabled(false);
+        chartLocations.getLegend().setEnabled(false);
+        chartLocations.setScaleEnabled(false);
+        chartLocations.setTouchEnabled(false);
+
+        xLabelsLocations = new ArrayList<>();
+        xLabelsLocations.add("기타");
+        xLabelsLocations.add("학교");
+        xLabelsLocations.add("식당가");
+        xLabelsLocations.add("마트");
+        xLabelsLocations.add("집");
+
+        XAxis xAxisLocations = chartLocations.getXAxis();
+        xAxisLocations.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxisLocations.setDrawGridLines(false);
+        xAxisLocations.setValueFormatter(new IAxisValueFormatter() {
+            @Override
+            public String getFormattedValue(float value, AxisBase axis) {
+                return xLabelsLocations.get((int) value);
+            }
+
+        });
+
+        YAxis yAxisLeftLocations = chartLocations.getAxisLeft();
+        yAxisLeftLocations.setStartAtZero(true);
+        yAxisLeftLocations.setEnabled(false);
+        int maxLocation = maxNumber5(locationEtc, school, restaurant, mart, home);
+        yAxisLeftLocations.setLabelCount(maxLocation, false);
+        yAxisLeftLocations.setAxisMaxValue(maxLocation);
+
+        YAxis yAxisRightLocations = chartLocations.getAxisRight();
+        yAxisRightLocations.setStartAtZero(true);
+        yAxisRightLocations.setLabelCount(maxLocation, false);
+        yAxisRightLocations.setAxisMaxValue(maxLocation);
+
+        yLocations.add(new BarEntry(0, locationEtc));
+        yLocations.add(new BarEntry(1, school));
+        yLocations.add(new BarEntry(2, restaurant));
+        yLocations.add(new BarEntry(3, mart));
+        yLocations.add(new BarEntry(4, home));
+
+        BarDataSet setLocations = new BarDataSet(yLocations, "");
+        setLocations.setColors(Color.parseColor("#2dc76d"));
+        setLocations.setDrawValues(false);
+        setLocations.setValueTextSize(12);
+        BarData dataLocations = new BarData(setLocations);
+        chartLocations.setData(dataLocations);
+        chartLocations.setFitBars(true);
 
         // Behavior ArrayList
 //        for(int i = 0; i < behaviorData.size(); i++) {
@@ -436,7 +721,7 @@ public class TemplateChartDayFragment extends Fragment {
 //                HashMap.Entry<String,Object> entryRaason = reason.entrySet().iterator().next();
 //
 //                // Color Code
-//                switch(entryRaason.getKey()) {
+//                switch(entryReason.getKey()) {
 //                    case "interest":
 //                        interest += 1;
 //                        break;
@@ -499,266 +784,6 @@ public class TemplateChartDayFragment extends Fragment {
 //            }
 //        }
 
-        // Frequency
-        chartFrequency = v.findViewById(R.id.chart_day_frequency);
-        chartFrequency.getDescription().setEnabled(false);
-        chartFrequency.getLegend().setEnabled(false);
-        chartFrequency.setScaleEnabled(false);
-        chartFrequency.setTouchEnabled(false);
-
-        XAxis xAxisFrequency = chartFrequency.getXAxis();
-        xAxisFrequency.setPosition(XAxis.XAxisPosition.BOTTOM);
-        xAxisFrequency.setDrawGridLines(false);
-
-        YAxis yAxisLeftFrequency = chartFrequency.getAxisLeft();
-        yAxisLeftFrequency.setEnabled(false);
-        yAxisLeftFrequency.setStartAtZero(true);
-
-        YAxis yAxisRightFrequency = chartFrequency.getAxisRight();
-        yAxisRightFrequency.setEnabled(true);
-        yAxisRightFrequency.mAxisMinimum = 0;
-        yAxisRightFrequency.setStartAtZero(true);
-
-//        if(dayNumber == 0) {
-//            yAxisRightFrequency.mAxisMaximum = 2;
-//        } else {
-//            List<Integer> list = Arrays.asList(hour0, hour1, hour2, hour3, hour4, hour5, hour6, hour7, hour8, hour9, hour10,
-//                    hour11, hour12, hour13, hour14, hour15, hour16, hour17, hour18, hour19, hour20, hour21, hour22, hour23);
-//
-//            int max = Collections.max(list);
-//            if(max == 1) {
-//                yAxisRightFrequency.setAxisMaximum(2);
-//            } else {
-//                yAxisRightFrequency.mAxisMaximum = max;
-//                yAxisRightFrequency.setLabelCount(max);
-//            }
-//        }
-
-        yFrequency.add(new BarEntry(0, hour0));
-        yFrequency.add(new BarEntry(1, hour1));
-        yFrequency.add(new BarEntry(2, hour2));
-        yFrequency.add(new BarEntry(3, hour3));
-        yFrequency.add(new BarEntry(4, hour4));
-        yFrequency.add(new BarEntry(5, hour5));
-        yFrequency.add(new BarEntry(6, hour6));
-        yFrequency.add(new BarEntry(7, hour7));
-        yFrequency.add(new BarEntry(8, hour8));
-        yFrequency.add(new BarEntry(9, hour9));
-        yFrequency.add(new BarEntry(10, hour10));
-        yFrequency.add(new BarEntry(11, hour11));
-        yFrequency.add(new BarEntry(12, hour12));
-        yFrequency.add(new BarEntry(13, hour13));
-        yFrequency.add(new BarEntry(14, hour14));
-        yFrequency.add(new BarEntry(15, hour15));
-        yFrequency.add(new BarEntry(16, hour16));
-        yFrequency.add(new BarEntry(17, hour17));
-        yFrequency.add(new BarEntry(18, hour18));
-        yFrequency.add(new BarEntry(19, hour19));
-        yFrequency.add(new BarEntry(20, hour20));
-        yFrequency.add(new BarEntry(21, hour21));
-        yFrequency.add(new BarEntry(22, hour22));
-        yFrequency.add(new BarEntry(23, hour23));
-
-        int[] colors = new int[] {colorIntensity(intensity0, hour0), colorIntensity(intensity1, hour1), colorIntensity(intensity2, hour2), colorIntensity(intensity3, hour3), colorIntensity(intensity4, hour4), colorIntensity(intensity5, hour5), colorIntensity(intensity6, hour6), colorIntensity(intensity7, hour7), colorIntensity(intensity8, hour8), colorIntensity(intensity9, hour9),
-                colorIntensity(intensity10, hour10), colorIntensity(intensity11, hour11), colorIntensity(intensity12, hour12), colorIntensity(intensity13, hour13), colorIntensity(intensity14, hour14), colorIntensity(intensity15, hour15), colorIntensity(intensity16, hour16), colorIntensity(intensity17, hour17), colorIntensity(intensity18, hour18), colorIntensity(intensity19, hour19),
-                colorIntensity(intensity20, hour20), colorIntensity(intensity21, hour21), colorIntensity(intensity22, hour22), colorIntensity(intensity23, hour23)};
-
-        BarDataSet setFrequency = new BarDataSet(yFrequency, "");
-        setFrequency.setDrawValues(false);
-        setFrequency.setColors(colors);
-        BarData dataFrequency = new BarData(setFrequency);
-        chartFrequency.setData(dataFrequency);
-
-        // Textview
-        TextView dayDate = v.findViewById(R.id.chart_day_date);
-        dayDate.setText(DateandTime);
-
-        mDayNumber = v.findViewById(R.id.chart_day_number);
-        mDayTime = v.findViewById(R.id.chart_day_time);
-        mDayIntensity = v.findViewById(R.id.chart_day_intensity);
-        mDayNumber.setText(String.valueOf(dayNumber));
-
-        if(dayNumber != 0) {
-            mDayTime.setText(String.valueOf(Math.round((dayTime / dayNumber)*10)/10.0));
-        } else {
-            mDayTime.setText("0");
-        }
-
-        if(dayNumber == 0) {
-            intensity = "없음";
-        } else {
-            switch(Math.round(dayIntensity / dayNumber)) {
-                case 1:
-                    intensity = "매우 약함";
-                    break;
-                case 2:
-                    intensity = "약함";
-                    break;
-                case 3:
-                    intensity = "보통";
-                    break;
-                case 4:
-                    intensity = "강함";
-                    break;
-                case 5:
-                    intensity = "매우 강함";
-                    break;
-            }
-        }
-        mDayIntensity.setText(intensity);
-
-        // Reasons
-        chartReasons = v.findViewById(R.id.chart_day_reasons);
-        chartReasons.getDescription().setEnabled(false);
-        chartReasons.getLegend().setEnabled(false);
-        chartReasons.setScaleEnabled(false);
-        chartReasons.setTouchEnabled(false);
-
-        xLabelsReasons = new ArrayList<>();
-        xLabelsReasons.add("기타");
-        xLabelsReasons.add("과제회피");
-        xLabelsReasons.add("자기자극");
-        xLabelsReasons.add("요구");
-        xLabelsReasons.add("관심");
-
-        XAxis xAxisReasons = chartReasons.getXAxis();
-        xAxisReasons.setPosition(XAxis.XAxisPosition.BOTTOM);
-        xAxisReasons.setDrawGridLines(false);
-        xAxisReasons.setValueFormatter(new IAxisValueFormatter() {
-            @Override
-            public String getFormattedValue(float value, AxisBase axis) {
-                return xLabelsReasons.get((int) value);
-            }
-
-        });
-
-        YAxis yAxisLeftReasons = chartReasons.getAxisLeft();
-        yAxisLeftReasons.setStartAtZero(true);
-        yAxisLeftReasons.setEnabled(false);
-        yAxisLeftReasons.setLabelCount(5, false);
-        yAxisLeftReasons.setAxisMaxValue(5);
-
-        YAxis yAxisRightReasons = chartReasons.getAxisRight();
-        yAxisRightReasons.setStartAtZero(true);
-        yAxisRightReasons.setLabelCount(5, false);
-        yAxisRightReasons.setAxisMaxValue(5);
-
-        yReasons.add(new BarEntry(0, reasonEtc));
-        yReasons.add(new BarEntry(1, taskevation));
-        yReasons.add(new BarEntry(2, selfstimulation));
-        yReasons.add(new BarEntry(3, demand));
-        yReasons.add(new BarEntry(4, interest));
-
-        BarDataSet setReasons = new BarDataSet(yReasons, "");
-        setReasons.setColors(Color.parseColor("#2dc76d"));
-        setReasons.setDrawValues(false);
-        setReasons.setValueTextSize(12);
-        BarData dataReasons = new BarData(setReasons);
-        chartReasons.setData(dataReasons);
-        chartReasons.setFitBars(true);
-
-        // Types
-        chartTypes = v.findViewById(R.id.chart_day_types);
-        chartTypes.getDescription().setEnabled(false);
-        chartTypes.getLegend().setEnabled(false);
-        chartTypes.setScaleEnabled(false);
-        chartTypes.setTouchEnabled(false);
-
-        xLabelsTypes = new ArrayList<>();
-        xLabelsTypes.add("기타");
-        xLabelsTypes.add("성적");
-        xLabelsTypes.add("이탈");
-        xLabelsTypes.add("파괴");
-        xLabelsTypes.add("타해");
-        xLabelsTypes.add("자해");
-
-        XAxis xAxisTypes = chartTypes.getXAxis();
-        xAxisTypes.setPosition(XAxis.XAxisPosition.BOTTOM);
-        xAxisTypes.setDrawGridLines(false);
-        xAxisTypes.setValueFormatter(new IAxisValueFormatter() {
-            @Override
-            public String getFormattedValue(float value, AxisBase axis) {
-                return xLabelsTypes.get((int) value);
-            }
-
-        });
-
-        YAxis yAxisLeftTypes = chartTypes.getAxisLeft();
-        yAxisLeftTypes.setStartAtZero(true);
-        yAxisLeftTypes.setEnabled(false);
-        yAxisLeftTypes.setLabelCount(5, false);
-        yAxisLeftTypes.setAxisMaxValue(5);
-
-        YAxis yAxisRightTypes = chartTypes.getAxisRight();
-        yAxisRightTypes.setStartAtZero(true);
-        yAxisRightTypes.setLabelCount(5, false);
-        yAxisRightTypes.setAxisMaxValue(5);
-
-        yTypes.add(new BarEntry(0, typeEtc));
-        yTypes.add(new BarEntry(1, sexual));
-        yTypes.add(new BarEntry(2, breakaway));
-        yTypes.add(new BarEntry(3, destruction));
-        yTypes.add(new BarEntry(4, harm));
-        yTypes.add(new BarEntry(5, selfharm));
-
-        BarDataSet setTypes = new BarDataSet(yTypes, "");
-        setTypes.setColors(Color.parseColor("#2dc76d"));
-        setTypes.setDrawValues(false);
-        setTypes.setValueTextSize(12);
-        BarData dataTypes = new BarData(setTypes);
-        chartTypes.setData(dataTypes);
-        chartTypes.setFitBars(true);
-
-        // Locations
-        chartLocations = v.findViewById(R.id.chart_day_locations);
-        chartLocations.getDescription().setEnabled(false);
-        chartLocations.getLegend().setEnabled(false);
-        chartLocations.setScaleEnabled(false);
-        chartLocations.setTouchEnabled(false);
-
-        xLabelsLocations = new ArrayList<>();
-        xLabelsLocations.add("기타");
-        xLabelsLocations.add("학교");
-        xLabelsLocations.add("식당가");
-        xLabelsLocations.add("마트");
-        xLabelsLocations.add("집");
-
-        XAxis xAxisLocations = chartLocations.getXAxis();
-        xAxisLocations.setPosition(XAxis.XAxisPosition.BOTTOM);
-        xAxisLocations.setDrawGridLines(false);
-        xAxisLocations.setValueFormatter(new IAxisValueFormatter() {
-            @Override
-            public String getFormattedValue(float value, AxisBase axis) {
-                return xLabelsLocations.get((int) value);
-            }
-
-        });
-
-        YAxis yAxisLeftLocations = chartLocations.getAxisLeft();
-        yAxisLeftLocations.setStartAtZero(true);
-        yAxisLeftLocations.setEnabled(false);
-        yAxisLeftLocations.setLabelCount(5, false);
-        yAxisLeftLocations.setAxisMaxValue(5);
-
-        YAxis yAxisRightLocations = chartLocations.getAxisRight();
-        yAxisRightLocations.setStartAtZero(true);
-        yAxisRightLocations.setLabelCount(5, false);
-        yAxisRightLocations.setAxisMaxValue(5);
-
-        yLocations.add(new BarEntry(0, locationEtc));
-        yLocations.add(new BarEntry(1, school));
-        yLocations.add(new BarEntry(2, restaurant));
-        yLocations.add(new BarEntry(3, mart));
-        yLocations.add(new BarEntry(4, home));
-
-        BarDataSet setLocations = new BarDataSet(yLocations, "");
-        setLocations.setColors(Color.parseColor("#2dc76d"));
-        setLocations.setDrawValues(false);
-        setLocations.setValueTextSize(12);
-        BarData dataLocations = new BarData(setLocations);
-        chartLocations.setData(dataLocations);
-        chartLocations.setFitBars(true);
-
         return v;
     }
 
@@ -782,6 +807,16 @@ public class TemplateChartDayFragment extends Fragment {
         }
 
         return 0;
+    }
+
+    public int maxNumber5(int n1, int n2, int n3, int n4, int n5) {
+        List<Integer> list = Arrays.asList(n1, n2, n3, n4, n5);
+        return Collections.max(list);
+    }
+
+    public int maxNumber6(int n1, int n2, int n3, int n4, int n5, int n6) {
+        List<Integer> list = Arrays.asList(n1, n2, n3, n4, n5, n6);
+        return Collections.max(list);
     }
 
     @Override

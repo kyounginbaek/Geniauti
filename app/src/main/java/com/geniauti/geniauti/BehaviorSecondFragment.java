@@ -55,7 +55,7 @@ public class BehaviorSecondFragment extends Fragment {
     private String mParam2;
 
     private View v;
-    private GridListAdapter adapter;
+    public static GridListAdapter adapter;
     private ArrayList<String> arrayList;
     public ListView listView;
 
@@ -169,7 +169,7 @@ public class BehaviorSecondFragment extends Fragment {
         return v;
     }
 
-    public String getResult() {
+    public static String getResult() {
         int i = adapter.selectedPosition;
 
         if(i == -1){

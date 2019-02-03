@@ -145,6 +145,7 @@ public class ChartMonthFragment extends Fragment {
                             statisticsHashMap.put(document.getId(), item);
                         }
                     }
+
                     // Setting ViewPager for each Tabs
                     viewPager = (ViewPager) v.findViewById(R.id.chart_month_viewpager);
                     setupViewPager(viewPager);
@@ -185,6 +186,8 @@ public class ChartMonthFragment extends Fragment {
 
                         }
                     });
+
+
                 } else {
 //                    Log.d(TAG, "get failed with ", task.getException());
                 }

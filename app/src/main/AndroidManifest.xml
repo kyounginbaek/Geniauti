@@ -60,16 +60,19 @@
             android:theme="@style/AppTheme" />
         <activity android:name=".BehaviorDetailActivity" />
         <activity android:name=".BookmarkDetailActivity" />
-        <activity android:name=".RalationshipAddActivity" />
+        <activity android:name=".RelationshipAddActivity" />
+        <activity android:name=".ChildCodeAddActivity" />
 
-        <receiver android:name=".GeniautiWidget">
+        <receiver android:name=".TimerWidget">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="com.geneauti.geniauti.TIMER_START_BUTTON" />
+                <action android:name="com.geneauti.geniauti.TIMER_RESET_BUTTON" />
             </intent-filter>
 
             <meta-data
                 android:name="android.appwidget.provider"
-                android:resource="@xml/geniauti_widget_info" />
+                android:resource="@xml/timer_widget_info" />
         </receiver>
     </application>
 

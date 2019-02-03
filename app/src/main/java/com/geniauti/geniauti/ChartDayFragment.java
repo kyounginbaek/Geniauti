@@ -139,6 +139,7 @@ public class ChartDayFragment extends Fragment implements TemplateChartDayFragme
                             statisticsHashMap.put(document.getId(), item);
                         }
                     }
+
                     // Setting ViewPager for each Tabs
                     viewPager = (ViewPager) v.findViewById(R.id.chart_day_viewpager);
                     setupViewPager(viewPager);
@@ -179,11 +180,14 @@ public class ChartDayFragment extends Fragment implements TemplateChartDayFragme
 
                         }
                     });
+
                 } else {
 //                    Log.d(TAG, "get failed with ", task.getException());
                 }
             }
         });
+
+
 
 //        db.collection("childs")
 //                .whereGreaterThanOrEqualTo("users."+user.getUid()+".name", "")

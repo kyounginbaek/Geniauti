@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    tools:context=".ChildCodeAddActivity">
+
+    <ProgressBar
+        android:id="@+id/child_code_add_progress"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:layout_gravity="center"
+        android:indeterminate="true"
+        android:layout_centerInParent="true"
+        android:layout_marginBottom="8dp"
+        android:visibility="gone"
+        />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="140dp"
+                android:textSize="24sp"
+                android:textColor="#3b3b3b"
+                android:textStyle="bold"
+                android:lineSpacingExtra="4dp"
+                android:letterSpacing="-0.02"
+                tools:text="초대 코드 입력하기"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="40dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:textSize="16sp"
+                android:lineSpacingExtra="3dp"
+                android:textColor="#3b3b3b"
+                android:text="GeniAuti 서비스 이용을 위해서는 아이를 등록해주셔야 합니다. 아이 등록 버튼을 눌러 아이를 등록해주세요."
+                />
+
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginTop="40dp">
+
+                <EditText
+                    android:id="@+id/child_code_txt"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    android:textColor="#de000000"
+                    app:backgroundTint="#1e000000"
+                    android:lineSpacingExtra="8sp"
+                    android:hint="초대 코드 입력(5자리)"
+                    android:maxLength="5"
+                    android:inputType="number"
+                    android:maxLines="1"
+                    android:singleLine="true" />
+
+            </android.support.design.widget.TextInputLayout>
+
+            <Button
+                android:id="@+id/child_code_add_button"
+                style="?android:textAppearanceSmall"
+                android:layout_width="match_parent"
+                android:layout_height="36dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginTop="40dp"
+                android:textSize="16sp"
+                android:textColor="#ffffff"
+                android:background="@color/coolGreen"
+                android:text="등록하기"
+                />
+
+        </LinearLayout>
+
+
+    </ScrollView>
+
+</RelativeLayout>

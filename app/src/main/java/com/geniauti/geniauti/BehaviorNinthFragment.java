@@ -38,10 +38,11 @@ public class BehaviorNinthFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    HashMap<String,Boolean> checkbox_reason = new HashMap<String,Boolean>();
-    HashMap<String,Boolean> reason_detail = new HashMap<String,Boolean>();
+    public static HashMap<String,Boolean> checkbox_reason = new HashMap<String,Boolean>();
+    public static HashMap<String,Boolean> reason_detail = new HashMap<String,Boolean>();
     private Reason[] reasons ;
-    private ArrayAdapter<Reason> listAdapter ;
+    public static ArrayAdapter<Reason> listAdapter;
+    public static View mProgressView;
 
     private OnFragmentInteractionListener mListener;
 
@@ -96,26 +97,28 @@ public class BehaviorNinthFragment extends Fragment {
             }
         });
 
+        mProgressView = (View) v.findViewById(R.id.behavior_ninth_progress);
+        mProgressView.bringToFront();
 
         // Create and populate reasons.
         reasons = (Reason[]) onRetainCustomNonConfigurationInstance() ;
         if ( reasons == null ) {
             reasons = new Reason[] {
-                    new Reason("자신에게 관심을 갖는 것이 좋아서", "interest", "interest1"),
-                    new Reason("타인에게 주목 받는 것을 즐겨서", "interest", "interest2"),
-                    new Reason("관심의 대상이 되고 싶어서", "interest", "interest3"),
-                    new Reason("다른 사람의 관심을 끌려고", "interest", "interest4"),
-                    new Reason("행동을 통해 얻는 감각이 좋아서", "selfstimulation", "stimulation1"),
-                    new Reason("행동을 하는 것 자체가 좋아서", "selfstimulation", "stimulation2"),
-                    new Reason("행동이 주는 자극을 얻으려고", "selfstimulation", "stimulation3"),
-                    new Reason("원하는 것을 즉각 얻지 못해서", "demand", "demand1"),
-                    new Reason("원하는 물건을 가질 수 없어서", "demand", "demand2"),
-                    new Reason("어떤 물건(장난감)을 갖기 위해서", "demand", "demand3"),
-                    new Reason("본인이 갖고 싶은 물건을 얻으려고", "demand", "demand4"),
-                    new Reason("시키는 일을 거부하려고", "taskevation", "taskevation1"),
-                    new Reason("하려고 한 일이 힘들어서", "taskevation", "taskevation2"),
-                    new Reason("주어진 일을 하기 싫어서", "taskevation", "taskevation3"),
-                    new Reason("시키는 일이 어려워 피하려고", "taskevation", "taskevation4")
+                    new Reason("자신에게 관심을 갖는 것이 좋아서", "attention", "attention1"),
+                    new Reason("타인에게 주목 받는 것을 즐겨서", "attention", "attention2"),
+                    new Reason("관심의 대상이 되고 싶어서", "attention", "attention3"),
+                    new Reason("다른 사람의 관심을 끌려고", "attention", "attention4"),
+                    new Reason("행동을 통해 얻는 감각이 좋아서", "self-stimulatory behaviour", "self-stimulatory behaviour1"),
+                    new Reason("행동을 하는 것 자체가 좋아서", "self-stimulatory behaviour", "self-stimulatory behaviour2"),
+                    new Reason("행동이 주는 자극을 얻으려고", "self-stimulatory behaviour", "self-stimulatory behaviour3"),
+                    new Reason("시키는 일을 거부하려고", "escape", "escape1"),
+                    new Reason("하려고 한 일이 힘들어서", "escape", "escape2"),
+                    new Reason("주어진 일을 하기 싫어서", "escape", "escape3"),
+                    new Reason("시키는 일이 어려워 피하려고", "escape", "escape4"),
+                    new Reason("원하는 것을 즉각 얻지 못해서", "tangibles", "tangibles1"),
+                    new Reason("원하는 물건을 가질 수 없어서", "tangibles", "tangibles2"),
+                    new Reason("어떤 물건(장난감)을 갖기 위해서", "tangibles", "tangibles3"),
+                    new Reason("본인이 갖고 싶은 물건을 얻으려고", "tangibles", "tangibles4")
             };
         }
         ArrayList<Reason> reasonList = new ArrayList<Reason>();
@@ -125,12 +128,11 @@ public class BehaviorNinthFragment extends Fragment {
         listAdapter = new ReasonArrayAdapter(this.getContext(), reasonList);
         mainListView.setAdapter( listAdapter );
 
-
         // Inflate the layout for this fragment
         return v;
     }
 
-    public HashMap<String, Boolean> getResult() {
+    public static HashMap<String, Boolean> getResult() {
         checkbox_reason.clear();
 
         for (int i=0; i < listAdapter.getCount(); i++) {
@@ -143,7 +145,7 @@ public class BehaviorNinthFragment extends Fragment {
         return checkbox_reason;
     }
 
-    public HashMap<String, Boolean> reasonDetail() {
+    public static HashMap<String, Boolean> reasonDetail() {
         reason_detail.clear();
 
         for (int i=0; i < listAdapter.getCount(); i++) {

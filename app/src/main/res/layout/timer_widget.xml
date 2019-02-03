@@ -1,0 +1,78 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="320dp"
+    android:layout_height="100dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:padding="@dimen/widget_margin">
+
+    <LinearLayout
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:background="@drawable/shadowed_green_rectangle"
+        >
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/shadowed_white_rectangle"
+        >
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/widget_timer"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="34dp"
+                android:gravity="center_vertical"
+                android:textSize="45sp"
+                android:textColor="#181801"
+                android:text="00 : 00"
+                />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_alignParentRight="true"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/widget_start_button"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginRight="9dp"
+                    android:layout_gravity="center_vertical"
+                    android:background="@drawable/shadowed_green_dot"
+                    android:backgroundTint="@color/coolGreen"
+                    android:text="시작"
+                    android:textSize="10sp"
+                    android:textColor="@android:color/white"
+                    />
+
+                <Button
+                    android:id="@+id/widget_reset_button"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_gravity="center_vertical"
+                    android:background="@drawable/shadowed_white_dot"
+                    android:text="리셋"
+                    android:textSize="10sp"
+                    android:textColor="@color/coolGreen"
+                    />
+
+            </LinearLayout>
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+</RelativeLayout>

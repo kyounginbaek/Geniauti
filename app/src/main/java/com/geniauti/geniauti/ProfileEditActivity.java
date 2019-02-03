@@ -38,21 +38,20 @@ import java.io.File;
 
 public class ProfileEditActivity extends AppCompatActivity {
 
-    private FirebaseStorage storage;
-    private StorageReference storageRef;
     private UploadTask uploadTask;
 
     private ImageView profileImage;
     private EditText profileName;
     private EditText profileEmail;
-    private EditText profileRelationship;
     private RelativeLayout passwordEdit;
     private Button btnProfileEdit;
-    private String newName, newEmail, newRelationship;
+    private String newName, newEmail;
 
     private RelativeLayout profileEditLayout;
-    private Image image;
+    private Image image = null;
     private Bitmap myBitmap;
+
+    private long currentTime;
 
     private View mProgressView;
 
@@ -75,25 +74,28 @@ public class ProfileEditActivity extends AppCompatActivity {
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
         mProgressView = findViewById(R.id.profile_edit_progress);
+        mProgressView.bringToFront();
         mProgressView.setVisibility(View.VISIBLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
 
-        storage = FirebaseStorage.getInstance();
-        storageRef = storage.getReference();
         profileImage = (ImageView) findViewById(R.id.profile_edit_image);
 
-        StorageReference pathReference = storageRef.child("users/"+MainActivity.user.getUid());
+        StorageReference pathReference = MainActivity.storageRef.child("users/"+MainActivity.user.getUid());
         pathReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
             public void onSuccess(Uri uri) {
                 // Got the download URL for 'users/me/profile.png'
                 Glide.with(getApplication()).load(uri).into(profileImage);
                 mProgressView.setVisibility(View.GONE);
+                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception exception) {
                 // Handle any errors
                 mProgressView.setVisibility(View.GONE);
+                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
             }
         });
 
@@ -110,10 +112,8 @@ public class ProfileEditActivity extends AppCompatActivity {
 
         profileName = (EditText) findViewById(R.id.txt_profile_name);
         profileEmail = (EditText) findViewById(R.id.txt_profile_email);
-        profileRelationship = (EditText) findViewById(R.id.txt_profile_relationship);
         profileEmail.setText(MainActivity.user.getEmail());
         profileName.setText(MainActivity.user.getDisplayName());
-        profileRelationship.setText(MainActivity.relationship);
 
         btnProfileEdit = (Button) findViewById(R.id.profile_edit_button);
         btnProfileEdit.setOnClickListener(new View.OnClickListener() {
@@ -122,59 +122,52 @@ public class ProfileEditActivity extends AppCompatActivity {
 
                 btnProfileEdit.setEnabled(false);
                 mProgressView.setVisibility(View.VISIBLE);
+                getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                        WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
 
                 // Reset errors.
                 profileName.setError(null);
                 profileEmail.setError(null);
 
                 boolean cancel = false;
-                View focusView = null;
 
                 newName = profileName.getText().toString();
                 newEmail = profileEmail.getText().toString();
-                newRelationship = profileRelationship.getText().toString();
 
                 if (TextUtils.isEmpty(newName)) {
                     profileName.setError("이름을 입력해주세요.");
-                    focusView = profileName;
                     cancel = true;
                 }
 
                 if (TextUtils.isEmpty(newName)) {
                     profileEmail.setError("이메일 주소를 입력해주세요.");
-                    focusView = profileEmail;
                     cancel = true;
                 }
 
                 if (!isEmailValid(newEmail)) {
                     profileEmail.setError("잘못된 이메일 형식입니다.");
-                    focusView = profileEmail;
-                    cancel = true;
-                }
-
-                if (TextUtils.isEmpty(newRelationship)) {
-                    profileRelationship.setError("아이와의 관계를 입력해주세요.");
-                    focusView = profileRelationship;
                     cancel = true;
                 }
 
                 if(cancel) {
                     btnProfileEdit.setEnabled(true);
+                    mProgressView.setVisibility(View.GONE);
+                    getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
                 } else {
-
-                    if(image.getPath() != null) {
-                        imageChange();
+                    if(!newEmail.equals(MainActivity.user.getEmail())) {
+                        emailChange();
+                    } else {
+                        if(image != null) {
+                            imageChange();
+                        } else {
+                            if(!newName.equals(MainActivity.user.getDisplayName())) {
+                                nameChange();
+                            } else {
+                                Toast toast = Toast.makeText(ProfileEditActivity.this, "내 정보를 수정해주세요.", Toast.LENGTH_SHORT);
+                                toast.show();
+                            }
+                        }
                     }
-
-//                    user.updateEmail(newEmail)
-//                            .addOnCompleteListener(new OnCompleteListener<Void>() {
-//                                @Override
-//                                public void onComplete(@NonNull Task<Void> task) {
-//                                    if (task.isSuccessful()) {
-//
-//                                    }
-//                                }
-//                            });
                 }
             }
         });
@@ -191,8 +184,10 @@ public class ProfileEditActivity extends AppCompatActivity {
 
     private void imageChange() {
         Uri file = Uri.fromFile(new File(image.getPath()));
-        StorageReference riversRef = storageRef.child("users/"+MainActivity.user.getUid());
+        StorageReference riversRef = MainActivity.storageRef.child("users/"+MainActivity.user.getUid());
         uploadTask = riversRef.putFile(file);
+
+        currentTime = System.currentTimeMillis();
 
         // Register observers to listen for when the download is done or if it fails
         uploadTask.addOnFailureListener(new OnFailureListener() {
@@ -201,64 +196,79 @@ public class ProfileEditActivity extends AppCompatActivity {
                 // Handle unsuccessful uploads
                 btnProfileEdit.setEnabled(false);
                 mProgressView.setVisibility(View.GONE);
+                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                Toast toast = Toast.makeText(ProfileEditActivity.this, "에러가 발생했습니다. 다시 한번 시도해주세요.", Toast.LENGTH_SHORT);
+                toast.show();
             }
         }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
 
-                mProgressView.setVisibility(View.GONE);
-                finish();
-                Toast toast = Toast.makeText(ProfileEditActivity.this, "프로필 정보가 수정되었습니다.", Toast.LENGTH_SHORT);
-                toast.show();
+                MainActivity.db.collection("childs").document(MainActivity.cid)
+                        .update("users."+MainActivity.user.getUid()+".profile_pic", "childs/"+MainActivity.cid+"_"+String.valueOf(currentTime))
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                if(!newName.equals(MainActivity.user.getDisplayName())){
+                                    nameChange();
+                                } else {
+                                    mProgressView.setVisibility(View.GONE);
+                                    getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                                    finish();
+                                    Toast toast = Toast.makeText(ProfileEditActivity.this, "프로필 정보가 수정되었습니다.", Toast.LENGTH_SHORT);
+                                    toast.show();
+                                }
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                btnProfileEdit.setEnabled(true);
+                                mProgressView.setVisibility(View.GONE);
+                                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                                Toast toast = Toast.makeText(ProfileEditActivity.this, "에러가 발생했습니다. 다시 한번 시도해주세요.", Toast.LENGTH_SHORT);
+                                toast.show();
+                            }
+                        });
             }
         });
     }
 
     private void nameChange() {
-        // users
+        // users(ok)
         MainActivity.db.collection("users").document(MainActivity.user.getUid())
                 .update("name", newName)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
 
-                        // childs
+                        // childs(ok)
                         MainActivity.db.collection("childs").document(MainActivity.cid)
                                 .update("users."+MainActivity.user.getUid()+".name", newName)
                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {
 
-                                        // behaviors
-                                        MainActivity.db.collection("behaviors")
-                                                .whereEqualTo("name", MainActivity.user.getDisplayName())
-                                                .get()
-                                                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                        // admin(ok)
+                                        UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                                                .setDisplayName(newName)
+                                                .build();
+
+                                        MainActivity.user.updateProfile(profileUpdates)
+                                                .addOnCompleteListener(new OnCompleteListener<Void>() {
                                                     @Override
-                                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                                    public void onComplete(@NonNull Task<Void> task) {
                                                         if (task.isSuccessful()) {
-                                                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                                            // behaviors
 
-                                                            }
-
-                                                            // admin
-                                                            UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
-                                                                    .setDisplayName(newName)
-                                                                    .build();
-
-                                                            MainActivity.user.updateProfile(profileUpdates)
-                                                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                                        @Override
-                                                                        public void onComplete(@NonNull Task<Void> task) {
-                                                                            if (task.isSuccessful()) {
-                                                                                finish();
-                                                                            }
-                                                                        }
-                                                                    });
 
                                                         } else {
                                                             btnProfileEdit.setEnabled(true);
+                                                            mProgressView.setVisibility(View.GONE);
+                                                            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                                                            Toast toast = Toast.makeText(ProfileEditActivity.this, "에러가 발생했습니다. 다시 한번 시도해주세요.", Toast.LENGTH_SHORT);
+                                                            toast.show();
                                                         }
                                                     }
                                                 });
@@ -269,6 +279,10 @@ public class ProfileEditActivity extends AppCompatActivity {
                                     @Override
                                     public void onFailure(@NonNull Exception e) {
                                         btnProfileEdit.setEnabled(true);
+                                        mProgressView.setVisibility(View.GONE);
+                                        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                                        Toast toast = Toast.makeText(ProfileEditActivity.this, "에러가 발생했습니다. 다시 한번 시도해주세요.", Toast.LENGTH_SHORT);
+                                        toast.show();
                                     }
                                 });
 
@@ -278,6 +292,10 @@ public class ProfileEditActivity extends AppCompatActivity {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         btnProfileEdit.setEnabled(true);
+                        mProgressView.setVisibility(View.GONE);
+                        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                        Toast toast = Toast.makeText(ProfileEditActivity.this, "에러가 발생했습니다. 다시 한번 시도해주세요.", Toast.LENGTH_SHORT);
+                        toast.show();
                     }
                 });
     }
@@ -288,11 +306,26 @@ public class ProfileEditActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()) {
-                            finish();
-                            Toast toast = Toast.makeText(ProfileEditActivity.this, "프로필 정보가 수정되었습니다.", Toast.LENGTH_SHORT);
-                            toast.show();
+
+                            if(image != null) {
+                                imageChange();
+                            } else {
+                                if(!newName.equals(MainActivity.user.getDisplayName())) {
+                                    nameChange();
+                                } else {
+                                    mProgressView.setVisibility(View.GONE);
+                                    getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                                    finish();
+                                    Toast toast = Toast.makeText(ProfileEditActivity.this, "프로필 정보가 수정되었습니다.", Toast.LENGTH_SHORT);
+                                    toast.show();
+                                }
+                            }
                         } else {
                             btnProfileEdit.setEnabled(true);
+                            mProgressView.setVisibility(View.GONE);
+                            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                            Toast toast = Toast.makeText(ProfileEditActivity.this, "이미 등록되어 있는 이메일입니다. 새로운 이메일을 입력해주세요.", Toast.LENGTH_SHORT);
+                            toast.show();
                         }
                     }
                 });

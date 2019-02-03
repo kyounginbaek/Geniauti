@@ -33,7 +33,7 @@
                     >
 
                     <de.hdodenhof.circleimageview.CircleImageView
-                        android:id="@+id/child_image"
+                        android:id="@+id/profile_child_image"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:src="@drawable/ic_profile_default"
@@ -127,7 +127,7 @@
                         android:textSize="16sp"
                         android:textColor="@color/coolGreen"
                         android:lineSpacingExtra="8sp"
-                        android:text="보호자 초대하기"
+                        android:text="보호자 초대 코드 공유하기"
                         />
 
                 </LinearLayout>

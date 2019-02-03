@@ -54,7 +54,6 @@ public class BookmarkDetailActivity extends AppCompatActivity {
     public static LinearLayout bookmark_self_stimulation;
     public static LinearLayout bookmark_task_evation;
     public static LinearLayout bookmark_demand;
-    public static LinearLayout bookmark_etc;
 
     public static TextView intensityOne;
     public static TextView intensityTwo;
@@ -88,7 +87,6 @@ public class BookmarkDetailActivity extends AppCompatActivity {
         bookmark_self_stimulation = findViewById(R.id.bookmark_self_stimulation);
         bookmark_task_evation = findViewById(R.id.bookmark_task_evation);
         bookmark_demand = findViewById(R.id.bookmark_demand);
-        bookmark_etc = findViewById(R.id.bookmark_etc);
 
         bookmark_categorization = findViewById(R.id.txt_bookmark_categorization);
 //        TextView bookmark_time = findViewById(R.id.txt_bookmark_time);
@@ -112,13 +110,13 @@ public class BookmarkDetailActivity extends AppCompatActivity {
 //        TextView bookmark_after = findViewById(R.id.txt_bookmark_after);
 
         editLine1 = findViewById(R.id.bookmark_edit_line1);
-        editLine2 = findViewById(R.id.bookmark_edit_line2);
+//        editLine2 = findViewById(R.id.bookmark_edit_line2);
         editLine3 = findViewById(R.id.bookmark_edit_line3);
         editLine4 = findViewById(R.id.bookmark_edit_line4);
         editLine5 = findViewById(R.id.bookmark_edit_line5);
         editLine6 = findViewById(R.id.bookmark_edit_line6);
-        editLine7 = findViewById(R.id.bookmark_edit_line7);
-        editLine8 = findViewById(R.id.bookmark_edit_line8);
+//        editLine7 = findViewById(R.id.bookmark_edit_line7);
+//        editLine8 = findViewById(R.id.bookmark_edit_line8);
 
         editText1 = findViewById(R.id.bookmark_edit_text1);
 //        editText2 = findViewById(R.id.bookmark_edit_text2);
@@ -222,13 +220,13 @@ public class BookmarkDetailActivity extends AppCompatActivity {
 //        });
 
         bookmarkLine1 = findViewById(R.id.bookmark_line1);
-        bookmarkLine2 = findViewById(R.id.bookmark_line2);
+//        bookmarkLine2 = findViewById(R.id.bookmark_line2);
         bookmarkLine3 = findViewById(R.id.bookmark_line3);
         bookmarkLine4 = findViewById(R.id.bookmark_line4);
         bookmarkLine5 = findViewById(R.id.bookmark_line5);
         bookmarkLine6 = findViewById(R.id.bookmark_line6);
-        bookmarkLine7 = findViewById(R.id.bookmark_line7);
-        bookmarkLine8 = findViewById(R.id.bookmark_line8);
+//        bookmarkLine7 = findViewById(R.id.bookmark_line7);
+//        bookmarkLine8 = findViewById(R.id.bookmark_line8);
 
         bookmark_categorization.setText(selectedBookmark.categorization);
 
@@ -238,7 +236,7 @@ public class BookmarkDetailActivity extends AppCompatActivity {
         bookmark_place.setText(selectedBookmark.place);
 
         setType(selectedBookmark.type);
-        setReasonType(selectedBookmark.reason);
+        setReasonType(selectedBookmark.reason_type);
         setIntensity(selectedBookmark.intensity);
 
 //        bookmark_before.setText(selectedBookmark.before_bookmark);
@@ -319,13 +317,13 @@ public class BookmarkDetailActivity extends AppCompatActivity {
 
     public static void editModeOn() {
         editLine1.setVisibility(View.VISIBLE);
-        editLine2.setVisibility(View.VISIBLE);
+//        editLine2.setVisibility(View.VISIBLE);
         editLine3.setVisibility(View.VISIBLE);
         editLine4.setVisibility(View.VISIBLE);
         editLine5.setVisibility(View.VISIBLE);
         editLine6.setVisibility(View.VISIBLE);
-        editLine7.setVisibility(View.VISIBLE);
-        editLine8.setVisibility(View.VISIBLE);
+//        editLine7.setVisibility(View.VISIBLE);
+//        editLine8.setVisibility(View.VISIBLE);
 
         editText1.setVisibility(View.VISIBLE);
 //                editText2.setVisibility(View.VISIBLE);
@@ -338,26 +336,26 @@ public class BookmarkDetailActivity extends AppCompatActivity {
 //                editText9.setVisibility(View.VISIBLE);
 
         bookmarkLine1.setVisibility(View.GONE);
-        bookmarkLine2.setVisibility(View.GONE);
+//        bookmarkLine2.setVisibility(View.GONE);
         bookmarkLine3.setVisibility(View.GONE);
         bookmarkLine4.setVisibility(View.GONE);
         bookmarkLine5.setVisibility(View.GONE);
         bookmarkLine6.setVisibility(View.GONE);
-        bookmarkLine7.setVisibility(View.GONE);
-        bookmarkLine8.setVisibility(View.GONE);
+//        bookmarkLine7.setVisibility(View.GONE);
+//        bookmarkLine8.setVisibility(View.GONE);
 
         editMode = true;
     }
 
     public static void editModeOff() {
         editLine1.setVisibility(View.GONE);
-        editLine2.setVisibility(View.GONE);
+//        editLine2.setVisibility(View.GONE);
         editLine3.setVisibility(View.GONE);
         editLine4.setVisibility(View.GONE);
         editLine5.setVisibility(View.GONE);
         editLine6.setVisibility(View.GONE);
-        editLine7.setVisibility(View.GONE);
-        editLine8.setVisibility(View.GONE);
+//        editLine7.setVisibility(View.GONE);
+//        editLine8.setVisibility(View.GONE);
 
         editText1.setVisibility(View.GONE);
 //                editText2.setVisibility(View.GONE);
@@ -370,13 +368,13 @@ public class BookmarkDetailActivity extends AppCompatActivity {
 //                editText9.setVisibility(View.GONE);
 
         bookmarkLine1.setVisibility(View.VISIBLE);
-        bookmarkLine2.setVisibility(View.VISIBLE);
+//        bookmarkLine2.setVisibility(View.VISIBLE);
         bookmarkLine3.setVisibility(View.VISIBLE);
         bookmarkLine4.setVisibility(View.VISIBLE);
         bookmarkLine5.setVisibility(View.VISIBLE);
         bookmarkLine6.setVisibility(View.VISIBLE);
-        bookmarkLine7.setVisibility(View.VISIBLE);
-        bookmarkLine8.setVisibility(View.VISIBLE);
+//        bookmarkLine7.setVisibility(View.VISIBLE);
+//        bookmarkLine8.setVisibility(View.VISIBLE);
 
         editMode = false;
     }
@@ -387,22 +385,22 @@ public class BookmarkDetailActivity extends AppCompatActivity {
         while (it.hasNext()) {
             Map.Entry pair = (Map.Entry)it.next();
             switch(pair.getKey().toString()) {
-                case "selfharm":
+                case "self-injury":
                     tmp_type = tmp_type + "자해, ";
                     break;
-                case "harm":
+                case "aggression":
                     tmp_type = tmp_type + "타해, ";
                     break;
-                case "destruction":
+                case "disruption":
                     tmp_type = tmp_type + "파괴, ";
                     break;
-                case "breakaway":
+                case "elopement":
                     tmp_type = tmp_type + "이탈, ";
                     break;
-                case "sexual":
+                case "sexual behaviors":
                     tmp_type = tmp_type + "성적, ";
                     break;
-                case "etc":
+                case "other behaviors":
                     tmp_type = tmp_type + "기타, ";
                     break;
             }
@@ -416,22 +414,18 @@ public class BookmarkDetailActivity extends AppCompatActivity {
         bookmark_self_stimulation.setVisibility(View.GONE);
         bookmark_task_evation.setVisibility(View.GONE);
         bookmark_demand.setVisibility(View.GONE);
-        bookmark_etc.setVisibility(View.GONE);
 
-        if(reason_type.get("interest")!=null) {
+        if(reason_type.get("attention")!=null) {
             bookmark_interest.setVisibility(View.VISIBLE);
         }
-        if(reason_type.get("selfstimulation")!=null) {
+        if(reason_type.get("self-stimulatory behaviour")!=null) {
             bookmark_self_stimulation.setVisibility(View.VISIBLE);
         }
-        if(reason_type.get("taskevation")!=null) {
+        if(reason_type.get("escape")!=null) {
             bookmark_task_evation.setVisibility(View.VISIBLE);
         }
-        if(reason_type.get("demand")!=null) {
+        if(reason_type.get("tangibles")!=null) {
             bookmark_demand.setVisibility(View.VISIBLE);
-        }
-        if(reason_type.get("etc")!=null){
-            bookmark_etc.setVisibility(View.VISIBLE);
         }
     }
 

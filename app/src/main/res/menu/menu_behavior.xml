@@ -13,7 +13,7 @@
         <menu>
             <item android:id="@+id/behavior_bookmark"
                 app:showAsAction="ifRoom"
-                android:title="자주 쓰는 기록" />
+                android:title="자주 쓰는 기록으로 저장" />
 
             <item android:id="@+id/behavior_edit"
                 app:showAsAction="ifRoom"

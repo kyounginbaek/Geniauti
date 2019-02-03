@@ -7,6 +7,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -42,6 +43,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,7 +52,8 @@ import static android.Manifest.permission.READ_CONTACTS;
 /**
  * A login screen that offers login via email/password.
  */
-public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<Cursor> {
+//public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<Cursor>
+public class LoginActivity extends AppCompatActivity {
 
     /**
      * Id to identity READ_CONTACTS permission request.
@@ -70,7 +73,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private UserLoginTask mAuthTask = null;
 
     // UI references.
-    private AutoCompleteTextView mEmailView;
+    private EditText mEmailView;
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
@@ -90,22 +93,10 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         // Set up the login form.
-        mEmailView = (AutoCompleteTextView) findViewById(R.id.login_email);
+
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-
-        populateAutoComplete();
-
+        mEmailView = (EditText) findViewById(R.id.login_email);
         mPasswordView = (EditText) findViewById(R.id.login_password);
-        mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
-                if (id == EditorInfo.IME_ACTION_DONE || id == EditorInfo.IME_NULL) {
-                    attemptLogin();
-                    return true;
-                }
-                return false;
-            }
-        });
 
         mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
@@ -143,38 +134,63 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 passwordFindSubmit.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+
+                        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+
+                        passwordFindSubmit.setEnabled(false);
+//                        mProgressView.setVisibility(View.VISIBLE);
+//                        getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+//                                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+
                         passwordFindEmail.setError(null);
                         boolean cancel = false;
-                        View focusView = null;
 
                         txtEmail = passwordFindEmail.getText().toString();
 
                         if(TextUtils.isEmpty(txtEmail)){
                             passwordFindEmail.setError("이메일 주소를 입력해주세요.");
-                            focusView = passwordFindEmail;
                             cancel = true;
                         } else {
                             if (!isEmailValid(txtEmail)) {
                                 passwordFindEmail.setError("잘못된 이메일 형식입니다.");
-                                focusView = passwordFindEmail;
                                 cancel = true;
                             }
                         }
 
                         if(cancel){
-
+                            passwordFindSubmit.setEnabled(true);
+//                            mProgressView.setVisibility(View.GONE);
+//                            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
                         } else {
-                            mAuth.sendPasswordResetEmail(txtEmail)
-                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<Void> task) {
-                                            if (task.isSuccessful()) {
-                                                dialog.dismiss();
-                                                Toast toast = Toast.makeText(LoginActivity.this, "입력해주신 이메일 주소로 비밀번호 변경 링크를 보내드렸습니다.", Toast.LENGTH_SHORT);
-                                                toast.show();
+                            if(!isNetworkConnected()) {
+                                passwordFindSubmit.setEnabled(true);
+//                                mProgressView.setVisibility(View.GONE);
+//                                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                                Toast toast = Toast.makeText(LoginActivity.this, "인터넷에 연결되어 있지 않습니다. 인터넷 연결 상태를 확인해주세요.", Toast.LENGTH_SHORT);
+                                toast.show();
+                            } else {
+                                mAuth.sendPasswordResetEmail(txtEmail)
+                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
+                                                if (task.isSuccessful()) {
+                                                    passwordFindSubmit.setEnabled(true);
+//                                                    mProgressView.setVisibility(View.GONE);
+//                                                    getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                                                    dialog.dismiss();
+                                                    Toast toast = Toast.makeText(LoginActivity.this, "입력해주신 이메일 주소로 비밀번호 변경 링크를 보내드렸습니다.", Toast.LENGTH_SHORT);
+                                                    toast.show();
+                                                } else {
+                                                    passwordFindSubmit.setEnabled(true);
+//                                                    mProgressView.setVisibility(View.GONE);
+//                                                    getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                                                    Toast toast = Toast.makeText(LoginActivity.this, "가입되지 않은 이메일 주소입니다.", Toast.LENGTH_SHORT);
+                                                    toast.show();
+                                                }
                                             }
-                                        }
-                                    });
+                                        });
+                            }
                         }
                     }
                 });
@@ -193,15 +209,21 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
+        mProgressView.bringToFront();
     }
 
-    private void populateAutoComplete() {
-        if (!mayRequestContacts()) {
-            return;
-        }
-
-        getLoaderManager().initLoader(0, null, this);
+    private boolean isNetworkConnected() {
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        return cm.getActiveNetworkInfo() != null;
     }
+
+//    private void populateAutoComplete() {
+//        if (!mayRequestContacts()) {
+//            return;
+//        }
+//
+//        getLoaderManager().initLoader(0, null, this);
+//    }
 
     private boolean mayRequestContacts() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
@@ -228,15 +250,15 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     /**
      * Callback received when a permissions request has been completed.
      */
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
-        if (requestCode == REQUEST_READ_CONTACTS) {
-            if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                populateAutoComplete();
-            }
-        }
-    }
+//    @Override
+//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+//                                           @NonNull int[] grantResults) {
+//        if (requestCode == REQUEST_READ_CONTACTS) {
+//            if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+//                populateAutoComplete();
+//            }
+//        }
+//    }
 
 
     /**
@@ -247,10 +269,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private void attemptLogin() {
         mEmailSignInButton.setEnabled(false);
         mProgressView.setVisibility(View.VISIBLE);
-
-        if (mAuthTask != null) {
-            return;
-        }
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
 
         // Reset errors.
         mEmailView.setError(null);
@@ -261,75 +281,78 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         String password = mPasswordView.getText().toString();
 
         boolean cancel = false;
-        View focusView = null;
 
         // Check for a valid password, if the user entered one.
         if (TextUtils.isEmpty(password) && !isPasswordValid(password)) {
-            mProgressView.setVisibility(View.GONE);
             mPasswordView.setError("6자리 이상의 비밀번호를 입력해주세요.");
-            focusView = mPasswordView;
             cancel = true;
         }
 
         // Check for a valid email address.
         if (TextUtils.isEmpty(email)) {
-            mProgressView.setVisibility(View.GONE);
             mEmailView.setError("이메일 주소를 입력해주세요.");
-            focusView = mEmailView;
             cancel = true;
         } else if (!isEmailValid(email)) {
-            mProgressView.setVisibility(View.GONE);
             mEmailView.setError("잘못된 이메일 형식입니다.");
-            focusView = mEmailView;
             cancel = true;
         }
 
         if (cancel) {
             // There was an error; don't attempt login and focus the first
             // form field with an error.
-            focusView.requestFocus();
             mEmailSignInButton.setEnabled(true);
+            mProgressView.setVisibility(View.GONE);
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
         } else {
-            mAuth.signInWithEmailAndPassword(email, password)
-                    .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-                            if (task.isSuccessful()) {
-                                mProgressView.setVisibility(View.GONE);
-                                startActivity(new Intent(LoginActivity.this,MainActivity.class));
-                                finish();
-                                // Sign in success, update UI with the signed-in user's information
-                                // Log.d(TAG, "signInWithEmail:success");
-                                // FirebaseUser user = mAuth.getCurrentUser();
-                                // updateUI(user);
-                            } else {
-                                mProgressView.setVisibility(View.GONE);
-                                mEmailSignInButton.setEnabled(true);
-                                FirebaseAuthException e = (FirebaseAuthException )task.getException();
-                                if(e.getErrorCode()=="ERROR_INVALID_EMAIL") {
-                                    mEmailView.setError("잘못된 이메일 형식입니다.");
-                                    return;
-                                } else if(e.getErrorCode()=="ERROR_USER_NOT_FOUND") {
-                                    Toast.makeText(LoginActivity.this, "가입되지 않은 이메일 주소입니다.", Toast.LENGTH_SHORT).show();
-                                    return;
-                                } else if(e.getErrorCode()=="ERROR_WRONG_PASSWORD") {
-                                    mPasswordView.setError("비밀번호를 다시 한번 확인해주세요.");
+            if(!isNetworkConnected()) {
+                mEmailSignInButton.setEnabled(true);
+                mProgressView.setVisibility(View.GONE);
+                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                Toast toast = Toast.makeText(LoginActivity.this, "인터넷에 연결되어 있지 않습니다. 인터넷 연결 상태를 확인해주세요.", Toast.LENGTH_SHORT);
+                toast.show();
+            } else {
+                mAuth.signInWithEmailAndPassword(email, password)
+                        .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                            @Override
+                            public void onComplete(@NonNull Task<AuthResult> task) {
+                                if (task.isSuccessful()) {
+                                    mProgressView.setVisibility(View.GONE);
+                                    startActivity(new Intent(LoginActivity.this,MainActivity.class));
+                                    finish();
+                                    // Sign in success, update UI with the signed-in user's information
+                                    // Log.d(TAG, "signInWithEmail:success");
+                                    // FirebaseUser user = mAuth.getCurrentUser();
+                                    // updateUI(user);
                                 } else {
-                                    Toast.makeText(LoginActivity.this, "오류가 발생했습니다. snu.dxd.lab@gmail.com으로 문의 바랍니다.", Toast.LENGTH_SHORT).show();
-                                    return;
+                                    mEmailSignInButton.setEnabled(true);
+                                    mProgressView.setVisibility(View.GONE);
+                                    getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                                    FirebaseAuthException e = (FirebaseAuthException )task.getException();
+                                    if(e.getErrorCode()=="ERROR_INVALID_EMAIL") {
+                                        mEmailView.setError("잘못된 이메일 형식입니다.");
+                                        return;
+                                    } else if(e.getErrorCode()=="ERROR_USER_NOT_FOUND") {
+                                        Toast.makeText(LoginActivity.this, "가입되지 않은 이메일 주소입니다.", Toast.LENGTH_SHORT).show();
+                                        return;
+                                    } else if(e.getErrorCode()=="ERROR_WRONG_PASSWORD") {
+                                        mPasswordView.setError("비밀번호를 다시 한번 확인해주세요.");
+                                    } else {
+                                        Toast.makeText(LoginActivity.this, "오류가 발생했습니다. snu.dxd.lab@gmail.com으로 문의 바랍니다.", Toast.LENGTH_SHORT).show();
+                                        return;
+                                    }
+                                    // If sign in fails, display a message to the user.
+                                    // Log.w(TAG, "signInWithEmail:failure", task.getException());
+                                    // Toast.makeText(LoginActivity.this, e.getErrorCode(), Toast.LENGTH_SHORT).show();
+                                    // updateUI(null);
                                 }
-                                // If sign in fails, display a message to the user.
-                                // Log.w(TAG, "signInWithEmail:failure", task.getException());
-                                // Toast.makeText(LoginActivity.this, e.getErrorCode(), Toast.LENGTH_SHORT).show();
-                                // updateUI(null);
                             }
-                        }
-                    });
+                        });
 
-            // Show a progress spinner, and kick off a background task to
-            // perform the user login attempt.
-            // mAuthTask = new UserLoginTask(email, password);
-            // mAuthTask.execute((Void) null);
+                // Show a progress spinner, and kick off a background task to
+                // perform the user login attempt.
+                // mAuthTask = new UserLoginTask(email, password);
+                // mAuthTask.execute((Void) null);
+            }
         }
     }
 
@@ -379,48 +402,48 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         }
     }
 
-    @Override
-    public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
-        return new CursorLoader(this,
-                // Retrieve data rows for the device user's 'profile' contact.
-                Uri.withAppendedPath(ContactsContract.Profile.CONTENT_URI,
-                        ContactsContract.Contacts.Data.CONTENT_DIRECTORY), ProfileQuery.PROJECTION,
+//    @Override
+//    public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
+//        return new CursorLoader(this,
+//                // Retrieve data rows for the device user's 'profile' contact.
+//                Uri.withAppendedPath(ContactsContract.Profile.CONTENT_URI,
+//                        ContactsContract.Contacts.Data.CONTENT_DIRECTORY), ProfileQuery.PROJECTION,
+//
+//                // Select only email addresses.
+//                ContactsContract.Contacts.Data.MIMETYPE +
+//                        " = ?", new String[]{ContactsContract.CommonDataKinds.Email
+//                .CONTENT_ITEM_TYPE},
+//
+//                // Show primary email addresses first. Note that there won't be
+//                // a primary email address if the user hasn't specified one.
+//                ContactsContract.Contacts.Data.IS_PRIMARY + " DESC");
+//    }
 
-                // Select only email addresses.
-                ContactsContract.Contacts.Data.MIMETYPE +
-                        " = ?", new String[]{ContactsContract.CommonDataKinds.Email
-                .CONTENT_ITEM_TYPE},
+//    @Override
+//    public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
+//        List<String> emails = new ArrayList<>();
+//        cursor.moveToFirst();
+//        while (!cursor.isAfterLast()) {
+//            emails.add(cursor.getString(ProfileQuery.ADDRESS));
+//            cursor.moveToNext();
+//        }
+//
+//        addEmailsToAutoComplete(emails);
+//    }
 
-                // Show primary email addresses first. Note that there won't be
-                // a primary email address if the user hasn't specified one.
-                ContactsContract.Contacts.Data.IS_PRIMARY + " DESC");
-    }
+//    @Override
+//    public void onLoaderReset(Loader<Cursor> cursorLoader) {
+//
+//    }
 
-    @Override
-    public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
-        List<String> emails = new ArrayList<>();
-        cursor.moveToFirst();
-        while (!cursor.isAfterLast()) {
-            emails.add(cursor.getString(ProfileQuery.ADDRESS));
-            cursor.moveToNext();
-        }
-
-        addEmailsToAutoComplete(emails);
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> cursorLoader) {
-
-    }
-
-    private void addEmailsToAutoComplete(List<String> emailAddressCollection) {
-        //Create adapter to tell the AutoCompleteTextView what to show in its dropdown list.
-        ArrayAdapter<String> adapter =
-                new ArrayAdapter<>(LoginActivity.this,
-                        android.R.layout.simple_dropdown_item_1line, emailAddressCollection);
-
-        mEmailView.setAdapter(adapter);
-    }
+//    private void addEmailsToAutoComplete(List<String> emailAddressCollection) {
+//        //Create adapter to tell the AutoCompleteTextView what to show in its dropdown list.
+//        ArrayAdapter<String> adapter =
+//                new ArrayAdapter<>(LoginActivity.this,
+//                        android.R.layout.simple_dropdown_item_1line, emailAddressCollection);
+//
+//        mEmailView.setAdapter(adapter);
+//    }
 
 
     private interface ProfileQuery {

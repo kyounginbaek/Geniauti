@@ -3,8 +3,10 @@ package com.geniauti.geniauti;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -42,6 +44,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -78,7 +81,7 @@ public class SignupActivity extends AppCompatActivity implements LoaderCallbacks
     private View mLoginFormView;
     private FirebaseAuth firebaseAuth;
     private FirebaseFirestore db;
-    private Button mEmailSignInButton;
+    private Button mEmailSignUpButton;
 
 
     @Override
@@ -90,49 +93,16 @@ public class SignupActivity extends AppCompatActivity implements LoaderCallbacks
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
         // Set up the login form.
-        mEmailView = (AutoCompleteTextView) findViewById(R.id.signup_email);
+
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-        populateAutoComplete();
 
+        mEmailView = (AutoCompleteTextView) findViewById(R.id.signup_email);
         mPasswordView = (EditText) findViewById(R.id.signup_password);
-        mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
-                if (id == EditorInfo.IME_ACTION_DONE || id == EditorInfo.IME_NULL) {
-                    attemptLogin();
-                    return true;
-                }
-                return false;
-            }
-        });
-
         mPasswordCheckView = (EditText) findViewById(R.id.signup_password_check);
-        mPasswordCheckView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
-                if (id == EditorInfo.IME_ACTION_DONE || id == EditorInfo.IME_NULL) {
-                    attemptLogin();
-                    return true;
-                }
-                return false;
-            }
-        });
-
         mUserNameView = (EditText) findViewById(R.id.signup_username);
-        mUserNameView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
-                if (id == EditorInfo.IME_ACTION_DONE || id == EditorInfo.IME_NULL) {
-                    attemptLogin();
-                    return true;
-                }
-                return false;
-            }
-        });
 
-
-        mEmailSignInButton = (Button) findViewById(R.id.signup_email_sign_up_button);
-        mEmailSignInButton.setOnClickListener(new OnClickListener() {
+        mEmailSignUpButton = (Button) findViewById(R.id.signup_email_sign_up_button);
+        mEmailSignUpButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 attemptLogin();
@@ -151,6 +121,12 @@ public class SignupActivity extends AppCompatActivity implements LoaderCallbacks
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.signup_progress);
+        mProgressView.bringToFront();
+    }
+
+    private boolean isNetworkConnected() {
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        return cm.getActiveNetworkInfo() != null;
     }
 
     @Override
@@ -210,15 +186,14 @@ public class SignupActivity extends AppCompatActivity implements LoaderCallbacks
      * errors are presented and no actual login attempt is made.
      */
     private void attemptLogin() {
+
+        mEmailSignUpButton.setEnabled(false);
         mProgressView.setVisibility(View.VISIBLE);
-        mEmailSignInButton.setEnabled(false);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
 
         InputMethodManager imm = (InputMethodManager)getSystemService(INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
-
-        if (mAuthTask != null) {
-            return;
-        }
 
         // Reset errors.
         mEmailView.setError(null);
@@ -231,100 +206,103 @@ public class SignupActivity extends AppCompatActivity implements LoaderCallbacks
         final String user_name = mUserNameView.getText().toString();
 
         boolean cancel = false;
-        View focusView = null;
 
         // Check for a valid password, if the user entered one.
         if (TextUtils.isEmpty(password) && !isPasswordValid(password)) {
             mPasswordView.setError("6자리 이상의 비밀번호를 입력해주세요.");
-            focusView = mPasswordView;
             cancel = true;
         }
 
         if (TextUtils.isEmpty(password_check) && !isPasswordValid(password_check)) {
             mPasswordCheckView.setError("6자리 이상의 비밀번호를 입력해주세요.");
-            focusView = mPasswordCheckView;
             cancel = true;
         }
 
         // Check for a valid email address.
         if (TextUtils.isEmpty(email)) {
             mEmailView.setError("이메일 주소를 입력해주세요.");
-            focusView = mEmailView;
             cancel = true;
         } else if (!isEmailValid(email)) {
             mEmailView.setError("잘못된 이메일 형식입니다.");
-            focusView = mEmailView;
             cancel = true;
         }
 
         if (TextUtils.isEmpty(user_name)) {
             mUserNameView.setError("사용자명을 입력해주세요.");
-            focusView = mUserNameView;
             cancel = true;
         }
 
         if (cancel) {
             // There was an error; don't attempt login and focus the first
             // form field with an error.
-            focusView.requestFocus();
-            mEmailSignInButton.setEnabled(true);
+            mEmailSignUpButton.setEnabled(true);
+            mProgressView.setVisibility(View.GONE);
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
         } else {
             if(password.equals(password_check)){
-                firebaseAuth.createUserWithEmailAndPassword(email, password)
-                        .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                            @Override
-                            public void onComplete(@NonNull Task<AuthResult> task) {
-                                // If sign in fails, display a message to the user. If sign in succeeds
-                                // the auth state listener will be notified and logic to handle the
-                                // signed in user can be handled in the listener.
-                                if (!task.isSuccessful()) {
-                                    mEmailSignInButton.setEnabled(true);
-                                    mProgressView.setVisibility(View.GONE);
-                                    FirebaseAuthException e = (FirebaseAuthException )task.getException();
+                if(!isNetworkConnected()) {
+                    mEmailSignUpButton.setEnabled(true);
+                    mProgressView.setVisibility(View.GONE);
+                    getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                    Toast toast = Toast.makeText(SignupActivity.this, "인터넷에 연결되어 있지 않습니다. 인터넷 연결 상태를 확인해주세요.", Toast.LENGTH_SHORT);
+                    toast.show();
+                } else {
+                    firebaseAuth.createUserWithEmailAndPassword(email, password)
+                            .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                                @Override
+                                public void onComplete(@NonNull Task<AuthResult> task) {
+                                    // If sign in fails, display a message to the user. If sign in succeeds
+                                    // the auth state listener will be notified and logic to handle the
+                                    // signed in user can be handled in the listener.
+                                    if (!task.isSuccessful()) {
+                                        mEmailSignUpButton.setEnabled(true);
+                                        mProgressView.setVisibility(View.GONE);
+                                        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                                        FirebaseAuthException e = (FirebaseAuthException )task.getException();
 
-                                    if(e.getErrorCode()=="ERROR_INVALID_EMAIL") {
-                                        mEmailView.setError("잘못된 이메일 형식입니다.");
-                                        return;
-                                    } else if(e.getErrorCode()=="ERROR_EMAIL_ALREADY_IN_USE") {
-                                        mEmailView.setError("이미 가입된 이메일 주소입니다.");
-                                        return;
+                                        if(e.getErrorCode()=="ERROR_INVALID_EMAIL") {
+                                            mEmailView.setError("잘못된 이메일 형식입니다.");
+                                            return;
+                                        } else if(e.getErrorCode()=="ERROR_EMAIL_ALREADY_IN_USE") {
+                                            mEmailView.setError("이미 가입된 이메일 주소입니다.");
+                                            return;
+                                        } else {
+                                            Toast.makeText(SignupActivity.this, "오류가 발생했습니다.", Toast.LENGTH_SHORT).show();
+                                            return;
+                                        }
                                     } else {
-                                        Toast.makeText(SignupActivity.this, "오류가 발생했습니다.", Toast.LENGTH_SHORT).show();
-                                        return;
-                                    }
-                                } else {
-                                    UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
-                                            .setDisplayName(user_name)
-                                            .build();
+                                        UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                                                .setDisplayName(user_name)
+                                                .build();
 
-                                    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                                    user.updateProfile(profileUpdates)
-                                            .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                @Override
-                                                public void onComplete(@NonNull Task<Void> task) {
-                                                    if (task.isSuccessful()) {
+                                        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                                        user.updateProfile(profileUpdates)
+                                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                    @Override
+                                                    public void onComplete(@NonNull Task<Void> task) {
+                                                        if (task.isSuccessful()) {
 //                                                        Log.d(TAG, "User profile updated.");
-                                                        mProgressView.setVisibility(View.GONE);
-                                                        startActivity(new Intent(SignupActivity.this,ChildRegisterActivity.class));
-                                                        finish();
-                                                    } else {
-                                                        mEmailSignInButton.setEnabled(true);
-                                                        mProgressView.setVisibility(View.GONE);
-                                                        Toast.makeText(SignupActivity.this, "사용자 이름 등록 중에 오류가 발생했습니다.", Toast.LENGTH_SHORT).show();
-                                                        startActivity(new Intent(SignupActivity.this,ChildRegisterActivity.class));
-                                                        finish();
+                                                            mProgressView.setVisibility(View.GONE);
+                                                            startActivity(new Intent(SignupActivity.this,ChildRegisterActivity.class));
+                                                            finish();
+                                                        } else {
+                                                            mEmailSignUpButton.setEnabled(true);
+                                                            mProgressView.setVisibility(View.GONE);
+                                                            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                                                            Toast.makeText(SignupActivity.this, "사용자 이름 등록 중 오류가 발생했습니다.", Toast.LENGTH_SHORT).show();
+                                                        }
                                                     }
-                                                }
-                                            });
+                                                });
+                                    }
                                 }
-                            }
-                        });
-                // showProgress(true);
-
+                            });
+                    // showProgress(true);
+                }
             } else {
-                mEmailSignInButton.setEnabled(true);
+                mEmailSignUpButton.setEnabled(true);
                 mProgressView.setVisibility(View.GONE);
-                mPasswordCheckView.setError("비밀번호와 비밀번호 확인이 일치하지 않습니다.\"");
+                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                mPasswordCheckView.setError("비밀번호와 비밀번호 확인이 일치하지 않습니다.");
             }
 
             // Show a progress spinner, and kick off a background task to

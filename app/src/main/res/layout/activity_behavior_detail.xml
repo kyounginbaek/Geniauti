@@ -461,31 +461,6 @@
 
                         </LinearLayout>
 
-                        <LinearLayout
-                            android:id="@+id/behavior_etc"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:gravity="center_vertical"
-                            android:layout_marginLeft="12dp">
-
-                            <ImageView
-                                android:layout_width="9dp"
-                                android:layout_height="9dp"
-                                android:backgroundTint="#93c7ff"
-                                android:background="@drawable/dot"/>
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginLeft="4dp"
-                                android:textSize="16sp"
-                                android:textColor="#3b3b3b"
-                                android:letterSpacing="-0.03"
-                                android:gravity="center_horizontal"
-                                android:text="기타"
-                                />
-
-                        </LinearLayout>
-
                     </LinearLayout>
 
                 </LinearLayout>
@@ -665,7 +640,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textSize="14sp"
-                            android:textColor="#2bc76d"
+                            android:textColor="#ababab"
                             android:lineSpacingExtra="10sp"
                             android:text="행동 이전의 상황"
                             />
@@ -732,7 +707,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textSize="14sp"
-                            android:textColor="#2bc76d"
+                            android:textColor="#ababab"
                             android:lineSpacingExtra="10sp"
                             android:text="아이의 행동"
                             />
@@ -800,7 +775,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textSize="14sp"
-                            android:textColor="#2bc76d"
+                            android:textColor="#ababab"
                             android:lineSpacingExtra="10sp"
                             android:text="행동 후 아이에게 한 일"
                             />

@@ -39,7 +39,7 @@ public class BehaviorSixthFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    public TextView textInput;
+    public static TextView textInput;
     public TextView textDelete;
     private ImageView voiceRecognition;
 
@@ -139,7 +139,6 @@ public class BehaviorSixthFragment extends Fragment {
         public void onEndOfSpeech() {
             voiceRecognition.setEnabled(true);
             rippleBackground.stopRippleAnimation();
-            textInput.append(audioText);
         }
 
         @Override
@@ -186,24 +185,28 @@ public class BehaviorSixthFragment extends Fragment {
 
         @Override
         public void onResults(Bundle results) {
-//            // 말을 하면 ArrayList에 단어를 넣고 textView에 단어를 이어줍니다.
-//            ArrayList<String> matches =
-//                    results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
-//
-//            for(int i = 0; i < matches.size() ; i++){
-//                textInput.setText(matches.get(i));
-//            }
+            // 말을 하면 ArrayList에 단어를 넣고 textView에 단어를 이어줍니다.
+            ArrayList<String> matches =
+                    results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
+
+            for(int i = 0; i < matches.size() ; i++){
+                audioText = matches.get(i);
+            }
+
+            textInput.append(audioText);
+            voiceRecognition.setEnabled(true);
+            rippleBackground.stopRippleAnimation();
         }
 
         @Override
         public void onPartialResults(Bundle partialResults) {
             // 말을 하면 ArrayList에 단어를 넣고 textView에 단어를 이어줍니다.
-            ArrayList<String> matches =
-                    partialResults.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
-
-            for(int i = 0; i < matches.size() ; i++){
-                audioText = matches.get(i);
-            }
+//            ArrayList<String> matches =
+//                    partialResults.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
+//
+//            for(int i = 0; i < matches.size() ; i++){
+//                audioText = matches.get(i);
+//            }
         }
 
         @Override

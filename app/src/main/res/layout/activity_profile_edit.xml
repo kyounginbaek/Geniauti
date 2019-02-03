@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -13,9 +13,10 @@
         style="?android:attr/progressBarStyleLarge"
         android:layout_width="wrap_content"
         android:layout_height="fill_parent"
-        android:layout_centerVertical="true"
-        android:layout_marginBottom="8dp"
+        android:layout_gravity="center"
         android:indeterminate="true"
+        android:layout_centerInParent="true"
+        android:layout_marginBottom="8dp"
         android:visibility="gone"
          />
 
@@ -126,28 +127,6 @@
                         android:maxLines="1"
                         android:singleLine="true" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp"
-                        android:textSize="13sp"
-                        android:textColor="#deababab"
-                        android:lineSpacingExtra="10sp"
-                        android:text="아이와의 관계"
-                        />
-
-                    <EditText
-                        android:id="@+id/txt_profile_relationship"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textSize="16sp"
-                        android:textColor="#de000000"
-                        android:backgroundTint="@drawable/focus_tint_list"
-                        android:lineSpacingExtra="8sp"
-                        android:hint="아이와의 관계"
-                        android:maxLines="1"
-                        android:singleLine="true" />
-
                 </LinearLayout>
 
                 <View
@@ -208,4 +187,4 @@
 
     </LinearLayout>
 
-</LinearLayout>
+</RelativeLayout>

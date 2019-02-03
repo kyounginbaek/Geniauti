@@ -33,9 +33,10 @@
                         </option>
                         <option name="values">
                           <map>
+                            <entry key="assetSourceType" value="FILE" />
                             <entry key="color" value="ffffff" />
-                            <entry key="outputName" value="ic_more_vert_white_24dp" />
-                            <entry key="sourceFile" value="C:\Users\kyoun\Downloads\ic_calendar.svg" />
+                            <entry key="outputName" value="ic_home" />
+                            <entry key="sourceFile" value="C:\Users\kyoun\Documents\카카오톡 받은 파일\ic_home_수정_대지 1.svg\ic_home.svg" />
                           </map>
                         </option>
                       </PersistentState>

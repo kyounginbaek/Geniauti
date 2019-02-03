@@ -42,6 +42,7 @@ public class CaseDetailActivity extends AppCompatActivity {
         }
 
         mProgressView = findViewById(R.id.case_detail_progress);
+        mProgressView.setVisibility(View.VISIBLE);
 
         caseReasons = findViewById(R.id.case_reasons);
         caseTypes = findViewById(R.id.case_types);
@@ -65,35 +66,38 @@ public class CaseDetailActivity extends AppCompatActivity {
         String tmp_reason = "행동 원인 > ";
         String tmp_type = "행동 종류 > ";
 
-        if(selectedCase.case_tags.get("taskEvation")!=null) {
-            tmp_reason = tmp_reason + "과제 회피 / ";
-        }
-        if(selectedCase.case_tags.get("selfStimulation")!=null) {
-            tmp_reason = tmp_reason + "자기 자극 / ";
-        }
-        if(selectedCase.case_tags.get("interest")!=null) {
+        if(selectedCase.case_tags.get("attention")!=null) {
             tmp_reason = tmp_reason + "관심 / ";
         }
-        if(selectedCase.case_tags.get("demand")!=null) {
+        if(selectedCase.case_tags.get("self-sitmulatory behaviour")!=null) {
+            tmp_reason = tmp_reason + "자기 자극 / ";
+        }
+        if(selectedCase.case_tags.get("escape")!=null) {
+            tmp_reason = tmp_reason + "과제 회피 / ";
+        }
+        if(selectedCase.case_tags.get("tangibles")!=null) {
             tmp_reason = tmp_reason + "요구 / ";
         }
 
         caseReasons.setText(tmp_reason.substring(0, tmp_reason.length()-2));
 
-        if(selectedCase.case_tags.get("harm")!=null) {
-            tmp_type = tmp_type + "타해 / ";
-        }
-        if(selectedCase.case_tags.get("selfHArm")!=null) {
+        if(selectedCase.case_tags.get("self-injury")!=null) {
             tmp_type = tmp_type + "자해 / ";
         }
-        if(selectedCase.case_tags.get("destruction")!=null) {
+        if(selectedCase.case_tags.get("aggression")!=null) {
+            tmp_type = tmp_type + "타해 / ";
+        }
+        if(selectedCase.case_tags.get("disruption")!=null) {
             tmp_type = tmp_type + "파괴 / ";
         }
-        if(selectedCase.case_tags.get("leave")!=null) {
+        if(selectedCase.case_tags.get("elopement")!=null) {
             tmp_type = tmp_type + "이탈 / ";
         }
-        if(selectedCase.case_tags.get("sexual")!=null) {
+        if(selectedCase.case_tags.get("sexual behaviors")!=null) {
             tmp_type = tmp_type + "성적 / ";
+        }
+        if(selectedCase.case_tags.get("other behaviors")!=null) {
+            tmp_type = tmp_type + "기타 / ";
         }
 
         caseTypes.setText(tmp_type.substring(0, tmp_type.length()-2));
@@ -118,6 +122,8 @@ public class CaseDetailActivity extends AppCompatActivity {
         caseSolutionDescription2.setText(case_solution.get(1).get("description"));
         caseSolutionDescription3.setText(case_solution.get(2).get("description"));
         caseEffect.setText(selectedCase.case_effect);
+
+        mProgressView.setVisibility(View.GONE);
     }
 
 //    @Override

@@ -13,4 +13,16 @@
         android:layout_centerVertical="true"
         android:src="@drawable/splash" />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/imgLogo"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="15dp"
+        android:layout_marginBottom="226dp"
+        android:text="멋진 우리아이 행동 이해하기"
+        android:textColor="#ffffff"
+        android:textSize="14sp" />
+
 </RelativeLayout>

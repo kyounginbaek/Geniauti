@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.CardView;
@@ -23,14 +24,16 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.geniauti.geniauti.compactcalendarview.CompactCalendarView;
 import com.geniauti.geniauti.compactcalendarview.domain.Event;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -91,10 +94,9 @@ public class MainFragment extends Fragment {
     private int color_self_stimulation;
     private int color_task_evation;
     private int color_demand;
-    private int color_etc;
     private int colorCode;
     private long timeInMilliseconds;
-    private HashMap<String, HashMap<String, Boolean>> calendarHash = new HashMap<>();
+    private HashMap<String, HashMap<String, Boolean>> calendarHash;
     private SimpleDateFormat formatter = new SimpleDateFormat("yyyy년 MM월 dd일", Locale.KOREAN);
 
     private ListView bookmarkListView;
@@ -259,7 +261,6 @@ public class MainFragment extends Fragment {
         color_self_stimulation = Color.parseColor("#3fd3b8");
         color_task_evation = Color.parseColor("#3f73d3");
         color_demand = Color.parseColor("#7b3fd3");
-        color_etc = Color.parseColor("#93c7ff");
 
         compactCalendar.setListener(new CompactCalendarView.CompactCalendarViewListener() {
             @Override
@@ -310,104 +311,107 @@ public class MainFragment extends Fragment {
         });
 
         bookmarkListView = (ListView) mView.findViewById(R.id.behavior_listview);
-        bookmarkData = new ArrayList<>();
 
         MainActivity.db.collection("users").document(MainActivity.user.getUid())
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                .addSnapshotListener(new EventListener<DocumentSnapshot>() {
                     @Override
-                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                        if (task.isSuccessful()) {
-                            DocumentSnapshot document = task.getResult();
-                            if(document.exists()) {
-                                HashMap<String, Object> preset = (HashMap<String, Object>) document.getData().get("preset");
-                                if(preset != null){
-                                    List<HashMap<String, Object>> behavior_preset = (List<HashMap<String,Object>>) preset.get("behavior_preset");
-                                    for(int i=0; i<behavior_preset.size(); i++) {
-                                        Bookmark item = new Bookmark(i, behavior_preset.get(i).get("title").toString(), behavior_preset.get(i).get("place").toString(),
-                                                behavior_preset.get(i).get("categorization").toString(), (HashMap<String, Object>) behavior_preset.get(i).get("type"),
-                                                Integer.parseInt(behavior_preset.get(i).get("intensity").toString()), (HashMap<String, Object>) behavior_preset.get(i).get("reason_type"),
-                                                (HashMap<String, Object>) behavior_preset.get(i).get("reason"));
-                                        bookmarkData.add(item);
-                                    }
+                    public void onEvent(@Nullable DocumentSnapshot snapshot,
+                                        @Nullable FirebaseFirestoreException e) {
+                        if (e != null) {
+//                            Log.w(TAG, "Listen failed.", e);
+                            return;
+                        }
 
-                                    bookmarkAdapter = new BookmarkListviewAdapter(getContext(), R.layout.list_bookmark_profile, bookmarkData);
-                                    bookmarkListView.setAdapter(bookmarkAdapter);
+                        if (snapshot != null && snapshot.exists()) {
+//                            System.out.println("Current data: " + snapshot.getData());
+                            HashMap<String, Object> preset = (HashMap<String, Object>) snapshot.getData().get("preset");
+                            if(preset != null){
+                                behavior_add_line.setVisibility(View.VISIBLE);
+                                bookmarkData = new ArrayList<>();
+
+                                List<HashMap<String, Object>> behavior_preset = (List<HashMap<String,Object>>) preset.get("behavior_preset");
+                                for(int i=0; i<behavior_preset.size(); i++) {
+                                    Bookmark item = new Bookmark(i, behavior_preset.get(i).get("title").toString(), behavior_preset.get(i).get("place").toString(),
+                                            behavior_preset.get(i).get("categorization").toString(), (HashMap<String, Object>) behavior_preset.get(i).get("type"),
+                                            Integer.parseInt(behavior_preset.get(i).get("intensity").toString()), (HashMap<String, Object>) behavior_preset.get(i).get("reason_type"),
+                                            (HashMap<String, Object>) behavior_preset.get(i).get("reason"));
+                                    bookmarkData.add(item);
                                 }
+
+                                bookmarkAdapter = new BookmarkListviewAdapter(getContext(), R.layout.list_bookmark_profile, bookmarkData);
+                                bookmarkListView.setAdapter(bookmarkAdapter);
                             } else {
                                 behavior_add_line.setVisibility(View.GONE);
                             }
                         } else {
-//                            Log.d(TAG, "Error getting documents: ", task.getException());
+//                            System.out.print("Current data: null");
                         }
                     }
                 });
 
-
         // cardListView
         cardListView = (ListView) v.findViewById(R.id.behavior_card_listview);
-        cardData = new ArrayList<>();
-        tmpData = new ArrayList<>();
-
         cardBlankBehavior = (CardView) v.findViewById(R.id.blank_behavior_layout);
 
         MainActivity.db.collection("behaviors")
                 .whereEqualTo("cid", MainActivity.cid)
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
+                    public void onEvent(@Nullable QuerySnapshot value,
+                                        @Nullable FirebaseFirestoreException e) {
+                        if (e != null) {
+//                            Log.w(TAG, "Listen failed.", e);
+                            return;
+                        }
 
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                HashMap<String, Boolean> reasonToday = (HashMap<String, Boolean>) document.get("reason_type");
-                                String todayDate = formatter.format(document.getDate("start_time"));
+                        cardData = new ArrayList<>();
+                        calendarHash = new HashMap<>();
+                        compactCalendar.removeAllEvents();
 
-                                if(calendarHash.get(todayDate)==null){
-                                    calendarHash.put(todayDate, reasonToday);
-                                } else {
-                                    HashMap<String, Boolean> reasonHash = (HashMap<String, Boolean>) calendarHash.get(todayDate);
-                                    HashMap<String, Boolean> tmpReason = calendarHash.get(todayDate);
-                                    if(reasonHash.get("interest")==null && reasonToday.get("interest")!=null) {
-                                        tmpReason.put("interest", true);
-                                    }
-                                    if(reasonHash.get("selfstimulation")==null && reasonToday.get("selfstimulation")!=null) {
-                                        tmpReason.put("selfstimulation", true);
-                                    }
-                                    if(reasonHash.get("taskevation")==null && reasonToday.get("taskevation")!=null) {
-                                        tmpReason.put("taskevation", true);
-                                    }
-                                    if(reasonHash.get("demand")==null && reasonToday.get("demand")!=null) {
-                                        tmpReason.put("demand", true);
-                                    }
-                                    if(reasonHash.get("etc")==null && reasonToday.get("etc")!=null){
-                                        tmpReason.put("etc", true);
-                                    }
-                                    calendarHash.put(todayDate, tmpReason);
+                        for (QueryDocumentSnapshot doc : value) {
+
+                            HashMap<String, Boolean> reasonToday = (HashMap<String, Boolean>) doc.get("reason_type");
+                            String todayDate = formatter.format(doc.getDate("start_time"));
+
+                            if(calendarHash.get(todayDate)==null){
+                                calendarHash.put(todayDate, reasonToday);
+                            } else {
+                                HashMap<String, Boolean> reasonHash = (HashMap<String, Boolean>) calendarHash.get(todayDate);
+                                HashMap<String, Boolean> tmpReason = calendarHash.get(todayDate);
+                                if(reasonHash.get("attention")==null && reasonToday.get("attention")!=null) {
+                                    tmpReason.put("attention", true);
                                 }
-
-                                Behavior item = new Behavior(document.getId(), (Date) document.getDate("start_time"), (Date) document.getDate("end_time"), document.get("place").toString(),
-                                        document.get("categorization").toString(), document.get("current_behavior").toString(), document.get("before_behavior").toString(), document.get("after_behavior").toString(),
-                                        (HashMap<String, Object>) document.get("type"), Integer.parseInt(document.get("intensity").toString()), (HashMap<String, Object>) document.get("reason_type"),
-                                        (HashMap<String, Object>) document.get("reason"), document.get("created_at").toString(),  document.get("updated_at").toString(), document.get("uid").toString(),
-                                        document.get("name").toString(), document.get("cid").toString(), document.get("relationship").toString());
-                                cardData.add(item);
+                                if(reasonHash.get("self-stimulatory behaviour")==null && reasonToday.get("self-stimulatory behaviour")!=null) {
+                                    tmpReason.put("self-stimulatory behaviour", true);
+                                }
+                                if(reasonHash.get("escape")==null && reasonToday.get("escape")!=null) {
+                                    tmpReason.put("escape", true);
+                                }
+                                if(reasonHash.get("tangibles")==null && reasonToday.get("tangibles")!=null) {
+                                    tmpReason.put("tangibles", true);
+                                }
+                                calendarHash.put(todayDate, tmpReason);
                             }
 
-                            if(cardData.size() == 0){
-                                cardBlankBehavior.setVisibility(View.VISIBLE);
-                            } else {
-                                makeDotLoop(calendarHash);
+                            Behavior item = new Behavior(doc.getId(), (Date) doc.getDate("start_time"), (Date) doc.getDate("end_time"), doc.get("place").toString(),
+                                    doc.get("categorization").toString(), doc.get("current_behavior").toString(), doc.get("before_behavior").toString(), doc.get("after_behavior").toString(),
+                                    (HashMap<String, Object>) doc.get("type"), Integer.parseInt(doc.get("intensity").toString()), (HashMap<String, Object>) doc.get("reason_type"),
+                                    (HashMap<String, Object>) doc.get("reason"), doc.get("created_at").toString(),  doc.get("updated_at").toString(), doc.get("uid").toString(),
+                                    doc.get("name").toString(), doc.get("cid").toString(), doc.get("relationship").toString());
+                            cardData.add(item);
+                        }
 
-                                Collections.sort(cardData, new BehaviorComparator());
-                                tmpData.addAll(cardData);
+                        if(cardData.size() == 0){
+                            cardBlankBehavior.setVisibility(View.VISIBLE);
+                        } else {
+                            cardBlankBehavior.setVisibility(View.GONE);
+                            makeDotLoop(calendarHash);
+                            Collections.sort(cardData, new BehaviorComparator());
 
+                            if(getActivity()!=null) {
                                 cardAdapter = new CardListviewAdapter(getContext(), R.layout.list_behavior_card, cardData);
                                 cardListView.setAdapter(cardAdapter);
                             }
-
-                        } else {
-
                         }
                     }
                 });
@@ -461,20 +465,17 @@ public class MainFragment extends Fragment {
                 Date today = formatter.parse(pair.getKey().toString());
                 HashMap<String, Boolean> reason = (HashMap<String, Boolean>) pair.getValue();
 
-                if(reason.get("interest")!=null){
-                    makeDot(today, "interest");
+                if(reason.get("attention")!=null){
+                    makeDot(today, "attention");
                 }
-                if(reason.get("selfstimulation")!=null){
-                    makeDot(today, "selfstimulation");
+                if(reason.get("self-stimulatory behaviour")!=null){
+                    makeDot(today, "self-stimulatory behaviour");
                 }
-                if(reason.get("taskevation")!=null){
-                    makeDot(today, "taskevation");
+                if(reason.get("escape")!=null){
+                    makeDot(today, "escape");
                 }
-                if(reason.get("demand")!=null){
-                    makeDot(today, "demand");
-                }
-                if(reason.get("etc")!=null){
-                    makeDot(today, "etc");
+                if(reason.get("tangibles")!=null){
+                    makeDot(today, "tangibles");
                 }
             } catch (ParseException e) {
                 // TODO Auto-generated catch block
@@ -486,20 +487,17 @@ public class MainFragment extends Fragment {
     public void makeDot(Date date, String reason) {
         // Color Code
         switch(reason) {
-            case "interest":
+            case "attention":
                 colorCode = color_interest;
                 break;
-            case "selfstimulation":
+            case "self-stimulatory behaviour":
                 colorCode = color_self_stimulation;
                 break;
-            case "taskevation":
+            case "escape":
                 colorCode = color_task_evation;
                 break;
-            case "demand":
+            case "tangibles":
                 colorCode = color_demand;
-                break;
-            case "etc":
-                colorCode = color_etc;
                 break;
         }
 
@@ -604,7 +602,6 @@ public class MainFragment extends Fragment {
             LinearLayout card_self_stimulation = convertView.findViewById(R.id.card_self_stimulation);
             LinearLayout card_task_evation = convertView.findViewById(R.id.card_task_evation);
             LinearLayout card_demand = convertView.findViewById(R.id.card_demand);
-            LinearLayout card_etc = convertView.findViewById(R.id.card_etc);
 
             TextView txtCategorization = convertView.findViewById(R.id.txt_card_categorization);
             TextView txtTime = convertView.findViewById(R.id.txt_card_time);
@@ -620,22 +617,18 @@ public class MainFragment extends Fragment {
             card_self_stimulation.setVisibility(View.GONE);
             card_task_evation.setVisibility(View.GONE);
             card_demand.setVisibility(View.GONE);
-            card_etc.setVisibility(View.GONE);
 
-            if(listviewitem.reason_type.get("interest")!=null) {
+            if(listviewitem.reason_type.get("attention")!=null) {
                 card_interest.setVisibility(View.VISIBLE);
             }
-            if(listviewitem.reason_type.get("selfstimulation")!=null) {
+            if(listviewitem.reason_type.get("self-stimulatory behaviour")!=null) {
                 card_self_stimulation.setVisibility(View.VISIBLE);
             }
-            if(listviewitem.reason_type.get("taskevation")!=null) {
+            if(listviewitem.reason_type.get("escape")!=null) {
                 card_task_evation.setVisibility(View.VISIBLE);
             }
-            if(listviewitem.reason_type.get("demand")!=null) {
+            if(listviewitem.reason_type.get("tangibles")!=null) {
                 card_demand.setVisibility(View.VISIBLE);
-            }
-            if(listviewitem.reason_type.get("etc")!=null){
-                card_etc.setVisibility(View.VISIBLE);
             }
 
 //            if(listviewitem.case_tags.get("harm")!=null) {

@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
@@ -20,6 +21,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -69,6 +71,7 @@ public class SearchFragment extends Fragment {
     private static ArrayList<Cases> tmpCases;
 
     private OnFragmentInteractionListener mListener;
+    private View mProgressView;
 
     public SearchFragment() {
         // Required empty public constructor
@@ -106,12 +109,17 @@ public class SearchFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_search, container, false);
+        mProgressView = (View) v.findViewById(R.id.search_progress);
+        mProgressView.bringToFront();
 
         setupUI(v);
 
         recentSearch = (LinearLayout) v.findViewById(R.id.recent_search);
         listView_bookmark = (ListView) v.findViewById(R.id.search_listview_bookmark);
         listView_all = (ListView) v.findViewById(R.id.search_listview_all);
+
+        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
 
         searchLine = (View) v.findViewById(R.id.search_line);
 
@@ -188,7 +196,11 @@ public class SearchFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
 
-                MainActivity.db.collection("users").document(MainActivity.user.getUid().toString())
+                mProgressView.setVisibility(View.VISIBLE);
+                getActivity().getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                        WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+
+                MainActivity.db.collection("users").document(MainActivity.user.getUid())
                         .get()
                         .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                             @Override
@@ -218,10 +230,12 @@ public class SearchFragment extends Fragment {
                                                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                                                         @Override
                                                         public void onSuccess(Void aVoid) {
-//                                                           mProgressView.setVisibility(View.GONE);
 
                                                             bookmark.add(0, tmp);
                                                             adapterBookmark.notifyDataSetChanged();
+
+                                                            mProgressView.setVisibility(View.GONE);
+                                                            getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
 
                                                             Intent intent = new Intent(getActivity(), CaseDetailActivity.class);
                                                             intent.putExtra("temp", tmp);
@@ -235,6 +249,9 @@ public class SearchFragment extends Fragment {
                                                         }
                                                     });
                                         } else {
+                                            mProgressView.setVisibility(View.GONE);
+                                            getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+
                                             Intent intent = new Intent(getActivity(), CaseDetailActivity.class);
                                             intent.putExtra("temp", (Cases) adapterAll.getItem(position));
                                             startActivity(intent);
@@ -243,7 +260,11 @@ public class SearchFragment extends Fragment {
 
                                     }
                                 } else {
-//                            Log.d(TAG, "Error getting documents: ", task.getException());
+                                    mProgressView.setVisibility(View.GONE);
+                                    getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+
+                                    Toast toast = Toast.makeText(getActivity(), "오류가 발생했습니다. 다시 한번 시도해주세요.", Toast.LENGTH_SHORT);
+                                    toast.show();
                                 }
                             }
                         });
@@ -337,35 +358,38 @@ public class SearchFragment extends Fragment {
             String tmp_reason = "행동 원인 > ";
             String tmp_type = "행동 종류 > ";
 
-            if(listviewitem.case_tags.get("taskEvation")!=null) {
-                tmp_reason = tmp_reason + "과제 회피 / ";
-            }
-            if(listviewitem.case_tags.get("selfStimulation")!=null) {
-                tmp_reason = tmp_reason + "자기 자극 / ";
-            }
-            if(listviewitem.case_tags.get("interest")!=null) {
+            if(listviewitem.case_tags.get("attention")!=null) {
                 tmp_reason = tmp_reason + "관심 / ";
             }
-            if(listviewitem.case_tags.get("demand")!=null) {
+            if(listviewitem.case_tags.get("self-stimulatory behaviour")!=null) {
+                tmp_reason = tmp_reason + "자기 자극 / ";
+            }
+            if(listviewitem.case_tags.get("escape")!=null) {
+                tmp_reason = tmp_reason + "과제 회피 / ";
+            }
+            if(listviewitem.case_tags.get("tangibles")!=null) {
                 tmp_reason = tmp_reason + "요구 / ";
             }
 
             case_tag_reason.setText(tmp_reason.substring(0, tmp_reason.length()-2));
 
-            if(listviewitem.case_tags.get("harm")!=null) {
-                tmp_type = tmp_type + "타해 / ";
-            }
-            if(listviewitem.case_tags.get("selfHArm")!=null) {
+            if(listviewitem.case_tags.get("self-injury")!=null) {
                 tmp_type = tmp_type + "자해 / ";
             }
-            if(listviewitem.case_tags.get("destruction")!=null) {
+            if(listviewitem.case_tags.get("aggression")!=null) {
+                tmp_type = tmp_type + "타해 / ";
+            }
+            if(listviewitem.case_tags.get("disruption")!=null) {
                 tmp_type = tmp_type + "파괴 / ";
             }
-            if(listviewitem.case_tags.get("leave")!=null) {
+            if(listviewitem.case_tags.get("elopement")!=null) {
                 tmp_type = tmp_type + "이탈 / ";
             }
-            if(listviewitem.case_tags.get("sexual")!=null) {
+            if(listviewitem.case_tags.get("sexual behaviors")!=null) {
                 tmp_type = tmp_type + "성적 / ";
+            }
+            if(listviewitem.case_tags.get("other behaviors")!=null) {
+                tmp_type = tmp_type + "기타 / ";
             }
 
             case_tag_type.setText(tmp_type.substring(0,tmp_type.length()-2));

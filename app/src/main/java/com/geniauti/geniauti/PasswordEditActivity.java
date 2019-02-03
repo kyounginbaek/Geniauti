@@ -43,6 +43,7 @@ public class PasswordEditActivity extends AppCompatActivity {
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
         mProgressView = findViewById(R.id.password_edit_progress);
+        mProgressView.bringToFront();
 
         final EditText currentPassword = (EditText) findViewById(R.id.txt_current_password);
         final EditText newPassword = (EditText) findViewById(R.id.txt_new_password);
@@ -52,8 +53,10 @@ public class PasswordEditActivity extends AppCompatActivity {
         btnPasswordEdit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mProgressView.setVisibility(View.VISIBLE);
                 btnPasswordEdit.setEnabled(false);
+                mProgressView.setVisibility(View.VISIBLE);
+                getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                        WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
 
                 // Reset errors.
                 currentPassword.setError(null);
@@ -61,7 +64,6 @@ public class PasswordEditActivity extends AppCompatActivity {
                 newPasswordCheck.setError(null);
 
                 boolean cancel = false;
-                View focusView = null;
 
                 String mCurrentPassword = currentPassword.getText().toString();
                 final String mNewPassword = newPassword.getText().toString();
@@ -69,49 +71,43 @@ public class PasswordEditActivity extends AppCompatActivity {
 
                 if(TextUtils.isEmpty(mCurrentPassword)){
                     currentPassword.setError("기존 비밀번호를 입력해주세요.");
-                    focusView = currentPassword;
                     cancel = true;
                 }
 
                 if(TextUtils.isEmpty(mNewPassword)){
                     newPassword.setError("새로운 비밀번호를 입력해주세요.");
-                    focusView = newPassword;
                     cancel = true;
                 }
 
                 if(!isPasswordValid(mNewPassword)) {
                     newPassword.setError("6자리 이상의 비밀번호를 입력해주세요.");
-                    focusView = newPassword;
                     cancel = true;
                 }
 
                 if(TextUtils.isEmpty(mNewPasswordCheck)){
                     newPasswordCheck.setError("새로운 비밀번호 확인을 입력해주세요.");
-                    focusView = newPasswordCheck;
                     cancel = true;
                 }
 
                 if(!isPasswordValid(mNewPasswordCheck)){
                     newPasswordCheck.setError("6자리 이상의 비밀번호를 입력해주세요.");
-                    focusView = newPasswordCheck;
                     cancel = true;
                 }
 
                 if(mCurrentPassword.equals(mNewPassword)){
                     newPassword.setError("기존 비밀번호와 다른 새로운 비밀번호를 입력해주세요.");
-                    focusView = newPassword;
                     cancel = true;
                 }
 
                 if(!mNewPassword.equals(mNewPasswordCheck)){
                     newPasswordCheck.setError("새로운 비밀번호와 확인이 일치하지 않습니다.");
-                    focusView = newPasswordCheck;
                     cancel = true;
                 }
 
                 if(cancel){
-                    mProgressView.setVisibility(View.GONE);
                     btnPasswordEdit.setEnabled(true);
+                    mProgressView.setVisibility(View.GONE);
+                    getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
                 } else {
                     AuthCredential credential = EmailAuthProvider.getCredential(MainActivity.user.getEmail(), mCurrentPassword);
 
@@ -126,6 +122,7 @@ public class PasswordEditActivity extends AppCompatActivity {
                                                     public void onComplete(@NonNull Task<Void> task) {
                                                         if (task.isSuccessful()) {
                                                             mProgressView.setVisibility(View.GONE);
+                                                            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
                                                             finish();
                                                             Toast toast = Toast.makeText(PasswordEditActivity.this, "비밀번호가 변경되었습니다.", Toast.LENGTH_SHORT);
                                                             toast.show();
@@ -135,6 +132,7 @@ public class PasswordEditActivity extends AppCompatActivity {
                                     } else {
                                         btnPasswordEdit.setEnabled(true);
                                         mProgressView.setVisibility(View.GONE);
+                                        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
                                         Toast toast = Toast.makeText(PasswordEditActivity.this, "기존 비밀번호가 일치하지 않습니다.", Toast.LENGTH_SHORT);
                                         toast.show();
                                     }

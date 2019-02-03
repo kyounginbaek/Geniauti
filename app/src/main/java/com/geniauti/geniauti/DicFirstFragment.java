@@ -7,7 +7,9 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.ExpandableListView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -30,6 +32,8 @@ public class DicFirstFragment extends Fragment {
     private static ExpandableListView expandableListView;
     private static ExpandableListAdapter adapter;
 
+    private View mProgressView;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,6 +43,10 @@ public class DicFirstFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_item_first, container, false);
+
+        mProgressView = (View) view.findViewById(R.id.dic_first_progress);
+        mProgressView.bringToFront();
+
         expandableListView = (ExpandableListView) view.findViewById(R.id.simple_expandable_listview1);
 
         // Setting group indicator null for custom indicator
@@ -65,9 +73,9 @@ public class DicFirstFragment extends Fragment {
         // Hash map for both header and child
         final HashMap<String, List<String>> hashMap = new HashMap<String, List<String>>();
 
-        header.add("과제 회피 사례");
-        header.add("자기 자극 사례");
         header.add("관심 사례");
+        header.add("자기 자극 사례");
+        header.add("과제 회피 사례");
         header.add("요구 사례");
 
         // Hash map for both header and child
@@ -92,16 +100,16 @@ public class DicFirstFragment extends Fragment {
                                         (List<HashMap<String, String>>) document.get("case_cause"), (List<HashMap<String, String>>) document.get("case_solution"), document.get("case_effect").toString(),
                                         (HashMap<String, String>) document.get("case_tags"), document.getId());
 
-                                if(case_tags.get("taskEvation")!=null) {
-                                    c_taskEvation.add(c);
-                                }
-                                if(case_tags.get("selfStimulation")!=null) {
-                                    c_selfStimulation.add(c);
-                                }
-                                if(case_tags.get("interest")!=null) {
+                                if(case_tags.get("attention")!=null) {
                                     c_interest.add(c);
                                 }
-                                if(case_tags.get("demand")!=null) {
+                                if(case_tags.get("self-stimulatory behaviour")!=null) {
+                                    c_selfStimulation.add(c);
+                                }
+                                if(case_tags.get("escape")!=null) {
+                                    c_taskEvation.add(c);
+                                }
+                                if(case_tags.get("tangibles")!=null) {
                                     c_demand.add(c);
                                 }
 //                                (TAG, document.getId() + " => " + document.getData());
@@ -129,8 +137,6 @@ public class DicFirstFragment extends Fragment {
         hashMap.put(header.get(2), child_interest);
         hashMap.put(header.get(3), child_demand);
     }
-
-    private int previousGroup=-1;
 
     // Setting different listeners to expandablelistview
     void setListener() {
@@ -175,6 +181,11 @@ public class DicFirstFragment extends Fragment {
             public boolean onChildClick(ExpandableListView listview, View view,
                                         final int groupPos, final int childPos, long id) {
 
+                mProgressView.setVisibility(View.VISIBLE);
+                getActivity().getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                        WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+
+
                 MainActivity.db.collection("users").document(MainActivity.user.getUid())
                         .get()
                         .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -205,9 +216,12 @@ public class DicFirstFragment extends Fragment {
                                                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                                                         @Override
                                                         public void onSuccess(Void aVoid) {
-//                                                           mProgressView.setVisibility(View.GONE);
+
                                                             bookmark.add(0, tmp);
                                                             adapterBookmark.notifyDataSetChanged();
+
+                                                            mProgressView.setVisibility(View.GONE);
+                                                            getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
 
                                                             Intent intent = new Intent(getActivity(), CaseDetailActivity.class);
                                                             intent.putExtra("temp", tmp);
@@ -217,10 +231,17 @@ public class DicFirstFragment extends Fragment {
                                                     .addOnFailureListener(new OnFailureListener() {
                                                         @Override
                                                         public void onFailure(@NonNull Exception e) {
-//                                                          Log.w(TAG, "Error writing document", e);
+                                                            mProgressView.setVisibility(View.GONE);
+                                                            getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+
+                                                            Toast toast = Toast.makeText(getActivity(), "오류가 발생했습니다. 다시 한번 시도해주세요.", Toast.LENGTH_SHORT);
+                                                            toast.show();
                                                         }
                                                     });
                                         } else {
+                                            mProgressView.setVisibility(View.GONE);
+                                            getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+
                                             Intent intent = new Intent(getActivity(), CaseDetailActivity.class);
                                             intent.putExtra("temp", (Cases) adapter.getChild(groupPos, childPos));
                                             startActivity(intent);
@@ -229,7 +250,11 @@ public class DicFirstFragment extends Fragment {
 
                                     }
                                 } else {
-//                            Log.d(TAG, "Error getting documents: ", task.getException());
+                                    mProgressView.setVisibility(View.GONE);
+                                    getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+
+                                    Toast toast = Toast.makeText(getActivity(), "오류가 발생했습니다. 다시 한번 시도해주세요.", Toast.LENGTH_SHORT);
+                                    toast.show();
                                 }
                             }
                         });

@@ -45,7 +45,7 @@
                 android:textSize="12sp"
                 android:lineSpacingExtra="4dp"
                 android:textColor="#858585"
-                android:text="* 다른 보호자 분께서 아이를 이미 등록하셨나요? 아이를 등록한 보호자분께 보호자 초대를 요청해주세요. 설정-다른 보호자 초대 버튼을 눌러 보호자를 초대할 수 있습니다."
+                android:text="* 다른 보호자 분께서 아이를 이미 등록하셨나요? 초대 코드를 받은 경우 하단 [초대 코드 입력하기] 버튼을 눌러 초대 코드를 입력해주세요."
                 />
 
             <Button
@@ -60,7 +60,21 @@
                 android:text="지금 등록하기"
                 />
 
+            <Button
+                android:id="@+id/child_code_button"
+                style="?android:textAppearanceSmall"
+                android:layout_width="match_parent"
+                android:layout_height="36dp"
+                android:textSize="16sp"
+                android:textColor="@color/coolGreen"
+                android:background="@drawable/code_rectangle"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:layout_marginTop="14dp"
+                android:text="초대 코드 입력하기"
+                />
+
         </LinearLayout>
+
     </ScrollView>
 
 </android.support.constraint.ConstraintLayout>

@@ -1,9 +1,11 @@
 package com.geniauti.geniauti;
 
+import android.app.Activity;
 import android.content.Context;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
@@ -13,18 +15,12 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -125,6 +121,8 @@ public class BehaviorActivity extends AppCompatActivity implements BehaviorFirst
                 if(mViewPager.getCurrentItem()==0) {
                     finish();
                 } else {
+                    InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
                     mViewPager.setCurrentItem(getItem(-1), true);
                 }
             }
@@ -159,7 +157,7 @@ public class BehaviorActivity extends AppCompatActivity implements BehaviorFirst
                 BehaviorSixthFragment f6 = (BehaviorSixthFragment) sixthFragment;
                 BehaviorSeventhFragment f7 = (BehaviorSeventhFragment) seventhFragment;
                 BehaviorEighthFragment f8 = (BehaviorEighthFragment) eighthFragment;
-                BehaviorNinthFragment f9 = (BehaviorNinthFragment) ninthFragment;
+                final BehaviorNinthFragment f9 = (BehaviorNinthFragment) ninthFragment;
 
                 if(mViewPager.getCurrentItem()==0) {
                     SimpleDateFormat formatter = new SimpleDateFormat("aa hh:mm", Locale.KOREAN);
@@ -230,7 +228,12 @@ public class BehaviorActivity extends AppCompatActivity implements BehaviorFirst
                     if(f9.getResult().toString()=="{}"){
                         Toast.makeText(BehaviorActivity.this, "행동 원인을 골라주세요.", Toast.LENGTH_SHORT).show();
                     } else {
+
                         fab.setEnabled(false);
+                        f9.mProgressView.setVisibility(View.VISIBLE);
+                        getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+
                         SimpleDateFormat formatter = new SimpleDateFormat("yyyy년 MM월 dd일 EEE aa hh:mm", Locale.KOREAN);
                         try{
                             Calendar cal = Calendar.getInstance();
@@ -293,8 +296,10 @@ public class BehaviorActivity extends AppCompatActivity implements BehaviorFirst
                                                 BehaviorDetailActivity.behavior_current.setText(docData.get("current_behavior").toString());
                                                 BehaviorDetailActivity.behavior_before.setText(docData.get("before_behavior").toString());
                                                 BehaviorDetailActivity.behavior_after.setText(docData.get("after_behavior").toString());
-                                                BehaviorDetailActivity.editModeOff();
 
+                                                editBehaviorState = false;
+                                                f9.mProgressView.setVisibility(View.GONE);
+                                                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
                                                 finish();
                                                 Toast toast = Toast.makeText(BehaviorActivity.this, "행동이 수정되었습니다.", Toast.LENGTH_SHORT);
                                                 toast.show();
@@ -304,6 +309,11 @@ public class BehaviorActivity extends AppCompatActivity implements BehaviorFirst
                                             @Override
                                             public void onFailure(@NonNull Exception e) {
                                                 fab.setEnabled(true);
+                                                f9.mProgressView.setVisibility(View.GONE);
+                                                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+
+                                                Toast toast = Toast.makeText(BehaviorActivity.this, "에러가 발생했습니다. 다시 한번 시도해주세요.", Toast.LENGTH_SHORT);
+                                                toast.show();
                                             }
                                         });
                             } else {
@@ -316,7 +326,10 @@ public class BehaviorActivity extends AppCompatActivity implements BehaviorFirst
                                             @Override
                                             public void onSuccess(Void aVoid) {
 //                                                                  mProgressView.setVisibility(View.GONE);
-                                                MainActivity.adapter.notifyDataSetChanged();
+//                                                MainActivity.adapter.notifyDataSetChanged();
+                                                f9.mProgressView.setVisibility(View.GONE);
+                                                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+
                                                 finish();
                                                 Toast toast = Toast.makeText(BehaviorActivity.this, "행동 생성이 완료되었습니다.", Toast.LENGTH_SHORT);
                                                 toast.show();
@@ -326,6 +339,8 @@ public class BehaviorActivity extends AppCompatActivity implements BehaviorFirst
                                             @Override
                                             public void onFailure(@NonNull Exception e) {
                                                 fab.setEnabled(true);
+                                                f9.mProgressView.setVisibility(View.GONE);
+                                                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
                                             }
                                         });
                             }
@@ -333,6 +348,10 @@ public class BehaviorActivity extends AppCompatActivity implements BehaviorFirst
                             // TODO Auto-generated catch block
                             e.printStackTrace();
                             fab.setEnabled(true);
+                            f9.mProgressView.setVisibility(View.GONE);
+                            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                            Toast toast = Toast.makeText(BehaviorActivity.this, "에러가 발생했습니다. 다시 한번 시도해주세요.", Toast.LENGTH_SHORT);
+                            toast.show();
                         }
                         }
                     }
@@ -361,7 +380,7 @@ public class BehaviorActivity extends AppCompatActivity implements BehaviorFirst
         return mViewPager.getCurrentItem() + i;
     }
 
-    public class PagerAdapter extends FragmentPagerAdapter {
+    public class PagerAdapter extends FragmentStatePagerAdapter {
         int mNumOfTabs = 9;
 
         public PagerAdapter(FragmentManager fm) {
@@ -402,6 +421,11 @@ public class BehaviorActivity extends AppCompatActivity implements BehaviorFirst
                 default:
                     return null;
             }
+        }
+
+        @Override
+        public int getItemPosition(Object object) {
+            return POSITION_NONE;
         }
 
         @Override

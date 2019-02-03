@@ -55,7 +55,7 @@ public class BehaviorThirdFragment extends Fragment {
     private String mParam2;
 
     private View v;
-    private GridListAdapter adapter;
+    private static GridListAdapter adapter;
     private ArrayList<String> arrayList;
     public ListView listView;
 
@@ -155,7 +155,7 @@ public class BehaviorThirdFragment extends Fragment {
                                 }
                             }
 
-                            arrayList.add("장소 추가하기");
+                            arrayList.add("제목 추가하기");
                             adapter = new GridListAdapter(getContext(), arrayList);
                             listView.setAdapter(adapter);
                         } else {
@@ -168,7 +168,7 @@ public class BehaviorThirdFragment extends Fragment {
         return v;
     }
 
-    public String getResult() {
+    public static String getResult() {
         int i = adapter.selectedPosition;
 
         if(i == -1){

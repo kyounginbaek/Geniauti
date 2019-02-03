@@ -129,12 +129,6 @@ public class TemplateChartMonthFragment extends Fragment {
         // Inflate the layout for this fragment
         v = inflater.inflate(R.layout.fragment_template_chart_month, container, false);
 
-        chart();
-
-        return v;
-    }
-
-    public void chart() {
         sdf = new SimpleDateFormat("yyyy년 MM월", Locale.KOREAN);
         sdfNew = new SimpleDateFormat("yyyyMM", Locale.KOREAN);
         cal = Calendar.getInstance();
@@ -261,22 +255,22 @@ public class TemplateChartMonthFragment extends Fragment {
             while (it_type.hasNext()) {
                 Map.Entry pair = (Map.Entry)it_type.next();
                 switch(pair.getKey().toString()) {
-                    case "selfharm":
+                    case "self-injury":
                         selfharm = Integer.parseInt(pair.getValue().toString());
                         break;
-                    case "harm":
+                    case "aggression":
                         harm = Integer.parseInt(pair.getValue().toString());
                         break;
-                    case "destruction":
+                    case "disruption":
                         destruction = Integer.parseInt(pair.getValue().toString());
                         break;
-                    case "breakaway":
+                    case "elopement":
                         breakaway = Integer.parseInt(pair.getValue().toString());
                         break;
-                    case "sexual":
+                    case "sexual behaviors":
                         sexual = Integer.parseInt(pair.getValue().toString());
                         break;
-                    case "etc":
+                    case "other behaviors":
                         typeEtc = Integer.parseInt(pair.getValue().toString());
                         break;
                 }
@@ -285,22 +279,30 @@ public class TemplateChartMonthFragment extends Fragment {
             HashMap<String, Object> reason_type = statisticData.reason_type;
             Iterator it_reason_type = reason_type.entrySet().iterator();
             while (it_reason_type.hasNext()) {
-                Map.Entry pair = (Map.Entry)it_reason_type.next();
-                switch(pair.getKey().toString()) {
-                    case "interest":
-                        interest = Integer.parseInt(pair.getValue().toString());
+                Map.Entry pair = (Map.Entry) it_reason_type.next();
+                switch (pair.getKey().toString()) {
+                    case "attention1":
+                    case "attention2":
+                    case "attention3":
+                    case "attention4":
+                        interest += Integer.parseInt(pair.getValue().toString());
                         break;
-                    case "selfstimulation":
-                        selfstimulation = Integer.parseInt(pair.getValue().toString());
+                    case "self-stimulatory behaviour1":
+                    case "self-stimulatory behaviour2":
+                    case "self-stimulatory behaviour3":
+                        selfstimulation += Integer.parseInt(pair.getValue().toString());
                         break;
-                    case "taskevation":
-                        taskevation = Integer.parseInt(pair.getValue().toString());
+                    case "escape1":
+                    case "escape2":
+                    case "escape3":
+                    case "escape4":
+                        taskevation += Integer.parseInt(pair.getValue().toString());
                         break;
-                    case "demand":
-                        demand = Integer.parseInt(pair.getValue().toString());
-                        break;
-                    case "etc":
-                        reasonEtc = Integer.parseInt(pair.getValue().toString());
+                    case "tangibles1":
+                    case "tangibles2":
+                    case "tangibles3":
+                    case "tangibles4":
+                        demand += Integer.parseInt(pair.getValue().toString());
                         break;
                 }
             }
@@ -324,10 +326,6 @@ public class TemplateChartMonthFragment extends Fragment {
                         break;
                 }
             }
-        }
-
-        if(statisticData != null) {
-
         }
 
         // Behavior ArrayList
@@ -560,10 +558,19 @@ public class TemplateChartMonthFragment extends Fragment {
         yAxisLeftFrequency.setEnabled(false);
         yAxisLeftFrequency.setStartAtZero(true);
 
+        List<Integer> list = Arrays.asList(day1, day2, day3, day4, day5, day6, day7, day8, day9, day10,
+                day11, day12, day13, day14, day15, day16, day17, day18, day19, day20,
+                day21, day22, day23, day24, day25, day26, day27, day28, day29, day30, day31);
+        int maxFrequency = Collections.max(list);
+
+        yAxisLeftFrequency.setLabelCount(maxFrequency, false);
+        yAxisLeftFrequency.setAxisMaxValue(maxFrequency);
+
         YAxis yAxisRightFrequency = chartFrequency.getAxisRight();
         yAxisRightFrequency.setEnabled(true);
-        yAxisRightFrequency.mAxisMinimum = 0;
         yAxisRightFrequency.setStartAtZero(true);
+        yAxisRightFrequency.setLabelCount(maxFrequency, false);
+        yAxisRightFrequency.setAxisMaxValue(maxFrequency);
 
 //        if(monthNumber == 0) {
 //            yAxisRightFrequency.mAxisMaximum = 1;
@@ -609,14 +616,14 @@ public class TemplateChartMonthFragment extends Fragment {
         yFrequency.add(new BarEntry(30, day30));
         yFrequency.add(new BarEntry(31, day31));
 
-        int[] colors = new int[]{colorIntensity(intensity1, day1), colorIntensity(intensity2, day2), colorIntensity(intensity3, day3), colorIntensity(intensity4, day4), colorIntensity(intensity5, day5), colorIntensity(intensity6, day6), colorIntensity(intensity7, day7), colorIntensity(intensity8, day8), colorIntensity(intensity9, day9), colorIntensity(intensity10, day10),
-                colorIntensity(intensity11, day11), colorIntensity(intensity12, day12), colorIntensity(intensity13, day13), colorIntensity(intensity14, day14), colorIntensity(intensity15, day15), colorIntensity(intensity16, day16), colorIntensity(intensity17, day17), colorIntensity(intensity18, day18), colorIntensity(intensity19, day19), colorIntensity(intensity20, day20),
-                colorIntensity(intensity21, day21), colorIntensity(intensity22, day22), colorIntensity(intensity23, day23), colorIntensity(intensity24, day24), colorIntensity(intensity25, day25), colorIntensity(intensity26, day26), colorIntensity(intensity27, day27), colorIntensity(intensity28, day28), colorIntensity(intensity29, day29), colorIntensity(intensity30, day30),
-                colorIntensity(intensity31, day31)};
+//        int[] colors = new int[]{colorIntensity(intensity1, day1), colorIntensity(intensity2, day2), colorIntensity(intensity3, day3), colorIntensity(intensity4, day4), colorIntensity(intensity5, day5), colorIntensity(intensity6, day6), colorIntensity(intensity7, day7), colorIntensity(intensity8, day8), colorIntensity(intensity9, day9), colorIntensity(intensity10, day10),
+//                colorIntensity(intensity11, day11), colorIntensity(intensity12, day12), colorIntensity(intensity13, day13), colorIntensity(intensity14, day14), colorIntensity(intensity15, day15), colorIntensity(intensity16, day16), colorIntensity(intensity17, day17), colorIntensity(intensity18, day18), colorIntensity(intensity19, day19), colorIntensity(intensity20, day20),
+//                colorIntensity(intensity21, day21), colorIntensity(intensity22, day22), colorIntensity(intensity23, day23), colorIntensity(intensity24, day24), colorIntensity(intensity25, day25), colorIntensity(intensity26, day26), colorIntensity(intensity27, day27), colorIntensity(intensity28, day28), colorIntensity(intensity29, day29), colorIntensity(intensity30, day30),
+//                colorIntensity(intensity31, day31)};
 
         BarDataSet setFrequency = new BarDataSet(yFrequency, "");
         setFrequency.setDrawValues(false);
-        setFrequency.setColors(colors);
+        setFrequency.setColors(colorIntensity5);
         BarData dataFrequency = new BarData(setFrequency);
         chartFrequency.setData(dataFrequency);
 
@@ -686,13 +693,14 @@ public class TemplateChartMonthFragment extends Fragment {
         YAxis yAxisLeftReasons = chartReasons.getAxisLeft();
         yAxisLeftReasons.setStartAtZero(true);
         yAxisLeftReasons.setEnabled(false);
-        yAxisLeftReasons.setLabelCount(5, false);
-        yAxisLeftReasons.setAxisMaxValue(5);
+        int maxReason = maxNumber5(reasonEtc, taskevation, selfstimulation, demand, interest);
+        yAxisLeftReasons.setLabelCount(maxReason, false);
+        yAxisLeftReasons.setAxisMaxValue(maxReason);
 
         YAxis yAxisRightReasons = chartReasons.getAxisRight();
         yAxisRightReasons.setStartAtZero(true);
-        yAxisRightReasons.setLabelCount(5, false);
-        yAxisRightReasons.setAxisMaxValue(5);
+        yAxisRightReasons.setLabelCount(maxReason, false);
+        yAxisRightReasons.setAxisMaxValue(maxReason);
 
         yReasons.add(new BarEntry(0, reasonEtc));
         yReasons.add(new BarEntry(1, taskevation));
@@ -736,13 +744,14 @@ public class TemplateChartMonthFragment extends Fragment {
         YAxis yAxisLeftTypes = chartTypes.getAxisLeft();
         yAxisLeftTypes.setStartAtZero(true);
         yAxisLeftTypes.setEnabled(false);
-        yAxisLeftTypes.setLabelCount(5, false);
-        yAxisLeftTypes.setAxisMaxValue(5);
+        int maxType = maxNumber6(typeEtc, sexual, breakaway, destruction, harm, selfharm);
+        yAxisLeftTypes.setLabelCount(maxType, false);
+        yAxisLeftTypes.setAxisMaxValue(maxType);
 
         YAxis yAxisRightTypes = chartTypes.getAxisRight();
         yAxisRightTypes.setStartAtZero(true);
-        yAxisRightTypes.setLabelCount(5, false);
-        yAxisRightTypes.setAxisMaxValue(5);
+        yAxisRightTypes.setLabelCount(maxType, false);
+        yAxisRightTypes.setAxisMaxValue(maxType);
 
         yTypes.add(new BarEntry(0, typeEtc));
         yTypes.add(new BarEntry(1, sexual));
@@ -786,13 +795,14 @@ public class TemplateChartMonthFragment extends Fragment {
         YAxis yAxisLeftLocations = chartLocations.getAxisLeft();
         yAxisLeftLocations.setStartAtZero(true);
         yAxisLeftLocations.setEnabled(false);
-        yAxisLeftLocations.setLabelCount(5, false);
-        yAxisLeftLocations.setAxisMaxValue(5);
+        int maxLocation = maxNumber5(locationEtc, school, restaurant, mart, home);
+        yAxisLeftLocations.setLabelCount(maxLocation, false);
+        yAxisLeftLocations.setAxisMaxValue(maxLocation);
 
         YAxis yAxisRightLocations = chartLocations.getAxisRight();
         yAxisRightLocations.setStartAtZero(true);
-        yAxisRightLocations.setLabelCount(5, false);
-        yAxisRightLocations.setAxisMaxValue(5);
+        yAxisRightLocations.setLabelCount(maxLocation, false);
+        yAxisRightLocations.setAxisMaxValue(maxLocation);
 
         yLocations.add(new BarEntry(0, locationEtc));
         yLocations.add(new BarEntry(1, school));
@@ -806,6 +816,8 @@ public class TemplateChartMonthFragment extends Fragment {
         BarData dataLocations = new BarData(setLocations);
         chartLocations.setData(dataLocations);
         chartLocations.setFitBars(true);
+
+        return v;
     }
 
     public int colorIntensity(int intensity, int number) {
@@ -828,6 +840,16 @@ public class TemplateChartMonthFragment extends Fragment {
         }
 
         return 0;
+    }
+
+    public int maxNumber5(int n1, int n2, int n3, int n4, int n5) {
+        List<Integer> list = Arrays.asList(n1, n2, n3, n4, n5);
+        return Collections.max(list);
+    }
+
+    public int maxNumber6(int n1, int n2, int n3, int n4, int n5, int n6) {
+        List<Integer> list = Arrays.asList(n1, n2, n3, n4, n5, n6);
+        return Collections.max(list);
     }
 
     @Override

@@ -11,6 +11,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
@@ -59,7 +60,6 @@ public class BehaviorDetailActivity extends AppCompatActivity {
     public static LinearLayout behavior_self_stimulation;
     public static LinearLayout behavior_task_evation;
     public static LinearLayout behavior_demand;
-    public static LinearLayout behavior_etc;
 
     public static SeekBar behavior_intensity;
     public static TextView intensityOne;
@@ -98,13 +98,18 @@ public class BehaviorDetailActivity extends AppCompatActivity {
         behavior_self_stimulation = findViewById(R.id.behavior_self_stimulation);
         behavior_task_evation = findViewById(R.id.behavior_task_evation);
         behavior_demand = findViewById(R.id.behavior_demand);
-        behavior_etc = findViewById(R.id.behavior_etc);
 
         behavior_categorization = findViewById(R.id.txt_behavior_categorization);
         behavior_time = findViewById(R.id.txt_behavior_time);
         behavior_place = findViewById(R.id.txt_behavior_place);
         behavior_type = findViewById(R.id.txt_behavior_type);
         behavior_intensity = findViewById(R.id.behavior_seekbar);
+        behavior_intensity.setOnTouchListener(new View.OnTouchListener(){
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                return true;
+            }
+        });
 
         intensityOne = (TextView) findViewById(R.id.txt_behavior_detail_intensity_one);
         intensityTwo = (TextView) findViewById(R.id.txt_behavior_detail_intensity_two);
@@ -305,7 +310,7 @@ public class BehaviorDetailActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(Void aVoid) {
 //                        mProgressView.setVisibility(View.GONE);
-                        MainActivity.adapter.notifyDataSetChanged();
+//                        MainActivity.adapter.notifyDataSetChanged();
                         bookmarkDialog.dismiss();
                         Toast toast = Toast.makeText(BehaviorDetailActivity.this, "자주 쓰는 기록으로 등록되었습니다.", Toast.LENGTH_SHORT);
                         toast.show();
@@ -335,22 +340,22 @@ public class BehaviorDetailActivity extends AppCompatActivity {
         while (it.hasNext()) {
             Map.Entry pair = (Map.Entry)it.next();
             switch(pair.getKey().toString()) {
-                case "selfharm":
+                case "self-injury":
                     tmp_type = tmp_type + "자해, ";
                     break;
-                case "harm":
+                case "aggression":
                     tmp_type = tmp_type + "타해, ";
                     break;
-                case "destruction":
+                case "disruption":
                     tmp_type = tmp_type + "파괴, ";
                     break;
-                case "breakaway":
+                case "elopement":
                     tmp_type = tmp_type + "이탈, ";
                     break;
-                case "sexual":
+                case "sexual behaviors":
                     tmp_type = tmp_type + "성적, ";
                     break;
-                case "etc":
+                case "other behaviors":
                     tmp_type = tmp_type + "기타, ";
                     break;
             }
@@ -366,27 +371,22 @@ public class BehaviorDetailActivity extends AppCompatActivity {
         behavior_self_stimulation.setVisibility(View.GONE);
         behavior_task_evation.setVisibility(View.GONE);
         behavior_demand.setVisibility(View.GONE);
-        behavior_etc.setVisibility(View.GONE);
 
-        if(reasonType.get("interest")!=null) {
+        if(reasonType.get("attention")!=null) {
             behavior_interest.setVisibility(View.VISIBLE);
             tmp_reason = tmp_reason + "관심, ";
         }
-        if(reasonType.get("selfstimulation")!=null) {
+        if(reasonType.get("self-stimulatory behaviour")!=null) {
             behavior_self_stimulation.setVisibility(View.VISIBLE);
             tmp_reason = tmp_reason + "자기자극, ";
         }
-        if(reasonType.get("taskevation")!=null) {
+        if(reasonType.get("escape")!=null) {
             behavior_task_evation.setVisibility(View.VISIBLE);
             tmp_reason = tmp_reason + "과제회피, ";
         }
-        if(reasonType.get("demand")!=null) {
+        if(reasonType.get("tangibles")!=null) {
             behavior_demand.setVisibility(View.VISIBLE);
             tmp_reason = tmp_reason + "요구, ";
-        }
-        if(reasonType.get("etc")!=null){
-            behavior_etc.setVisibility(View.VISIBLE);
-            tmp_reason = tmp_reason + "기타, ";
         }
 
         textBookmark.setText(selectedBehavior.place + " / " + selectedBehavior.categorization + " / " + tmp_reason.substring(0, tmp_reason.length()-2));

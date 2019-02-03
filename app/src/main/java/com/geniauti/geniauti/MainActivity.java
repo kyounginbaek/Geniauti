@@ -1,8 +1,12 @@
 package com.geniauti.geniauti;
 
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -11,26 +15,44 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 
 public class MainActivity extends AppCompatActivity implements MainFragment.OnFragmentInteractionListener, DicFragment.OnFragmentInteractionListener, ChartFragment.OnFragmentInteractionListener, ProfileFragment.OnFragmentInteractionListener {
+
+    private BackPressCloseHandler backPressCloseHandler;
 
     public static CustomViewPager viewPager;
     public static ViewPagerAdapter adapter;
 
     public static FirebaseUser user;
     public static FirebaseFirestore db;
+
+    public static FirebaseStorage storage;
+    public static StorageReference storageRef;
+
     public static String cid;
     public static String relationship;
 
@@ -39,6 +61,8 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnFr
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        backPressCloseHandler = new BackPressCloseHandler(this);
+
         Toolbar mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
         getSupportActionBar().setTitle("행동 조회");
@@ -46,22 +70,27 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnFr
         user = FirebaseAuth.getInstance().getCurrentUser();
         db = FirebaseFirestore.getInstance();
 
+        storage = FirebaseStorage.getInstance();
+        storageRef = storage.getReference();
+
         db.collection("childs")
-                .whereGreaterThanOrEqualTo("users."+user.getUid()+".name", "")
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                .whereGreaterThanOrEqualTo("users."+MainActivity.user.getUid()+".name", "")
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                cid = document.getId();
-                                HashMap<String, Object> result = (HashMap<String, Object>) document.get("users."+user.getUid());
-                                relationship = result.get("relationship").toString();
-                            }
-                            setupViewPager(viewPager);
-                        } else {
-//                                Log.d(TAG, "Error getting documents: ", task.getException());
+                    public void onEvent(@Nullable QuerySnapshot value,
+                                        @Nullable FirebaseFirestoreException e) {
+                        if (e != null) {
+//                            Log.w(TAG, "Listen failed.", e);
+                            return;
                         }
+
+                        for (QueryDocumentSnapshot doc : value) {
+                            cid = doc.getId();
+                            HashMap<String, Object> result = (HashMap<String, Object>) doc.get("users."+user.getUid());
+                            relationship = result.get("relationship").toString();
+                        }
+
+                        setupViewPager(viewPager);
                     }
                 });
 
@@ -103,6 +132,39 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnFr
             }
         });
     }
+
+    public class BackPressCloseHandler {
+
+        private long backKeyPressedTime = 0;
+        private Toast toast;
+        private Activity activity;
+
+        public BackPressCloseHandler(Activity context) {
+            this.activity = context;
+        }
+
+        public void onBackPressed() {
+            if (System.currentTimeMillis() > backKeyPressedTime + 2000) {
+                backKeyPressedTime = System.currentTimeMillis(); showGuide();
+                return;
+            }
+
+            if (System.currentTimeMillis() <= backKeyPressedTime + 2000) {
+                activity.finish(); toast.cancel();
+            }
+        }
+
+        public void showGuide() {
+            toast = Toast.makeText(activity, "\'뒤로\'버튼을 한번 더 누르시면 종료됩니다.", Toast.LENGTH_SHORT);
+            toast.show();
+        }
+    }
+
+    @Override public void onBackPressed() {
+//        super.onBackPressed();
+        backPressCloseHandler.onBackPressed();
+    }
+
 
     private void setupViewPager(ViewPager viewPager) {
         adapter = new ViewPagerAdapter(getSupportFragmentManager());

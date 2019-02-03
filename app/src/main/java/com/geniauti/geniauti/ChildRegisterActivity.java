@@ -23,5 +23,15 @@ public class ChildRegisterActivity extends AppCompatActivity {
             }
         });
 
+        Button mChildCodeButton = (Button) findViewById(R.id.child_code_button);
+        mChildCodeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent=new Intent(ChildRegisterActivity.this,ChildCodeAddActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        });
+
     }
 }

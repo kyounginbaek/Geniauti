@@ -59,15 +59,12 @@ import java.util.Map;
  */
 public class ProfileFragment extends Fragment {
 
-    private FirebaseStorage storage;
-    private StorageReference storageRef;
-
     private RelativeLayout childEdit;
     private RelativeLayout profileEdit;
     private LinearLayout parentAdd;
     private RelativeLayout mSignOut;
 
-    private EditText txtEmail;
+    private TextView txtChildCode;
     private LinearLayout inviteCancel;
     private LinearLayout parentInvite;
     private LinearLayout bookmarkAdd;
@@ -85,9 +82,8 @@ public class ProfileFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    private String child;
-
     private View v;
+    private ImageView childImage;
     private TextView childNameView;
     public static String childName;
     private TextView childParentView;
@@ -99,6 +95,10 @@ public class ProfileFragment extends Fragment {
     public static ArrayList<Bookmark> bookmarkData;
     private ParentListviewAdapter parentAdapter;
     public static BookmarkListviewAdapter bookmarkAdapter;
+    private StorageReference pathReference;
+
+    private String childCode;
+    private Uri childImageURI;
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -166,11 +166,11 @@ public class ProfileFragment extends Fragment {
         }
         v = inflater.inflate(R.layout.fragment_profile, container, false);
 
-        storage = FirebaseStorage.getInstance();
-        storageRef = storage.getReference();
-
         childNameView = (TextView) v.findViewById(R.id.profile_child_name);
         childParentView = (TextView) v.findViewById(R.id.txt_child_parent);
+        childImage = (ImageView) v.findViewById(R.id.profile_child_image);
+
+        pathReference = MainActivity.storageRef.child("childs/"+MainActivity.cid);
 
         MainActivity.db.collection("childs")
                 .whereGreaterThanOrEqualTo("users."+MainActivity.user.getUid()+".name", "")
@@ -184,16 +184,11 @@ public class ProfileFragment extends Fragment {
                         }
 
                         for (QueryDocumentSnapshot doc : value) {
-                            child = doc.getData().get("name").toString();
-                            dialogChildName.setText("이메일로 " + child +  "의 새로운 보호자에게 초대장을 보낼 수 있습니다.");
-
-                            childName = doc.getData().get("name").toString();
-
-                            childNameView.setText(childName);
-                            childParentView.setText(childName+"의 보호자");
 
                             HashMap<String, Object> users = (HashMap<String, Object>) doc.getData().get("users");
                             Iterator it = users.entrySet().iterator();
+                            parentData = new ArrayList<>();
+
                             while(it.hasNext()){
                                 Map.Entry pair = (Map.Entry)it.next();
                                 HashMap<String, Object> data = (HashMap<String, Object>) pair.getValue();
@@ -201,14 +196,70 @@ public class ProfileFragment extends Fragment {
 //                                    Parent item = new Parent(data.get("name").toString(), data.get("profile_pic").toString(), data.get("relationship").toString(), pair.getKey().toString());
 //                                    parentData.add(item);
 //                                }
-                                Parent item = new Parent(data.get("name").toString(), data.get("profile_pic").toString(), data.get("relationship").toString(), pair.getKey().toString());
-                                parentData.add(item);
-                            }
-                        }
 
-                        parentAdapter = new ParentListviewAdapter(getContext(), R.layout.list_parent, parentData);
-                        parentListView.setAdapter(parentAdapter);
-                        setListViewHeightBasedOnChildren(parentListView);
+                                Parent item = new Parent(data.get("name").toString(), data.get("profile_pic").toString(), data.get("relationship").toString(), pair.getKey().toString());
+
+                                if(pair.getKey().toString().equals(MainActivity.user.getUid())) {
+                                    parentData.add(0, item);
+                                } else {
+                                    parentData.add(item);
+                                }
+                            }
+
+                            if(getActivity()!=null) {
+                                parentAdapter = new ParentListviewAdapter(getContext(), R.layout.list_parent, parentData);
+                                parentListView.setAdapter(parentAdapter);
+                                setListViewHeightBasedOnChildren(parentListView);
+
+                                pathReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                    @Override
+                                    public void onSuccess(Uri uri) {
+                                        // Got the download URL for 'users/me/profile.png'
+                                        childImageURI = uri;
+                                        Glide.with(ProfileFragment.this).load(childImageURI).into(childImage);
+                                    }
+                                }).addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception exception) {
+                                        // Handle any errors
+                                    }
+                                });
+                            }
+
+                            childName = doc.getData().get("name").toString();
+                            childNameView.setText(childName);
+                            childParentView.setText(childName+"의 보호자");
+                        }
+                    }
+                });
+
+        MainActivity.db.collection("childs")
+                .whereGreaterThanOrEqualTo("users."+MainActivity.user.getUid()+".name", "")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                final String childName = childCode = document.getData().get("name").toString();
+                                childCode = document.getData().get("code").toString();
+                                txtChildCode.setText(childCodeNumber(childCode));
+
+                                parentInvite.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        String shareBody = childName + " 아이의 초대 코드는 " + childCodeNumber(childCode) + " 입니다.";
+                                        Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+                                        sharingIntent.setType("text/plain");
+                                        sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "[지니어티 알림]");
+                                        sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
+                                        startActivity(Intent.createChooser(sharingIntent, "보호자 초대 코드 공유하기"));
+                                    }
+                                });
+                            }
+                        } else {
+
+                        }
                     }
                 });
 
@@ -221,43 +272,45 @@ public class ProfileFragment extends Fragment {
         });
 
         parentListView = (ListView) v.findViewById(R.id.parent_listview);
-        parentData = new ArrayList<>();
-
         bookmarkListView = (ListView) v.findViewById(R.id.bookmark_listview);
-        bookmarkData = new ArrayList<>();
 
         MainActivity.db.collection("users").document(MainActivity.user.getUid())
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                .addSnapshotListener(new EventListener<DocumentSnapshot>() {
                     @Override
-                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                        if (task.isSuccessful()) {
-                            DocumentSnapshot document = task.getResult();
-                            if(document.exists()) {
+                    public void onEvent(@Nullable DocumentSnapshot snapshot,
+                                        @Nullable FirebaseFirestoreException e) {
+                        if (e != null) {
+//                            Log.w(TAG, "Listen failed.", e);
+                            return;
+                        }
 
-                                HashMap<String, Object> preset = (HashMap<String, Object>) document.getData().get("preset");
-                                if(preset != null) {
-                                    List<HashMap<String, Object>> behavior_preset = (List<HashMap<String,Object>>) preset.get("behavior_preset");
-                                    for(int i=0; i<behavior_preset.size(); i++) {
-                                        Bookmark item = new Bookmark(i, behavior_preset.get(i).get("title").toString(), behavior_preset.get(i).get("place").toString(),
-                                                behavior_preset.get(i).get("categorization").toString(), (HashMap<String, Object>) behavior_preset.get(i).get("type"),
-                                                Integer.parseInt(behavior_preset.get(i).get("intensity").toString()), (HashMap<String, Object>) behavior_preset.get(i).get("reason_type"),
-                                                (HashMap<String, Object>) behavior_preset.get(i).get("reason"));
-                                        bookmarkData.add(item);
-                                    }
+                        if (snapshot != null && snapshot.exists()) {
+//                            System.out.println("Current data: " + snapshot.getData());
+                            bookmarkData = new ArrayList<>();
+                            HashMap<String, Object> preset = (HashMap<String, Object>) snapshot.getData().get("preset");
 
+                            if(preset != null) {
+                                List<HashMap<String, Object>> behavior_preset = (List<HashMap<String,Object>>) preset.get("behavior_preset");
+                                for(int i=0; i<behavior_preset.size(); i++) {
+                                    Bookmark item = new Bookmark(i, behavior_preset.get(i).get("title").toString(), behavior_preset.get(i).get("place").toString(),
+                                            behavior_preset.get(i).get("categorization").toString(), (HashMap<String, Object>) behavior_preset.get(i).get("type"),
+                                            Integer.parseInt(behavior_preset.get(i).get("intensity").toString()), (HashMap<String, Object>) behavior_preset.get(i).get("reason_type"),
+                                            (HashMap<String, Object>) behavior_preset.get(i).get("reason"));
+                                    bookmarkData.add(item);
+                                }
+
+                                if(getActivity()!=null) {
                                     bookmarkAdapter = new BookmarkListviewAdapter(getContext(), R.layout.list_bookmark_profile, bookmarkData);
                                     bookmarkListView.setAdapter(bookmarkAdapter);
                                     setListViewHeightBasedOnChildren(bookmarkListView);
                                 }
-                            } else {
-
                             }
                         } else {
-//                            Log.d(TAG, "Error getting documents: ", task.getException());
+//                            System.out.print("Current data: null");
                         }
                     }
                 });
+
 
         profileEdit = (RelativeLayout) v.findViewById(R.id.profile_edit);
         profileEdit.setOnClickListener(new View.OnClickListener() {
@@ -281,7 +334,7 @@ public class ProfileFragment extends Fragment {
             }
         });
 
-        txtEmail = (EditText) mView.findViewById(R.id.txt_email);
+        txtChildCode = (TextView) mView.findViewById(R.id.txt_child_code);
 
         inviteCancel = (LinearLayout) mView.findViewById(R.id.invite_cancel);
         inviteCancel.setOnClickListener(new View.OnClickListener() {
@@ -292,16 +345,6 @@ public class ProfileFragment extends Fragment {
         });
 
         parentInvite = (LinearLayout) mView.findViewById(R.id.parent_invite);
-        parentInvite.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(txtEmail.getText().toString().equals("")){
-                    Toast.makeText(getActivity(), "빈칸을 입력해주세요.", Toast.LENGTH_SHORT).show();
-                } else {
-
-                }
-            }
-        });
 
         bookmarkAdd = (LinearLayout) v.findViewById(R.id.bookmark_add);
         bookmarkAdd.setOnClickListener(new View.OnClickListener() {
@@ -355,6 +398,24 @@ public class ProfileFragment extends Fragment {
 //        });
 
         return v;
+    }
+
+    private String childCodeNumber(String number) {
+
+        switch(number.length()) {
+            case 1:
+                return "0000"+number;
+            case 2:
+                return "000"+number;
+            case 3:
+                return "00"+number;
+            case 4:
+                return "0"+number;
+            case 5:
+                return number;
+            default:
+                return number;
+        }
     }
 
     public static void setListViewHeightBasedOnChildren(ListView listView) {
@@ -421,7 +482,7 @@ public class ProfileFragment extends Fragment {
             Parent parentData = data.get(position);
 
             final ImageView parentImage = (ImageView) v.findViewById(R.id.list_parent_image);
-            StorageReference pathReference = storageRef.child("users/"+parentData.uid);
+            StorageReference pathReference = MainActivity.storageRef.child("users/"+parentData.uid);
             pathReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                 @Override
                 public void onSuccess(Uri uri) {
@@ -513,12 +574,12 @@ public class ProfileFragment extends Fragment {
                                 @Override
                                 public void onSuccess(Void aVoid) {
 //                        mProgressView.setVisibility(View.GONE);
-                                    bookmarkData.remove(position);
-                                    setListViewHeightBasedOnChildren(bookmarkListView);
-                                    MainFragment.bookmarkData.remove(position);
+//                                    bookmarkData.remove(position);
+//                                    setListViewHeightBasedOnChildren(bookmarkListView);
+//                                    MainFragment.bookmarkData.remove(position);
 
-                                    bookmarkAdapter.notifyDataSetChanged();
-                                    MainFragment.bookmarkAdapter.notifyDataSetChanged();
+//                                    bookmarkAdapter.notifyDataSetChanged();
+//                                    MainFragment.bookmarkAdapter.notifyDataSetChanged();
                                     Toast toast = Toast.makeText(getActivity(), "자주 쓰는 기록이 삭제되었습니다.", Toast.LENGTH_SHORT);
                                     toast.show();
 

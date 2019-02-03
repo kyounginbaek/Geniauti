@@ -173,6 +173,7 @@ public class ChartWeekFragment extends Fragment {
                             statisticsHashMap.put(document.getId(), item);
                         }
                     }
+
                     // Setting ViewPager for each Tabs
                     viewPager = (ViewPager) v.findViewById(R.id.chart_week_viewpager);
                     setupViewPager(viewPager);
@@ -217,6 +218,7 @@ public class ChartWeekFragment extends Fragment {
 
                         }
                     });
+
                 } else {
 //                    Log.d(TAG, "get failed with ", task.getException());
                 }

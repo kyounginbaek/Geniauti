@@ -38,9 +38,9 @@ public class BehaviorSeventhFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    HashMap<String,Boolean> checkbox_type = new HashMap<String,Boolean>();
+    public static HashMap<String,Boolean> checkbox_type = new HashMap<String,Boolean>();
     private BehaviorSeventhFragment.Type[] types ;
-    private ArrayAdapter<BehaviorSeventhFragment.Type> listAdapter ;
+    public static ArrayAdapter<BehaviorSeventhFragment.Type> listAdapter ;
 
     private OnFragmentInteractionListener mListener;
 
@@ -100,12 +100,12 @@ public class BehaviorSeventhFragment extends Fragment {
         types = (BehaviorSeventhFragment.Type[]) onRetainCustomNonConfigurationInstance() ;
         if ( types == null ) {
             types = new BehaviorSeventhFragment.Type[] {
-                    new BehaviorSeventhFragment.Type("자해 행동", "selfharm"),
-                    new BehaviorSeventhFragment.Type("타해 행동", "harm"),
-                    new BehaviorSeventhFragment.Type("파괴 행동", "destruction"),
-                    new BehaviorSeventhFragment.Type("이탈 행동", "breakaway"),
-                    new BehaviorSeventhFragment.Type("성적 행동", "sexual"),
-                    new BehaviorSeventhFragment.Type("기타", "etc"),
+                    new BehaviorSeventhFragment.Type("자해 행동", "self-injury"),
+                    new BehaviorSeventhFragment.Type("타해 행동", "aggression"),
+                    new BehaviorSeventhFragment.Type("파괴 행동", "disruption"),
+                    new BehaviorSeventhFragment.Type("이탈 행동", "elopement"),
+                    new BehaviorSeventhFragment.Type("성적 행동", "sexual behaviors"),
+                    new BehaviorSeventhFragment.Type("기타", "other behaviors"),
             };
         }
         ArrayList<BehaviorSeventhFragment.Type> typeList = new ArrayList<BehaviorSeventhFragment.Type>();
@@ -119,7 +119,7 @@ public class BehaviorSeventhFragment extends Fragment {
         return v;
     }
 
-    public HashMap<String, Boolean> getResult() {
+    public static HashMap<String, Boolean> getResult() {
         checkbox_type.clear();
 
         for (int i=0; i < listAdapter.getCount(); i++) {

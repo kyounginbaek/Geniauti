@@ -39,9 +39,9 @@ public class BehaviorFirstFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    public String hour_start;
-    public String hour_end;
-    public String date_start;
+    public static String hour_start;
+    public static String hour_end;
+    public static String date_start;
     private RelativeLayout dateLayout ;
     private RelativeLayout startTimeLayout, endTimeLayout;
     private TextView dateText, startTimeText, endTimeText;

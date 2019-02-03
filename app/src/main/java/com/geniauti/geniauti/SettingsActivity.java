@@ -125,89 +125,86 @@ public class SettingsActivity extends AppCompatActivity {
                                         for (QueryDocumentSnapshot document : task.getResult()) {
                                             HashMap<String, Boolean> type = (HashMap<String, Boolean>) document.get("type");
                                             String tmpType = "";
-                                            if(type.get("selfharm")!=null) {
+                                            if(type.get("self-injury")!=null) {
                                                 tmpType = tmpType + "자해 / ";
                                             }
-                                            if(type.get("harm")!=null) {
+                                            if(type.get("aggression")!=null) {
                                                 tmpType = tmpType + "타해 / ";
                                             }
-                                            if(type.get("destruction")!=null) {
+                                            if(type.get("disruption")!=null) {
                                                 tmpType = tmpType + "파괴 / ";
                                             }
-                                            if(type.get("breakaway")!=null) {
+                                            if(type.get("elopement")!=null) {
                                                 tmpType = tmpType + "이탈 / ";
                                             }
-                                            if(type.get("sexual")!=null){
+                                            if(type.get("sexual behaviors")!=null){
                                                 tmpType = tmpType + "성적 / ";
                                             }
-                                            if(type.get("etc")!=null){
+                                            if(type.get("other behaviors")!=null){
                                                 tmpType = tmpType + "기타 / ";
                                             }
 
                                             HashMap<String, Boolean> reason_type = (HashMap<String, Boolean>) document.get("reason_type");
                                             String tmpReasonType = "";
-                                            if(reason_type.get("interest")!=null) {
+                                            if(reason_type.get("attention")!=null) {
                                                 tmpReasonType = tmpReasonType + "관심 / ";
                                             }
-                                            if(reason_type.get("selfstimulation")!=null) {
+                                            if(reason_type.get("self-stimulatory behaviour")!=null) {
                                                 tmpReasonType = tmpReasonType + "자기자극 / ";
                                             }
-                                            if(reason_type.get("taskevation")!=null) {
+                                            if(reason_type.get("escape")!=null) {
                                                 tmpReasonType = tmpReasonType + "과제회피 / ";
                                             }
-                                            if(reason_type.get("demand")!=null) {
+                                            if(reason_type.get("tangibles")!=null) {
                                                 tmpReasonType = tmpReasonType + "요구 / ";
-                                            }
-                                            if(reason_type.get("etc")!=null){
-                                                tmpReasonType = tmpReasonType + "기타 / ";
                                             }
 
                                             HashMap<String, Boolean> reason = (HashMap<String, Boolean>) document.get("reason");
                                             String tmpReason = "";
-                                            if(reason.get("interest1")!=null) {
+                                            if(reason.get("attention1")!=null) {
                                                 tmpReason = tmpReason + "자신에게 관심을 갖는 것이 좋아서 / ";
                                             }
-                                            if(reason.get("interest2")!=null) {
+                                            if(reason.get("attention2")!=null) {
                                                 tmpReason = tmpReason + "타인에게 주목 받는 것을 즐겨서 / ";
                                             }
-                                            if(reason.get("interest3")!=null) {
+                                            if(reason.get("attention3")!=null) {
                                                 tmpReason = tmpReason + "관심의 대상이 되고 싶어서 / ";
                                             }
-                                            if(reason.get("interest4")!=null) {
+                                            if(reason.get("attention4")!=null) {
                                                 tmpReason = tmpReason + "다른 사람의 관심을 끌려고 / ";
                                             }
-                                            if(reason.get("stimulation1")!=null){
+                                            if(reason.get("self-stimulatory behaviour1")!=null){
                                                 tmpReason = tmpReason + "행동을 통해 얻는 감각이 좋아서 / ";
                                             }
-                                            if(reason.get("stimulation2")!=null){
+                                            if(reason.get("self-stimulatory behaviour2")!=null){
                                                 tmpReason = tmpReason + "행동을 하는 것 자체가 좋아서 / ";
                                             }
-                                            if(reason.get("stimulation3")!=null){
+                                            if(reason.get("self-stimulatory behaviour3")!=null){
                                                 tmpReason = tmpReason + "행동이 주는 자극을 얻으려고 / ";
                                             }
-                                            if(reason.get("demand1")!=null){
-                                                tmpReason = tmpReason + "원하는 것을 즉각 얻지 못해서 / ";
-                                            }
-                                            if(reason.get("demand2")!=null){
-                                                tmpReason = tmpReason + "원하는 물건을 가질 수 없어서 / ";
-                                            }
-                                            if(reason.get("demand3")!=null){
-                                                tmpReason = tmpReason + "어떤 물건(장난감)을 갖기 위해서 / ";
-                                            }
-                                            if(reason.get("demand4")!=null){
-                                                tmpReason = tmpReason + "본인이 갖고 싶은 물건을 얻으려고 / ";
-                                            }
-                                            if(reason.get("taskevation1")!=null){
+                                            if(reason.get("escape1")!=null){
                                                 tmpReason = tmpReason + "시키는 일을 거부하려고 / ";
                                             }
-                                            if(reason.get("taskevation2")!=null){
+                                            if(reason.get("escape2")!=null){
                                                 tmpReason = tmpReason + "하려고 한 일이 힘들어서 / ";
                                             }
-                                            if(reason.get("taskevation3")!=null){
+                                            if(reason.get("escape3")!=null){
                                                 tmpReason = tmpReason + "주어진 일을 하기 싫어서 / ";
                                             }
-                                            if(reason.get("taskevation4")!=null){
+                                            if(reason.get("escape4")!=null){
                                                 tmpReason = tmpReason + "시키는 일이 어려워 피하려고 / ";
+                                            }
+                                            if(reason.get("tangibles1")!=null){
+                                                tmpReason = tmpReason + "원하는 것을 즉각 얻지 못해서 / ";
+                                            }
+                                            if(reason.get("tangibles2")!=null){
+                                                tmpReason = tmpReason + "원하는 물건을 가질 수 없어서 / ";
+                                            }
+                                            if(reason.get("tangibles3")!=null){
+                                                tmpReason = tmpReason + "어떤 물건(장난감)을 갖기 위해서 / ";
+                                            }
+                                            if(reason.get("tangibles4")!=null){
+                                                tmpReason = tmpReason + "본인이 갖고 싶은 물건을 얻으려고 / ";
                                             }
 
                                             data.add(new String[]{formatter.format(document.get("start_time")), formatter.format(document.get("end_time")), document.get("place").toString(), document.get("categorization").toString(),
