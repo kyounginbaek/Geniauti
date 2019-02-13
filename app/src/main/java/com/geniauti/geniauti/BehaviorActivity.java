@@ -333,6 +333,8 @@ public class BehaviorActivity extends AppCompatActivity implements BehaviorFirst
                                                 finish();
                                                 Toast toast = Toast.makeText(BehaviorActivity.this, "행동 생성이 완료되었습니다.", Toast.LENGTH_SHORT);
                                                 toast.show();
+
+                                                ChartDayFragment.mProgressView.setVisibility(View.VISIBLE);
                                             }
                                         })
                                         .addOnFailureListener(new OnFailureListener() {

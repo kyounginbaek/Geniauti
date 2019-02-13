@@ -6,8 +6,10 @@ import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
+import android.util.Log;
 import android.widget.RemoteViews;
 
+import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -16,24 +18,20 @@ import java.util.TimerTask;
  */
 public class TimerWidget extends AppWidgetProvider {
 
+    private static Timer timer;
     private static boolean timerOn = false;
-    private static int second = 0;
-    private static int minute = 0;
+    public static boolean widgetUsed = false;
+    public static Date startTime;
+    public static int second = 0;
     public static String TIMER_START_BUTTON = "com.geniauti.geniauti.TIMER_START_BUTTON";
     public static String TIMER_RESET_BUTTON = "com.geniauti.geniauti.TIMER_RESET_BUTTON";
+    private static RemoteViews views;
 
     static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
                                 int appWidgetId) {
 
         // Construct the RemoteViews object
-        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.timer_widget);
-
-        Intent intentStart = new Intent(context, TimerWidget.class);
-        intentStart.setAction(TIMER_START_BUTTON);
-        intentStart.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
-        PendingIntent pendingStart = PendingIntent.getBroadcast(context, appWidgetId,
-                intentStart, 0);
-        views.setOnClickPendingIntent(R.id.widget_start_button, pendingStart);
+        views = new RemoteViews(context.getPackageName(), R.layout.timer_widget);
 
         Intent intentRest = new Intent(context, TimerWidget.class);
         intentRest.setAction(TIMER_RESET_BUTTON);
@@ -44,8 +42,15 @@ public class TimerWidget extends AppWidgetProvider {
 
         if(timerOn) {
             views.setTextViewText(R.id.widget_start_button, "종료");
-            views.setTextViewText(R.id.widget_timer, String.valueOf(second));
+            views.setTextViewText(R.id.widget_timer, String.format("%2s", String.valueOf(second/60)).replace(' ', '0') + " : " + String.format("%2s", String.valueOf(second%60)).replace(' ', '0'));
         } else {
+            Intent intentStart = new Intent(context, TimerWidget.class);
+            intentStart.setAction(TIMER_START_BUTTON);
+            intentStart.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
+            PendingIntent pendingStart = PendingIntent.getBroadcast(context, appWidgetId,
+                    intentStart, 0);
+            views.setOnClickPendingIntent(R.id.widget_start_button, pendingStart);
+
             views.setTextViewText(R.id.widget_start_button, "시작");
             views.setTextViewText(R.id.widget_timer, "00 : 00");
         }
@@ -80,12 +85,35 @@ public class TimerWidget extends AppWidgetProvider {
             final int id = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
                     AppWidgetManager.INVALID_APPWIDGET_ID);
 
-            if(timerOn) {
-
-
-            } else {
-                timerOn = true;
+            if(timerOn==true){
+                if (timer != null){
+                    timer.cancel();
+                    timer.purge();
+                    timer = null;
+                }
+                widgetUsed = true;
+                timerOn = false;
                 updateAppWidget(context, AppWidgetManager.getInstance(context), id);
+
+                Intent i = new Intent();
+                i.setClassName(context.getPackageName(), SplashActivity.class.getName());
+                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(i);
+            } else {
+                second = 0;
+                startTime = new Date();
+                widgetUsed = false;
+                timerOn = true;
+                timer = null;
+                timer = new Timer();
+                timer.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        second++;
+                        updateAppWidget(context, AppWidgetManager.getInstance(context), id);
+                    }
+
+                },0,1000);//Update text every second
             }
 
             return;
@@ -95,10 +123,15 @@ public class TimerWidget extends AppWidgetProvider {
             int id = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
                     AppWidgetManager.INVALID_APPWIDGET_ID);
 
-            if(timerOn) {
+            if(timerOn==true) {
+                if (timer != null){
+                    timer.cancel();
+                    timer.purge();
+                    timer = null;
+                }
+                widgetUsed = false;
                 timerOn = false;
                 second = 0;
-                minute = 0;
                 updateAppWidget(context, AppWidgetManager.getInstance(context), id);
             }
 

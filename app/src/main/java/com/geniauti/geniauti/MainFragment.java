@@ -413,11 +413,16 @@ public class MainFragment extends Fragment {
                                 cardListView.setAdapter(cardAdapter);
                             }
                         }
+
+                        if(TimerWidget.widgetUsed == true) {
+                            TimerWidget.widgetUsed = false;
+                            Intent intent = new Intent(getActivity(), BehaviorActivity.class);
+                            startActivity(intent);
+                        }
                     }
                 });
 
         // Today List View
-        int date = cal.get(Calendar.DATE);
         int month = cal.get(Calendar.MONTH);
         int dayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
         String korDayOfWeek = "";

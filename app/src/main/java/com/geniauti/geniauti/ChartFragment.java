@@ -77,7 +77,6 @@ public class ChartFragment extends Fragment implements ChartDayFragment.OnFragme
         }
         v = inflater.inflate(R.layout.fragment_chart, container, false);
 
-
         // Setting ViewPager for each Tabs
         viewPager = (CustomViewPager) v.findViewById(R.id.chart_viewpager);
         setupViewPager(viewPager);

@@ -68,9 +68,10 @@ public class TemplateChartYearFragment extends Fragment {
 
     private int january = 0, february = 0, march = 0, afril = 0, may = 0, june = 0, july = 0, august = 0, september = 0, october = 0, november = 0, december = 0;
     private int januaryIntensity = 5, februaryIntensity = 5, marchIntensity = 5, afrilIntensity = 5, mayIntensity = 5, juneIntensity = 5, julyIntensity = 5, augustIntensity = 5, septemberIntensity = 5, octoberIntensity = 5, novemberIntensity = 5, decemberIntensity = 5;
-    private int interest = 0, demand = 0, selfstimulation = 0, taskevation = 0, reasonEtc = 0;
+    private int interest = 0, demand = 0, selfstimulation = 0, taskevation = 0;
     private int selfharm = 0, harm = 0, destruction = 0, breakaway = 0, sexual = 0, typeEtc = 0;
-    private int home = 0, mart = 0, restaurant = 0, school = 0, locationEtc = 0;
+    private int home = 0, mart = 0, restaurant = 0, school = 0;
+    private HashMap<String, Integer> xLocations = new HashMap<>();
     private int yearNumber = 0, yearIntensity = 0;
     private double yearTime = 0.0;
     private String intensity;
@@ -269,6 +270,9 @@ public class TemplateChartYearFragment extends Fragment {
                         break;
                     case "학교":
                         school = Integer.parseInt(pair.getValue().toString());
+                        break;
+                    default:
+                        xLocations.put(pair.getKey().toString(), Integer.parseInt(pair.getValue().toString()));
                         break;
                 }
             }
@@ -562,7 +566,7 @@ public class TemplateChartYearFragment extends Fragment {
         YAxis yAxisLeftReasons = chartReasons.getAxisLeft();
         yAxisLeftReasons.setStartAtZero(true);
         yAxisLeftReasons.setEnabled(false);
-        int maxReason = maxNumber5(reasonEtc, taskevation, selfstimulation, demand, interest);
+        int maxReason = maxNumber4(taskevation, selfstimulation, demand, interest);
         yAxisLeftReasons.setLabelCount(maxReason, false);
         yAxisLeftReasons.setAxisMaxValue(maxReason);
 
@@ -571,11 +575,10 @@ public class TemplateChartYearFragment extends Fragment {
         yAxisRightReasons.setLabelCount(maxReason, false);
         yAxisRightReasons.setAxisMaxValue(maxReason);
 
-        yReasons.add(new BarEntry(0, reasonEtc));
-        yReasons.add(new BarEntry(1, taskevation));
-        yReasons.add(new BarEntry(2, selfstimulation));
-        yReasons.add(new BarEntry(3, demand));
-        yReasons.add(new BarEntry(4, interest));
+        yReasons.add(new BarEntry(0, taskevation));
+        yReasons.add(new BarEntry(1, selfstimulation));
+        yReasons.add(new BarEntry(2, demand));
+        yReasons.add(new BarEntry(3, interest));
 
         BarDataSet setReasons = new BarDataSet(yReasons, "");
         setReasons.setColors(Color.parseColor("#2dc76d"));
@@ -643,8 +646,15 @@ public class TemplateChartYearFragment extends Fragment {
         chartLocations.setScaleEnabled(false);
         chartLocations.setTouchEnabled(false);
 
+        // for loop
         xLabelsLocations = new ArrayList<>();
-        xLabelsLocations.add("기타");
+        if(xLocations.size() != 0) {
+            Iterator it_location = xLocations.entrySet().iterator();
+            while (it_location.hasNext()) {
+                Map.Entry pair = (Map.Entry)it_location.next();
+                xLabelsLocations.add(pair.getKey().toString());
+            }
+        }
         xLabelsLocations.add("학교");
         xLabelsLocations.add("식당");
         xLabelsLocations.add("마트");
@@ -664,7 +674,9 @@ public class TemplateChartYearFragment extends Fragment {
         YAxis yAxisLeftLocations = chartLocations.getAxisLeft();
         yAxisLeftLocations.setStartAtZero(true);
         yAxisLeftLocations.setEnabled(false);
-        int maxLocation = maxNumber5(locationEtc, school, restaurant, mart, home);
+
+        // for loop
+        int maxLocation = maxNumberLocation(xLocations, school, restaurant, mart, home);
         yAxisLeftLocations.setLabelCount(maxLocation, false);
         yAxisLeftLocations.setAxisMaxValue(maxLocation);
 
@@ -673,11 +685,22 @@ public class TemplateChartYearFragment extends Fragment {
         yAxisRightLocations.setLabelCount(maxLocation, false);
         yAxisRightLocations.setAxisMaxValue(maxLocation);
 
-        yLocations.add(new BarEntry(0, locationEtc));
-        yLocations.add(new BarEntry(1, school));
-        yLocations.add(new BarEntry(2, restaurant));
-        yLocations.add(new BarEntry(3, mart));
-        yLocations.add(new BarEntry(4, home));
+        // for loop
+        int nLocations = 0;
+
+        if(xLocations.size() != 0) {
+            Iterator it_location = xLocations.entrySet().iterator();
+            while (it_location.hasNext()) {
+                Map.Entry pair = (Map.Entry)it_location.next();
+                yLocations.add(new BarEntry(nLocations, Integer.parseInt(pair.getValue().toString())));
+                nLocations++;
+            }
+        }
+
+        yLocations.add(new BarEntry(nLocations, school));
+        yLocations.add(new BarEntry(nLocations+1, restaurant));
+        yLocations.add(new BarEntry(nLocations+2, mart));
+        yLocations.add(new BarEntry(nLocations+3, home));
 
         BarDataSet setLocations = new BarDataSet(yLocations, "");
         setLocations.setColors(Color.parseColor("#2dc76d"));
@@ -711,8 +734,29 @@ public class TemplateChartYearFragment extends Fragment {
         return 0;
     }
 
-    public int maxNumber5(int n1, int n2, int n3, int n4, int n5) {
-        List<Integer> list = Arrays.asList(n1, n2, n3, n4, n5);
+    public int maxNumber4(int n1, int n2, int n3, int n4) {
+        List<Integer> list = Arrays.asList(n1, n2, n3, n4);
+        return Collections.max(list);
+    }
+
+    public int maxNumberLocation(HashMap<String, Integer> n, int n2, int n3, int n4, int n5) {
+
+        List<Integer> list;
+
+        if(n.size() != 0) {
+            int n1 = 0;
+            Iterator it_n = n.entrySet().iterator();
+            while (it_n.hasNext()) {
+                Map.Entry pair = (Map.Entry)it_n.next();
+                if(Integer.parseInt(pair.getValue().toString()) > n1) {
+                    n1 = Integer.parseInt(pair.getValue().toString());
+                }
+            }
+            list = Arrays.asList(n1, n2, n3, n4, n5);
+        } else {
+            list = Arrays.asList(n2, n3, n4, n5);
+        }
+
         return Collections.max(list);
     }
 

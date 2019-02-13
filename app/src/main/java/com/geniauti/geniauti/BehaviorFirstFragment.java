@@ -112,9 +112,22 @@ public class BehaviorFirstFragment extends Fragment {
             startTimeText.setText(hour_start);
             endTimeText.setText(hour_end);
         } else {
-            Date dateToday = new Date();
-            long curTimeInMs = dateToday.getTime();
-            Date afterAddingMins = new Date(curTimeInMs + (5 * ONE_MINUTE_IN_MILLIS));
+
+            Date dateToday;
+            Date afterAddingMins;
+
+            if(TimerWidget.second != 0) {
+                dateToday = TimerWidget.startTime;
+                long curTimeInMs = dateToday.getTime();
+                afterAddingMins = new Date(curTimeInMs + (TimerWidget.second * 1000));
+
+                TimerWidget.second = 0;
+                TimerWidget.startTime = null;
+            } else {
+                dateToday = new Date();
+                long curTimeInMs = dateToday.getTime();
+                afterAddingMins = new Date(curTimeInMs + (5 * ONE_MINUTE_IN_MILLIS));
+            }
 
             date_start = formatterDate.format(dateToday);
             dateText.setText(date_start);

@@ -4,6 +4,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -68,9 +69,10 @@ public class TemplateChartWeekFragment extends Fragment {
 
     private int sunday = 0, monday = 0, tuesday = 0, wednesday = 0, thursday = 0, friday = 0, saturday = 0;
     private int sundayIntensity = 5, mondayIntensity = 5, tuesdayIntensity = 5, wednesdayIntensity = 5, thursdayIntensity = 5, fridayIntensity = 5, saturdayIntensity = 5;
-    private int interest = 0, demand = 0, selfstimulation = 0, taskevation = 0, reasonEtc = 0;
+    private int interest = 0, demand = 0, selfstimulation = 0, taskevation = 0;
     private int selfharm = 0, harm = 0, destruction = 0, breakaway = 0, sexual = 0, typeEtc = 0;
-    private int home = 0, mart = 0, restaurant = 0, school = 0, locationEtc = 0;
+    private int home = 0, mart = 0, restaurant = 0, school = 0;
+    private HashMap<String, Integer> xLocations = new HashMap<>();
     private int weekNumber = 0, weekIntensity = 0;
     private double weekTime = 0.0;
     private String intensity;
@@ -176,10 +178,14 @@ public class TemplateChartWeekFragment extends Fragment {
 
         for(int i = 0; i < 7; i++) {
             Calendar tmpCal = calSunday;
-            tmpCal.add(Calendar.DATE, +i);
+            if(i == 0) {
+                tmpCal.add(Calendar.DATE, 0);
+            } else {
+                tmpCal.add(Calendar.DATE, 1);
+            }
 
-            if(ChartDayFragment.statisticsHashMap.containsKey(sdfNew.format(tmpCal.getTime()))) {
-                statisticData = ChartDayFragment.statisticsHashMap.get(sdfNew.format(tmpCal.getTime()));
+            if(ChartWeekFragment.statisticsHashMap.containsKey(sdfNew.format(tmpCal.getTime()))) {
+                statisticData = ChartWeekFragment.statisticsHashMap.get(sdfNew.format(tmpCal.getTime()));
 
                 int tmpDayOfWeek = tmpCal.get(Calendar.DAY_OF_WEEK);
 
@@ -285,6 +291,9 @@ public class TemplateChartWeekFragment extends Fragment {
                             break;
                         case "학교":
                             school += Integer.parseInt(pair.getValue().toString());
+                            break;
+                        default:
+                            xLocations.put(pair.getKey().toString(), Integer.parseInt(pair.getValue().toString()));
                             break;
                     }
                 }
@@ -547,7 +556,7 @@ public class TemplateChartWeekFragment extends Fragment {
         YAxis yAxisLeftReasons = chartReasons.getAxisLeft();
         yAxisLeftReasons.setStartAtZero(true);
         yAxisLeftReasons.setEnabled(false);
-        int maxReason = maxNumber5(reasonEtc, taskevation, selfstimulation, demand, interest);
+        int maxReason = maxNumber4(taskevation, selfstimulation, demand, interest);
         yAxisLeftReasons.setLabelCount(maxReason, false);
         yAxisLeftReasons.setAxisMaxValue(maxReason);
 
@@ -556,11 +565,10 @@ public class TemplateChartWeekFragment extends Fragment {
         yAxisRightReasons.setLabelCount(maxReason, false);
         yAxisRightReasons.setAxisMaxValue(maxReason);
 
-        yReasons.add(new BarEntry(0, reasonEtc));
-        yReasons.add(new BarEntry(1, taskevation));
-        yReasons.add(new BarEntry(2, selfstimulation));
-        yReasons.add(new BarEntry(3, demand));
-        yReasons.add(new BarEntry(4, interest));
+        yReasons.add(new BarEntry(0, taskevation));
+        yReasons.add(new BarEntry(1, selfstimulation));
+        yReasons.add(new BarEntry(2, demand));
+        yReasons.add(new BarEntry(3, interest));
 
         BarDataSet setReasons = new BarDataSet(yReasons, "");
         setReasons.setColors(Color.parseColor("#2dc76d"));
@@ -628,8 +636,15 @@ public class TemplateChartWeekFragment extends Fragment {
         chartLocations.setScaleEnabled(false);
         chartLocations.setTouchEnabled(false);
 
+        // for loop
         xLabelsLocations = new ArrayList<>();
-        xLabelsLocations.add("기타");
+        if(xLocations.size() != 0) {
+            Iterator it_location = xLocations.entrySet().iterator();
+            while (it_location.hasNext()) {
+                Map.Entry pair = (Map.Entry)it_location.next();
+                xLabelsLocations.add(pair.getKey().toString());
+            }
+        }
         xLabelsLocations.add("학교");
         xLabelsLocations.add("식당");
         xLabelsLocations.add("마트");
@@ -649,7 +664,9 @@ public class TemplateChartWeekFragment extends Fragment {
         YAxis yAxisLeftLocations = chartLocations.getAxisLeft();
         yAxisLeftLocations.setStartAtZero(true);
         yAxisLeftLocations.setEnabled(false);
-        int maxLocation = maxNumber5(locationEtc, school, restaurant, mart, home);
+
+        // for loop
+        int maxLocation = maxNumberLocation(xLocations, school, restaurant, mart, home);
         yAxisLeftLocations.setLabelCount(maxLocation, false);
         yAxisLeftLocations.setAxisMaxValue(maxLocation);
 
@@ -658,11 +675,22 @@ public class TemplateChartWeekFragment extends Fragment {
         yAxisRightLocations.setLabelCount(maxLocation, false);
         yAxisRightLocations.setAxisMaxValue(maxLocation);
 
-        yLocations.add(new BarEntry(0, locationEtc));
-        yLocations.add(new BarEntry(1, school));
-        yLocations.add(new BarEntry(2, restaurant));
-        yLocations.add(new BarEntry(3, mart));
-        yLocations.add(new BarEntry(4, home));
+        // for loop
+        int nLocations = 0;
+
+        if(xLocations.size() != 0) {
+            Iterator it_location = xLocations.entrySet().iterator();
+            while (it_location.hasNext()) {
+                Map.Entry pair = (Map.Entry)it_location.next();
+                yLocations.add(new BarEntry(nLocations, Integer.parseInt(pair.getValue().toString())));
+                nLocations++;
+            }
+        }
+
+        yLocations.add(new BarEntry(nLocations, school));
+        yLocations.add(new BarEntry(nLocations+1, restaurant));
+        yLocations.add(new BarEntry(nLocations+2, mart));
+        yLocations.add(new BarEntry(nLocations+3, home));
 
         BarDataSet setLocations = new BarDataSet(yLocations, "");
         setLocations.setColors(Color.parseColor("#2dc76d"));
@@ -696,117 +724,29 @@ public class TemplateChartWeekFragment extends Fragment {
         return 0;
     }
 
-    public void weekCalculate(Date date) {
-
-        ChartWeekFragment.statisticsHashMap.get(sdfNew.format(date.getTime()));
-
-        HashMap<String, Object> behavior_freq = statisticData.behavior_freq;
-        Iterator it_behavior_freq = behavior_freq.entrySet().iterator();
-        while (it_behavior_freq.hasNext()) {
-            Map.Entry pair = (Map.Entry)it_behavior_freq.next();
-            switch(Integer.parseInt(pair.getKey().toString())) {
-                case 0:
-                    saturday += 1;
-                    break;
-                case 1:
-                    friday += 1;
-                    break;
-                case 2:
-                    thursday += 1;
-                    break;
-                case 3:
-                    wednesday += 1;
-                    break;
-                case 4:
-                    tuesday += 1;
-                    break;
-                case 5:
-                    monday += 1;
-                    break;
-                case 6:
-                    sunday += 1;
-                    break;
-            }
-        }
-
-        HashMap<String, Object> summary = statisticData.summary;
-        weekNumber += Integer.parseInt(summary.get("count").toString());
-        weekTime += Integer.parseInt(summary.get("duration_min").toString());
-        weekIntensity += Integer.parseInt(summary.get("intensity_sum").toString());
-
-        HashMap<String, Object> type = statisticData.type;
-        Iterator it_type = type.entrySet().iterator();
-        while (it_type.hasNext()) {
-            Map.Entry pair = (Map.Entry)it_type.next();
-            switch(pair.getKey().toString()) {
-                case "selfharm":
-                    selfharm += Integer.parseInt(pair.getValue().toString());
-                    break;
-                case "harm":
-                    harm += Integer.parseInt(pair.getValue().toString());
-                    break;
-                case "destruction":
-                    destruction += Integer.parseInt(pair.getValue().toString());
-                    break;
-                case "breakaway":
-                    breakaway += Integer.parseInt(pair.getValue().toString());
-                    break;
-                case "sexual":
-                    sexual += Integer.parseInt(pair.getValue().toString());
-                    break;
-                case "etc":
-                    typeEtc += Integer.parseInt(pair.getValue().toString());
-                    break;
-            }
-        }
-
-        HashMap<String, Object> reason_type = statisticData.reason_type;
-        Iterator it_reason_type = reason_type.entrySet().iterator();
-        while (it_reason_type.hasNext()) {
-            Map.Entry pair = (Map.Entry)it_reason_type.next();
-            switch(pair.getKey().toString()) {
-                case "interest":
-                    interest += Integer.parseInt(pair.getValue().toString());
-                    break;
-                case "selfstimulation":
-                    selfstimulation += Integer.parseInt(pair.getValue().toString());
-                    break;
-                case "taskevation":
-                    taskevation += Integer.parseInt(pair.getValue().toString());
-                    break;
-                case "demand":
-                    demand += Integer.parseInt(pair.getValue().toString());
-                    break;
-                case "etc":
-                    reasonEtc += Integer.parseInt(pair.getValue().toString());
-                    break;
-            }
-        }
-
-        HashMap<String, Object> place = statisticData.place;
-        Iterator it_place = place.entrySet().iterator();
-        while (it_place.hasNext()) {
-            Map.Entry pair = (Map.Entry)it_place.next();
-            switch(pair.getKey().toString()) {
-                case "집":
-                    home += Integer.parseInt(pair.getValue().toString());
-                    break;
-                case "마트":
-                    mart += Integer.parseInt(pair.getValue().toString());
-                    break;
-                case "식당":
-                    restaurant += Integer.parseInt(pair.getValue().toString());
-                    break;
-                case "학교":
-                    school += Integer.parseInt(pair.getValue().toString());
-                    break;
-            }
-        }
-
+    public int maxNumber4(int n1, int n2, int n3, int n4) {
+        List<Integer> list = Arrays.asList(n1, n2, n3, n4);
+        return Collections.max(list);
     }
 
-    public int maxNumber5(int n1, int n2, int n3, int n4, int n5) {
-        List<Integer> list = Arrays.asList(n1, n2, n3, n4, n5);
+    public int maxNumberLocation(HashMap<String, Integer> n, int n2, int n3, int n4, int n5) {
+
+        List<Integer> list;
+
+        if(n.size() != 0) {
+            int n1 = 0;
+            Iterator it_n = n.entrySet().iterator();
+            while (it_n.hasNext()) {
+                Map.Entry pair = (Map.Entry)it_n.next();
+                if(Integer.parseInt(pair.getValue().toString()) > n1) {
+                    n1 = Integer.parseInt(pair.getValue().toString());
+                }
+            }
+            list = Arrays.asList(n1, n2, n3, n4, n5);
+        } else {
+            list = Arrays.asList(n2, n3, n4, n5);
+        }
+
         return Collections.max(list);
     }
 

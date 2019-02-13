@@ -2,7 +2,9 @@ package com.geniauti.geniauti;
 
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -10,17 +12,23 @@ import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
@@ -50,13 +58,16 @@ public class ChartDayFragment extends Fragment implements TemplateChartDayFragme
     private OnFragmentInteractionListener mListener;
     public static ViewPager viewPager;
     public static ViewPagerAdapter adapter;
-    private TextView todayDate;
+    public static TextView todayDate;
     private Calendar cal, tmpcal;
     private SimpleDateFormat sdf, sdfNew;
-    private ImageView forwardButton;
+    public static ImageView forwardButton;
+    public static ImageView backButton;
     private String todayDateandTime;
     private String previousDateandTime;
     private int lastPage;
+
+    public static View mProgressView;
 
     public ChartDayFragment() {
         // Required empty public constructor
@@ -95,20 +106,15 @@ public class ChartDayFragment extends Fragment implements TemplateChartDayFragme
         // Inflate the layout for this fragment
         v = inflater.inflate(R.layout.fragment_chart_day, container, false);
 
+        mProgressView = (View) v.findViewById(R.id.chart_day_progress);
+        mProgressView.bringToFront();
+
         todayDate = v.findViewById(R.id.txt_chart_day);
         sdf = new SimpleDateFormat("yyyy년 MM월 dd일 E요일", Locale.KOREAN);
         sdfNew = new SimpleDateFormat("yyyyMMdd", Locale.KOREAN);
-        cal = Calendar.getInstance();
-        todayDateandTime = sdf.format(cal.getTime());
-        todayDate.setText(todayDateandTime);
 
-        tmpcal = Calendar.getInstance();
-        tmpcal.add(Calendar.DATE, -1);
-        previousDateandTime = sdf.format(tmpcal.getTime());
-
-        ImageView backButton = v.findViewById(R.id.chart_day_back);
+        backButton = v.findViewById(R.id.chart_day_back);
         forwardButton = v.findViewById(R.id.chart_day_forward);
-        forwardButton.setVisibility(View.GONE);
 
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -124,27 +130,41 @@ public class ChartDayFragment extends Fragment implements TemplateChartDayFragme
             }
         });
 
-        statisticsHashMap = new HashMap<>();
+        viewPager = (ViewPager) v.findViewById(R.id.chart_day_viewpager);
 
-        CollectionReference docRef = MainActivity.db
-                .collection("statistics").document(MainActivity.cid).collection("day");
-
-        docRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        MainActivity.db.collection("statistics").document(MainActivity.cid).collection("day")
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    for (QueryDocumentSnapshot document : task.getResult()) {
-                        if(document.exists()) {
-                            Statistics item = new Statistics(document.getId(), (HashMap<String, Object>) document.get("behavior_freq"), (HashMap<String, Object>) document.get("summary"), (HashMap<String, Object>) document.get("type"), (HashMap<String, Object>) document.get("reason_type"), (HashMap<String, Object>) document.get("place"));
-                            statisticsHashMap.put(document.getId(), item);
-                        }
-                    }
+            public void onEvent(@Nullable QuerySnapshot value,
+                                @Nullable FirebaseFirestoreException e) {
+                if (e != null) {
+//                            Log.w(TAG, "Listen failed.", e);
+                    return;
+                }
 
-                    // Setting ViewPager for each Tabs
-                    viewPager = (ViewPager) v.findViewById(R.id.chart_day_viewpager);
-                    setupViewPager(viewPager);
+                statisticsHashMap = new HashMap<>();
+
+                for (QueryDocumentSnapshot doc : value) {
+                    Statistics item = new Statistics(doc.getId(), (HashMap<String, Object>) doc.get("behavior_freq"), (HashMap<String, Object>) doc.get("summary"),
+                            (HashMap<String, Object>) doc.get("type"), (HashMap<String, Object>) doc.get("reason_type"), (HashMap<String, Object>) doc.get("place"));
+                    statisticsHashMap.put(doc.getId(), item);
+                }
+
+                if(getActivity()!=null) {
+                    forwardButton.setVisibility(View.GONE);
+
+                    cal = Calendar.getInstance();
+                    todayDateandTime = sdf.format(cal.getTime());
+                    todayDate.setText(todayDateandTime);
+
+                    tmpcal = Calendar.getInstance();
+                    tmpcal.add(Calendar.DATE, -1);
+                    previousDateandTime = sdf.format(tmpcal.getTime());
+
+                    adapter = new ViewPagerAdapter(getFragmentManager());
+                    viewPager.setAdapter(adapter);
+                    viewPager.setCurrentItem(adapter.getCount()-1);
                     lastPage = adapter.getCount()-1;
-
                     viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener()
                     {
                         @Override
@@ -181,13 +201,9 @@ public class ChartDayFragment extends Fragment implements TemplateChartDayFragme
                         }
                     });
 
-                } else {
-//                    Log.d(TAG, "get failed with ", task.getException());
                 }
             }
         });
-
-
 
 //        db.collection("childs")
 //                .whereGreaterThanOrEqualTo("users."+user.getUid()+".name", "")
@@ -268,11 +284,6 @@ public class ChartDayFragment extends Fragment implements TemplateChartDayFragme
         return v;
     }
 
-    private void setupViewPager(ViewPager viewPager) {
-        adapter = new ViewPagerAdapter(getFragmentManager());
-        viewPager.setAdapter(adapter);
-        viewPager.setCurrentItem(adapter.getCount()-1);
-    }
 
     public class ViewPagerAdapter extends FragmentStatePagerAdapter {
 
@@ -298,6 +309,21 @@ public class ChartDayFragment extends Fragment implements TemplateChartDayFragme
         @Override
         public int getItemPosition(Object object) {
             return POSITION_NONE;
+        }
+
+        @Override
+        public Parcelable saveState()
+        {
+            Bundle bundle = (Bundle) super.saveState();
+            if (bundle != null)
+            {
+                // Never maintain any states from the base class, just null it out
+                bundle.putParcelableArray("states", null);
+            } else
+            {
+                // do nothing
+            }
+            return bundle;
         }
 
     }

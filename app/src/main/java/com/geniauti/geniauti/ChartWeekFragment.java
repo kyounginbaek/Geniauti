@@ -2,7 +2,9 @@ package com.geniauti.geniauti;
 
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -18,7 +20,9 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -55,13 +59,16 @@ public class ChartWeekFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
     public static ViewPager viewPager;
     public static ViewPagerAdapter adapter;
-    private TextView weekDate;
+    public static TextView weekDate;
     private Calendar cal, calSunday, calSaturday, tmpcal;
     private SimpleDateFormat sdf, sdfNew, sdfCompare, sdfDay;
-    private ImageView forwardButton;
+    public static ImageView forwardButton;
+    public static ImageView backButton;
     private String weekDateandTime;
     private String previousDateandTime;
     private int lastPage;
+
+    public static View mProgressView;
 
     public ChartWeekFragment() {
         // Required empty public constructor
@@ -100,48 +107,17 @@ public class ChartWeekFragment extends Fragment {
         // Inflate the layout for this fragment
         v = inflater.inflate(R.layout.fragment_chart_week, container, false);
 
+        mProgressView = (View) v.findViewById(R.id.chart_week_progress);
+        mProgressView.bringToFront();
+
         weekDate = v.findViewById(R.id.txt_chart_week);
         sdf = new SimpleDateFormat("yyyy년 MM월", Locale.KOREAN);
         sdfNew = new SimpleDateFormat("yyyyMMdd", Locale.KOREAN);
         sdfCompare = new SimpleDateFormat("yyyy년 MM월 dd일", Locale.KOREAN);
         sdfDay = new SimpleDateFormat("dd일", Locale.KOREAN);
-        cal = Calendar.getInstance();
-        calSunday = Calendar.getInstance();
-        calSaturday = Calendar.getInstance();
-        weekDateandTime = sdfCompare.format(cal.getTime());
 
-        int dayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
-        if (Calendar.MONDAY == dayOfWeek) {
-            calSunday.add(Calendar.DATE, -1);
-            calSaturday.add(Calendar.DATE, +5);
-        } else if (Calendar.TUESDAY == dayOfWeek) {
-            calSunday.add(Calendar.DATE, -2);
-            calSaturday.add(Calendar.DATE, +4);
-        } else if (Calendar.WEDNESDAY == dayOfWeek) {
-            calSunday.add(Calendar.DATE, -3);
-            calSaturday.add(Calendar.DATE, +3);
-        } else if (Calendar.THURSDAY == dayOfWeek) {
-            calSunday.add(Calendar.DATE, -4);
-            calSaturday.add(Calendar.DATE, +2);
-        } else if (Calendar.FRIDAY == dayOfWeek) {
-            calSunday.add(Calendar.DATE, -5);
-            calSaturday.add(Calendar.DATE, +1);
-        } else if (Calendar.SATURDAY == dayOfWeek) {
-            calSunday.add(Calendar.DATE, -6);
-            calSaturday.add(Calendar.DATE, +0);
-        } else if (Calendar.SUNDAY == dayOfWeek) {
-            calSunday.add(Calendar.DATE, -0);
-            calSaturday.add(Calendar.DATE, +6);
-        }
-        weekDate.setText(weekDateResult(calSunday, calSaturday));
-
-        tmpcal = Calendar.getInstance();
-        tmpcal.add(Calendar.DATE, -7);
-        previousDateandTime = sdfCompare.format(tmpcal.getTime());
-
-        ImageView backButton = v.findViewById(R.id.chart_week_back);
+        backButton = v.findViewById(R.id.chart_week_back);
         forwardButton = v.findViewById(R.id.chart_week_forward);
-        forwardButton.setVisibility(View.GONE);
 
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -157,73 +133,109 @@ public class ChartWeekFragment extends Fragment {
             }
         });
 
+        viewPager = (ViewPager) v.findViewById(R.id.chart_week_viewpager);
 
-        statisticsHashMap = new HashMap<>();
+        MainActivity.db.collection("statistics").document(MainActivity.cid).collection("day")
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable QuerySnapshot value,
+                                        @Nullable FirebaseFirestoreException e) {
+                        if (e != null) {
+//                            Log.w(TAG, "Listen failed.", e);
+                            return;
+                        }
 
-        CollectionReference docRef = MainActivity.db
-                .collection("statistics").document(MainActivity.cid).collection("day");
+                        statisticsHashMap = new HashMap<>();
 
-        docRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    for (QueryDocumentSnapshot document : task.getResult()) {
-                        if(document.exists()) {
-                            Statistics item = new Statistics(document.getId(), (HashMap<String, Object>) document.get("behavior_freq"), (HashMap<String, Object>) document.get("summary"), (HashMap<String, Object>) document.get("type"), (HashMap<String, Object>) document.get("reason_type"), (HashMap<String, Object>) document.get("place"));
-                            statisticsHashMap.put(document.getId(), item);
+                        for (QueryDocumentSnapshot doc : value) {
+                            Statistics item = new Statistics(doc.getId(), (HashMap<String, Object>) doc.get("behavior_freq"), (HashMap<String, Object>) doc.get("summary"),
+                                    (HashMap<String, Object>) doc.get("type"), (HashMap<String, Object>) doc.get("reason_type"), (HashMap<String, Object>) doc.get("place"));
+                            statisticsHashMap.put(doc.getId(), item);
+                        }
+
+                        if(getActivity()!=null) {
+                            forwardButton.setVisibility(View.GONE);
+
+                            cal = Calendar.getInstance();
+                            calSunday = Calendar.getInstance();
+                            calSaturday = Calendar.getInstance();
+                            weekDateandTime = sdfCompare.format(cal.getTime());
+
+                            int dayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
+                            if (Calendar.MONDAY == dayOfWeek) {
+                                calSunday.add(Calendar.DATE, -1);
+                                calSaturday.add(Calendar.DATE, +5);
+                            } else if (Calendar.TUESDAY == dayOfWeek) {
+                                calSunday.add(Calendar.DATE, -2);
+                                calSaturday.add(Calendar.DATE, +4);
+                            } else if (Calendar.WEDNESDAY == dayOfWeek) {
+                                calSunday.add(Calendar.DATE, -3);
+                                calSaturday.add(Calendar.DATE, +3);
+                            } else if (Calendar.THURSDAY == dayOfWeek) {
+                                calSunday.add(Calendar.DATE, -4);
+                                calSaturday.add(Calendar.DATE, +2);
+                            } else if (Calendar.FRIDAY == dayOfWeek) {
+                                calSunday.add(Calendar.DATE, -5);
+                                calSaturday.add(Calendar.DATE, +1);
+                            } else if (Calendar.SATURDAY == dayOfWeek) {
+                                calSunday.add(Calendar.DATE, -6);
+                                calSaturday.add(Calendar.DATE, +0);
+                            } else if (Calendar.SUNDAY == dayOfWeek) {
+                                calSunday.add(Calendar.DATE, -0);
+                                calSaturday.add(Calendar.DATE, +6);
+                            }
+                            weekDate.setText(weekDateResult(calSunday, calSaturday));
+
+                            tmpcal = Calendar.getInstance();
+                            tmpcal.add(Calendar.DATE, -7);
+                            previousDateandTime = sdfCompare.format(tmpcal.getTime());
+
+                            adapter = new ViewPagerAdapter(getFragmentManager());
+                            viewPager.setAdapter(adapter);
+                            viewPager.setCurrentItem(adapter.getCount()-1);
+                            lastPage = adapter.getCount()-1;
+                            viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener()
+                            {
+                                @Override
+                                public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels)
+                                {
+
+                                }
+
+                                @Override
+                                public void onPageSelected(int position)
+                                {
+                                    if(position < lastPage) {
+                                        cal.add(Calendar.DATE, -7);
+                                        calSunday.add(Calendar.DATE, -7);
+                                        calSaturday.add(Calendar.DATE, -7);
+                                        weekDate.setText(weekDateResult(calSunday, calSaturday));
+
+                                        if(sdfCompare.format(cal.getTime()).equals(previousDateandTime)) {
+                                            forwardButton.setVisibility(View.VISIBLE);
+                                        }
+                                    } else if(position > lastPage) {
+                                        cal.add(Calendar.DATE, +7);
+                                        calSunday.add(Calendar.DATE, +7);
+                                        calSaturday.add(Calendar.DATE, +7);
+                                        weekDate.setText(weekDateResult(calSunday, calSaturday));
+
+                                        if(sdfCompare.format(cal.getTime()).equals(weekDateandTime)) {
+                                            forwardButton.setVisibility(View.GONE);
+                                        }
+                                    }
+
+                                    lastPage = position;
+                                }
+
+                                @Override
+                                public void onPageScrollStateChanged(int state) {
+
+                                }
+                            });
                         }
                     }
-
-                    // Setting ViewPager for each Tabs
-                    viewPager = (ViewPager) v.findViewById(R.id.chart_week_viewpager);
-                    setupViewPager(viewPager);
-                    lastPage = adapter.getCount()-1;
-
-                    viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener()
-                    {
-                        @Override
-                        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels)
-                        {
-
-                        }
-
-                        @Override
-                        public void onPageSelected(int position)
-                        {
-                            if(position < lastPage) {
-                                cal.add(Calendar.DATE, -7);
-                                calSunday.add(Calendar.DATE, -7);
-                                calSaturday.add(Calendar.DATE, -7);
-                                weekDate.setText(weekDateResult(calSunday, calSaturday));
-
-                                if(sdfCompare.format(cal.getTime()).equals(previousDateandTime)) {
-                                    forwardButton.setVisibility(View.VISIBLE);
-                                }
-                            } else if(position > lastPage) {
-                                cal.add(Calendar.DATE, +7);
-                                calSunday.add(Calendar.DATE, +7);
-                                calSaturday.add(Calendar.DATE, +7);
-                                weekDate.setText(weekDateResult(calSunday, calSaturday));
-
-                                if(sdfCompare.format(cal.getTime()).equals(weekDateandTime)) {
-                                    forwardButton.setVisibility(View.GONE);
-                                }
-                            }
-
-                            lastPage = position;
-                        }
-
-                        @Override
-                        public void onPageScrollStateChanged(int state) {
-
-                        }
-                    });
-
-                } else {
-//                    Log.d(TAG, "get failed with ", task.getException());
-                }
-            }
-        });
+                });
 
 //        db.collection("childs")
 //                .whereGreaterThanOrEqualTo("users."+user.getUid()+".name", "")
@@ -309,16 +321,9 @@ public class ChartWeekFragment extends Fragment {
     }
 
     public String weekDateResult(Calendar calSunday, Calendar calSaturday) {
-
         return sdf.format(calSunday.getTime()) + " " + sdfDay.format(calSunday.getTime()) + " - " + sdf.format(calSaturday.getTime()) + " " + sdfDay.format(calSaturday.getTime());
     }
 
-    private void setupViewPager(ViewPager viewPager) {
-        adapter = new ViewPagerAdapter(getFragmentManager());
-        viewPager.setAdapter(adapter);
-        viewPager.setCurrentItem(adapter.getCount()-1);
-
-    }
 
     public class ViewPagerAdapter extends FragmentStatePagerAdapter {
 
@@ -342,6 +347,21 @@ public class ChartWeekFragment extends Fragment {
         @Override
         public int getItemPosition(Object object) {
             return POSITION_NONE;
+        }
+
+        @Override
+        public Parcelable saveState()
+        {
+            Bundle bundle = (Bundle) super.saveState();
+            if (bundle != null)
+            {
+                // Never maintain any states from the base class, just null it out
+                bundle.putParcelableArray("states", null);
+            } else
+            {
+                // do nothing
+            }
+            return bundle;
         }
 
     }

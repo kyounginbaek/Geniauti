@@ -69,9 +69,10 @@ public class TemplateChartMonthFragment extends Fragment {
 
     private int day1 = 0, day2 = 0, day3 = 0, day4 = 0, day5 = 0, day6 = 0, day7 = 0, day8 = 0, day9 = 0, day10 = 0, day11 = 0, day12 = 0, day13 = 0, day14 = 0, day15 = 0, day16 = 0, day17 = 0, day18 = 0, day19 = 0, day20 = 0, day21 = 0, day22 = 0, day23 = 0, day24 = 0, day25 = 0, day26 = 0, day27 = 0, day28 = 0, day29 = 0, day30 = 0, day31 = 0;
     private int intensity1 = 5, intensity2 = 5, intensity3 = 5, intensity4 = 5, intensity5 = 5, intensity6 = 5, intensity7 = 5, intensity8 = 5, intensity9 = 5, intensity10 = 5, intensity11 = 5, intensity12 = 5, intensity13 = 5, intensity14 = 5, intensity15 = 5, intensity16 = 5, intensity17 = 5, intensity18 = 5, intensity19 = 5, intensity20 = 5, intensity21 = 5, intensity22 = 5, intensity23 = 5, intensity24 = 5, intensity25 = 5, intensity26 = 5, intensity27 = 5, intensity28 = 5, intensity29 = 5, intensity30 = 5, intensity31 = 5;
-    private int interest = 0, demand = 0, selfstimulation = 0, taskevation = 0, reasonEtc = 0;
+    private int interest = 0, demand = 0, selfstimulation = 0, taskevation = 0;
     private int selfharm = 0, harm = 0, destruction = 0, breakaway = 0, sexual = 0, typeEtc = 0;
-    private int home = 0, mart = 0, restaurant = 0, school = 0, locationEtc = 0;
+    private int home = 0, mart = 0, restaurant = 0, school = 0;
+    private HashMap<String, Integer> xLocations = new HashMap<>();
     private int monthNumber = 0, monthIntensity = 0;
     private double monthTime = 0.0;
     private String intensity;
@@ -86,7 +87,7 @@ public class TemplateChartMonthFragment extends Fragment {
     public static int positionNum;
     private int getCount = ChartMonthFragment.adapter.getCount();
 
-    private int diff, tmp_diff;
+    private int diff;
 
     public TemplateChartMonthFragment() {
         // Required empty public constructor
@@ -323,6 +324,9 @@ public class TemplateChartMonthFragment extends Fragment {
                         break;
                     case "학교":
                         school = Integer.parseInt(pair.getValue().toString());
+                        break;
+                    default:
+                        xLocations.put(pair.getKey().toString(), Integer.parseInt(pair.getValue().toString()));
                         break;
                 }
             }
@@ -693,7 +697,7 @@ public class TemplateChartMonthFragment extends Fragment {
         YAxis yAxisLeftReasons = chartReasons.getAxisLeft();
         yAxisLeftReasons.setStartAtZero(true);
         yAxisLeftReasons.setEnabled(false);
-        int maxReason = maxNumber5(reasonEtc, taskevation, selfstimulation, demand, interest);
+        int maxReason = maxNumber4(taskevation, selfstimulation, demand, interest);
         yAxisLeftReasons.setLabelCount(maxReason, false);
         yAxisLeftReasons.setAxisMaxValue(maxReason);
 
@@ -702,11 +706,10 @@ public class TemplateChartMonthFragment extends Fragment {
         yAxisRightReasons.setLabelCount(maxReason, false);
         yAxisRightReasons.setAxisMaxValue(maxReason);
 
-        yReasons.add(new BarEntry(0, reasonEtc));
-        yReasons.add(new BarEntry(1, taskevation));
-        yReasons.add(new BarEntry(2, selfstimulation));
-        yReasons.add(new BarEntry(3, demand));
-        yReasons.add(new BarEntry(4, interest));
+        yReasons.add(new BarEntry(0, taskevation));
+        yReasons.add(new BarEntry(1, selfstimulation));
+        yReasons.add(new BarEntry(2, demand));
+        yReasons.add(new BarEntry(3, interest));
 
         BarDataSet setReasons = new BarDataSet(yReasons, "");
         setReasons.setColors(Color.parseColor("#2dc76d"));
@@ -774,8 +777,15 @@ public class TemplateChartMonthFragment extends Fragment {
         chartLocations.setScaleEnabled(false);
         chartLocations.setTouchEnabled(false);
 
+        // for loop
         xLabelsLocations = new ArrayList<>();
-        xLabelsLocations.add("기타");
+        if(xLocations.size() != 0) {
+            Iterator it_location = xLocations.entrySet().iterator();
+            while (it_location.hasNext()) {
+                Map.Entry pair = (Map.Entry)it_location.next();
+                xLabelsLocations.add(pair.getKey().toString());
+            }
+        }
         xLabelsLocations.add("학교");
         xLabelsLocations.add("식당");
         xLabelsLocations.add("마트");
@@ -795,7 +805,9 @@ public class TemplateChartMonthFragment extends Fragment {
         YAxis yAxisLeftLocations = chartLocations.getAxisLeft();
         yAxisLeftLocations.setStartAtZero(true);
         yAxisLeftLocations.setEnabled(false);
-        int maxLocation = maxNumber5(locationEtc, school, restaurant, mart, home);
+
+        // for loop
+        int maxLocation = maxNumberLocation(xLocations, school, restaurant, mart, home);
         yAxisLeftLocations.setLabelCount(maxLocation, false);
         yAxisLeftLocations.setAxisMaxValue(maxLocation);
 
@@ -804,11 +816,22 @@ public class TemplateChartMonthFragment extends Fragment {
         yAxisRightLocations.setLabelCount(maxLocation, false);
         yAxisRightLocations.setAxisMaxValue(maxLocation);
 
-        yLocations.add(new BarEntry(0, locationEtc));
-        yLocations.add(new BarEntry(1, school));
-        yLocations.add(new BarEntry(2, restaurant));
-        yLocations.add(new BarEntry(3, mart));
-        yLocations.add(new BarEntry(4, home));
+        // for loop
+        int nLocations = 0;
+
+        if(xLocations.size() != 0) {
+            Iterator it_location = xLocations.entrySet().iterator();
+            while (it_location.hasNext()) {
+                Map.Entry pair = (Map.Entry)it_location.next();
+                yLocations.add(new BarEntry(nLocations, Integer.parseInt(pair.getValue().toString())));
+                nLocations++;
+            }
+        }
+
+        yLocations.add(new BarEntry(nLocations, school));
+        yLocations.add(new BarEntry(nLocations+1, restaurant));
+        yLocations.add(new BarEntry(nLocations+2, mart));
+        yLocations.add(new BarEntry(nLocations+3, home));
 
         BarDataSet setLocations = new BarDataSet(yLocations, "");
         setLocations.setColors(Color.parseColor("#2dc76d"));
@@ -842,11 +865,31 @@ public class TemplateChartMonthFragment extends Fragment {
         return 0;
     }
 
-    public int maxNumber5(int n1, int n2, int n3, int n4, int n5) {
-        List<Integer> list = Arrays.asList(n1, n2, n3, n4, n5);
+    public int maxNumber4(int n1, int n2, int n3, int n4) {
+        List<Integer> list = Arrays.asList(n1, n2, n3, n4);
         return Collections.max(list);
     }
 
+    public int maxNumberLocation(HashMap<String, Integer> n, int n2, int n3, int n4, int n5) {
+
+        List<Integer> list;
+
+        if(n.size() != 0) {
+            int n1 = 0;
+            Iterator it_n = n.entrySet().iterator();
+            while (it_n.hasNext()) {
+                Map.Entry pair = (Map.Entry)it_n.next();
+                if(Integer.parseInt(pair.getValue().toString()) > n1) {
+                    n1 = Integer.parseInt(pair.getValue().toString());
+                }
+            }
+            list = Arrays.asList(n1, n2, n3, n4, n5);
+        } else {
+            list = Arrays.asList(n2, n3, n4, n5);
+        }
+
+        return Collections.max(list);
+    }
     public int maxNumber6(int n1, int n2, int n3, int n4, int n5, int n6) {
         List<Integer> list = Arrays.asList(n1, n2, n3, n4, n5, n6);
         return Collections.max(list);
