@@ -294,9 +294,7 @@ public class ChildAddActivity extends AppCompatActivity {
 
                                                 Map<String, Object> userData = new HashMap<>();
                                                 userData.put("name", user.getDisplayName());
-                                                userData.put("profile_pic", "");
                                                 userData.put("childs", nestedData);
-                                                userData.put("relationship", mChildRelation.getText().toString());
 
                                                 db.collection("users").document(user.getUid())
                                                         .set(userData)

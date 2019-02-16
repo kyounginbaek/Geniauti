@@ -132,6 +132,7 @@ public class ChartDayFragment extends Fragment implements TemplateChartDayFragme
 
         viewPager = (ViewPager) v.findViewById(R.id.chart_day_viewpager);
 
+
         MainActivity.db.collection("statistics").document(MainActivity.cid).collection("day")
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
@@ -163,8 +164,9 @@ public class ChartDayFragment extends Fragment implements TemplateChartDayFragme
 
                     adapter = new ViewPagerAdapter(getFragmentManager());
                     viewPager.setAdapter(adapter);
-                    viewPager.setCurrentItem(adapter.getCount()-1);
                     lastPage = adapter.getCount()-1;
+                    viewPager.clearOnPageChangeListeners();
+                    viewPager.setCurrentItem(adapter.getCount()-1);
                     viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener()
                     {
                         @Override

@@ -46,9 +46,10 @@ public class BehaviorFourthFragment extends Fragment {
     private ImageView voiceRecognition;
     private RippleBackground rippleBackground;
 
-    Intent intent;
-    SpeechRecognizer mRecognizer;
-    String audioText = "";
+    private Intent intent;
+    private SpeechRecognizer mRecognizer;
+    private String audioText = "";
+    public String purpose = "";
 
     private OnFragmentInteractionListener mListener;
 
@@ -117,7 +118,7 @@ public class BehaviorFourthFragment extends Fragment {
             }
         });
 
-        if(BehaviorActivity.editBehaviorState == true && BehaviorActivity.editBehavior != null) {
+        if(purpose.equals("editBehavior")) {
             textInput.setText(BehaviorActivity.editBehavior.current_behavior);
         }
 

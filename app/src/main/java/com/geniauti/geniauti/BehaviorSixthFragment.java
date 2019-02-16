@@ -43,9 +43,10 @@ public class BehaviorSixthFragment extends Fragment {
     public TextView textDelete;
     private ImageView voiceRecognition;
 
-    Intent intent;
-    SpeechRecognizer mRecognizer;
-    String audioText = "";
+    private Intent intent;
+    private SpeechRecognizer mRecognizer;
+    private String audioText = "";
+    public String purpose = "";
 
     private RippleBackground rippleBackground;
     private OnFragmentInteractionListener mListener;
@@ -113,7 +114,7 @@ public class BehaviorSixthFragment extends Fragment {
             }
         });
 
-        if(BehaviorActivity.editBehaviorState == true && BehaviorActivity.editBehavior != null) {
+        if(purpose.equals("editBehavior")) {
             textInput.setText(BehaviorActivity.editBehavior.after_behavior);
         }
 

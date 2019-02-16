@@ -52,6 +52,7 @@ public class BehaviorFifthFragment extends Fragment {
 
     final int PERMISSION = 1;
     private RippleBackground rippleBackground;
+    public String purpose = "";
 
     private OnFragmentInteractionListener mListener;
 
@@ -125,7 +126,7 @@ public class BehaviorFifthFragment extends Fragment {
             }
         });
 
-        if(BehaviorActivity.editBehaviorState == true && BehaviorActivity.editBehavior != null) {
+        if(purpose.equals("editBehavior")) {
             textInput.setText(BehaviorActivity.editBehavior.before_behavior);
         }
 

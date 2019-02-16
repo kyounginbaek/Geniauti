@@ -43,6 +43,7 @@ public class BehaviorNinthFragment extends Fragment {
     private Reason[] reasons ;
     public static ArrayAdapter<Reason> listAdapter;
     public static View mProgressView;
+    public String purpose = "";
 
     private OnFragmentInteractionListener mListener;
 
@@ -201,7 +202,7 @@ public class BehaviorNinthFragment extends Fragment {
     }
 
     /** Custom adapter for displaying an array of Reason objects. */
-    private static class ReasonArrayAdapter extends ArrayAdapter<Reason> {
+    private class ReasonArrayAdapter extends ArrayAdapter<Reason> {
 
         private LayoutInflater inflater;
 
@@ -221,7 +222,7 @@ public class BehaviorNinthFragment extends Fragment {
             CheckBox checkBox ;
 
             // Create a new row view
-            if ( convertView == null ) {
+            if (convertView == null) {
                 convertView = inflater.inflate(R.layout.list_checkbox, null);
 
                 // Find the child views.
@@ -247,7 +248,7 @@ public class BehaviorNinthFragment extends Fragment {
                 ReasonViewHolder viewHolder = (ReasonViewHolder) convertView.getTag();
                 checkBox = viewHolder.getCheckBox() ;
 
-                if(BehaviorActivity.bookmarkState == true && BehaviorActivity.tmpBookmark != null) {
+                if(purpose.equals("tmpBookmark")) {
                     Iterator it = BehaviorActivity.tmpBookmark.reason.entrySet().iterator();
                     while (it.hasNext()) {
                         Map.Entry pair = (Map.Entry)it.next();
@@ -257,7 +258,7 @@ public class BehaviorNinthFragment extends Fragment {
                     }
                 }
 
-                if(BehaviorActivity.editBehaviorState == true && BehaviorActivity.editBehavior != null) {
+                if(purpose.equals("editBehavior")) {
                     Iterator it = BehaviorActivity.editBehavior.reason.entrySet().iterator();
                     while (it.hasNext()) {
                         Map.Entry pair = (Map.Entry)it.next();
@@ -267,7 +268,7 @@ public class BehaviorNinthFragment extends Fragment {
                     }
                 }
 
-                if(BookmarkActivity.editBookmarkState == true && BookmarkActivity.editBookmark != null) {
+                if(purpose.equals("editBookmark")) {
                     Iterator it = BookmarkActivity.editBookmark.reason.entrySet().iterator();
                     while (it.hasNext()) {
                         Map.Entry pair = (Map.Entry)it.next();

@@ -192,8 +192,9 @@ public class ChartWeekFragment extends Fragment {
 
                             adapter = new ViewPagerAdapter(getFragmentManager());
                             viewPager.setAdapter(adapter);
-                            viewPager.setCurrentItem(adapter.getCount()-1);
                             lastPage = adapter.getCount()-1;
+                            viewPager.clearOnPageChangeListeners();
+                            viewPager.setCurrentItem(adapter.getCount()-1);
                             viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener()
                             {
                                 @Override

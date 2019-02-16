@@ -338,8 +338,10 @@ public class MainFragment extends Fragment {
                                     bookmarkData.add(item);
                                 }
 
-                                bookmarkAdapter = new BookmarkListviewAdapter(getContext(), R.layout.list_bookmark_profile, bookmarkData);
-                                bookmarkListView.setAdapter(bookmarkAdapter);
+                                if(getActivity()!=null) {
+                                    bookmarkAdapter = new BookmarkListviewAdapter(getContext(), R.layout.list_bookmark_profile, bookmarkData);
+                                    bookmarkListView.setAdapter(bookmarkAdapter);
+                                }
                             } else {
                                 behavior_add_line.setVisibility(View.GONE);
                             }

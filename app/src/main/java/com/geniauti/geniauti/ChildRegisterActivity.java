@@ -33,5 +33,10 @@ public class ChildRegisterActivity extends AppCompatActivity {
             }
         });
 
+        if(TimerWidget.widgetUsed == true) {
+            TimerWidget.widgetUsed = false;
+            TimerWidget.second = 0;
+        }
+
     }
 }

@@ -52,6 +52,7 @@ public class BehaviorFirstFragment extends Fragment {
     private long ONE_MINUTE_IN_MILLIS = 60000; //millisecs
     private SimpleDateFormat formatterDate;
     private SimpleDateFormat formatterHour;
+    public String purpose = "";
 
     private OnFragmentInteractionListener mListener;
 
@@ -102,8 +103,7 @@ public class BehaviorFirstFragment extends Fragment {
         endTimeLayout = (RelativeLayout) v.findViewById(R.id.end_time_layout);
         endTimeText = (TextView) v.findViewById(R.id.end_time_txt);
 
-
-        if(BehaviorActivity.editBehaviorState == true && BehaviorActivity.editBehavior != null) {
+        if(purpose.equals("editBehavior")) {
             date_start = formatterDate.format(BehaviorActivity.editBehavior.start_time);
             hour_start = formatterHour.format(BehaviorActivity.editBehavior.start_time);
             hour_end = formatterHour.format(BehaviorActivity.editBehavior.end_time);

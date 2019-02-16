@@ -28,13 +28,18 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.Transaction;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
+import java.util.Map;
 
 public class ProfileEditActivity extends AppCompatActivity {
 
@@ -163,6 +168,9 @@ public class ProfileEditActivity extends AppCompatActivity {
                             if(!newName.equals(MainActivity.user.getDisplayName())) {
                                 nameChange();
                             } else {
+                                btnProfileEdit.setEnabled(true);
+                                mProgressView.setVisibility(View.GONE);
+                                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
                                 Toast toast = Toast.makeText(ProfileEditActivity.this, "내 정보를 수정해주세요.", Toast.LENGTH_SHORT);
                                 toast.show();
                             }
@@ -255,12 +263,14 @@ public class ProfileEditActivity extends AppCompatActivity {
                                                 .setDisplayName(newName)
                                                 .build();
 
+
                                         MainActivity.user.updateProfile(profileUpdates)
                                                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                                                     @Override
                                                     public void onComplete(@NonNull Task<Void> task) {
                                                         if (task.isSuccessful()) {
-                                                            // behaviors
+
+                                                            // behaviors name edit
 
 
                                                         } else {

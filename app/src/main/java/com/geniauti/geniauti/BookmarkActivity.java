@@ -48,9 +48,9 @@ public class BookmarkActivity extends AppCompatActivity implements BehaviorFirst
      */
     private CustomViewPager mViewPager;
     public static Bookmark editBookmark;
-    public static boolean editBookmarkState = false;
-
     private Map<String, Object> docData;
+
+    private String purpose = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +63,13 @@ public class BookmarkActivity extends AppCompatActivity implements BehaviorFirst
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
+        // editBehavior
+        editBookmark = null;
+        editBookmark = (Bookmark) getIntent().getSerializableExtra("bookmarkEdit");
+        if(editBookmark != null) {
+            purpose = "editBookmark";
+        }
+
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         mSectionsPagerAdapter = new PagerAdapter(getSupportFragmentManager());
@@ -74,7 +81,6 @@ public class BookmarkActivity extends AppCompatActivity implements BehaviorFirst
 
         toolbar.setNavigationIcon(getResources().getDrawable(R.drawable.ic_close_green_24dp));
         final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.bookmark_fab);
-
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener()
         {
             @Override
@@ -106,8 +112,12 @@ public class BookmarkActivity extends AppCompatActivity implements BehaviorFirst
 
             }
 
-
         });
+
+        if(editBookmark != null){
+            int editPage = getIntent().getIntExtra("bookmarkEditPage", 0);
+            mViewPager.setCurrentItem(editPage-1);
+        }
 
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -119,14 +129,6 @@ public class BookmarkActivity extends AppCompatActivity implements BehaviorFirst
                 }
             }
         });
-
-        // editBehavior
-        editBookmark = (Bookmark) getIntent().getSerializableExtra("bookmarkEdit");
-        if(editBookmark != null){
-            editBookmarkState = true;
-            int editPage = getIntent().getIntExtra("bookmarkEditPage", 0);
-            mViewPager.setCurrentItem(editPage-1);
-        }
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -201,7 +203,7 @@ public class BookmarkActivity extends AppCompatActivity implements BehaviorFirst
                         docData.put("reason_type", f9.getResult());
                         docData.put("reason", f9.reasonDetail());
 
-                        if(editBookmarkState == true) {
+                        if(editBookmark != null) {
                             docData.put("title", editBookmark.title);
 
                             final DocumentReference sfDocRef = MainActivity.db.collection("users").document(MainActivity.user.getUid());
@@ -235,7 +237,6 @@ public class BookmarkActivity extends AppCompatActivity implements BehaviorFirst
                                     BookmarkDetailActivity.setReasonType((HashMap<String, Object>) docData.get("reason_type"));
                                     BookmarkDetailActivity.setIntensity((int) docData.get("intensity"));
 
-                                    editBookmarkState = false;
                                     f9.mProgressView.setVisibility(View.GONE);
                                     getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
                                     finish();
@@ -340,6 +341,7 @@ public class BookmarkActivity extends AppCompatActivity implements BehaviorFirst
     }
 
     public class PagerAdapter extends FragmentPagerAdapter {
+
         int mNumOfTabs = 5;
 
         public PagerAdapter(FragmentManager fm) {
@@ -355,9 +357,11 @@ public class BookmarkActivity extends AppCompatActivity implements BehaviorFirst
 //                    return tab1;
                 case 0:
                     BehaviorSecondFragment tab2 = new BehaviorSecondFragment();
+                    tab2.purpose = purpose;
                     return tab2;
                 case 1:
                     BehaviorThirdFragment tab3 = new BehaviorThirdFragment();
+                    tab3.purpose = purpose;
                     return tab3;
 //                case 3:
 //                    BehaviorFourthFragment tab4 = new BehaviorFourthFragment();
@@ -370,12 +374,15 @@ public class BookmarkActivity extends AppCompatActivity implements BehaviorFirst
 //                    return tab6;
                 case 2:
                     BehaviorSeventhFragment tab7 = new BehaviorSeventhFragment();
+                    tab7.purpose = purpose;
                     return tab7;
                 case 3:
                     BehaviorEighthFragment tab8 = new BehaviorEighthFragment();
+                    tab8.purpose = purpose;
                     return tab8;
                 case 4:
                     BehaviorNinthFragment tab9 = new BehaviorNinthFragment();
+                    tab9.purpose = purpose;
                     return tab9;
                 default:
                     return null;

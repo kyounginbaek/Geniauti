@@ -73,6 +73,22 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnFr
         storage = FirebaseStorage.getInstance();
         storageRef = storage.getReference();
 
+        MainActivity.db.collection("childs")
+                .whereGreaterThanOrEqualTo("users."+MainActivity.user.getUid()+".name", "")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                cid = document.getId();
+                            }
+
+                            setupViewPager(viewPager);
+                        }
+                    }
+                });
+
         db.collection("childs")
                 .whereGreaterThanOrEqualTo("users."+MainActivity.user.getUid()+".name", "")
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
@@ -85,12 +101,9 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnFr
                         }
 
                         for (QueryDocumentSnapshot doc : value) {
-                            cid = doc.getId();
                             HashMap<String, Object> result = (HashMap<String, Object>) doc.get("users."+user.getUid());
                             relationship = result.get("relationship").toString();
                         }
-
-                        setupViewPager(viewPager);
                     }
                 });
 

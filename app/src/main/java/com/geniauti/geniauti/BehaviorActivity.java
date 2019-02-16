@@ -47,8 +47,7 @@ public class BehaviorActivity extends AppCompatActivity implements BehaviorFirst
     public static CustomViewPager mViewPager;
     public static Bookmark tmpBookmark;
     public static Behavior editBehavior;
-    public static boolean bookmarkState = false;
-    public static boolean editBehaviorState = false;
+    private String purpose = "";
 
     private Map<String, Object> docData;
 
@@ -64,9 +63,17 @@ public class BehaviorActivity extends AppCompatActivity implements BehaviorFirst
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         // Bookmark
+        tmpBookmark = null;
         tmpBookmark = (Bookmark) getIntent().getSerializableExtra("bookmark");
-        if(tmpBookmark != null){
-            bookmarkState = true;
+        if(tmpBookmark != null) {
+            purpose = "tmpBookmark";
+        }
+
+        // editBehavior
+        editBehavior = null;
+        editBehavior = (Behavior) getIntent().getSerializableExtra("behaviorEdit");
+        if(editBehavior != null) {
+            purpose = "editBehavior";
         }
 
         // Create the adapter that will return a fragment for each of the three
@@ -80,7 +87,6 @@ public class BehaviorActivity extends AppCompatActivity implements BehaviorFirst
 
         toolbar.setNavigationIcon(getResources().getDrawable(R.drawable.ic_close_green_24dp));
         final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.behavior_fab);
-
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener()
         {
             @Override
@@ -112,8 +118,12 @@ public class BehaviorActivity extends AppCompatActivity implements BehaviorFirst
 
             }
 
-
         });
+
+        if(editBehavior != null) {
+            int editPage = getIntent().getIntExtra("behaviorEditPage", 0);
+            mViewPager.setCurrentItem(editPage-1);
+        }
 
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -127,14 +137,6 @@ public class BehaviorActivity extends AppCompatActivity implements BehaviorFirst
                 }
             }
         });
-
-        // editBehavior
-        editBehavior = (Behavior) getIntent().getSerializableExtra("behaviorEdit");
-        if(editBehavior != null){
-            editBehaviorState = true;
-            int editPage = getIntent().getIntExtra("behaviorEditPage", 0);
-            mViewPager.setCurrentItem(editPage-1);
-        }
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -264,7 +266,7 @@ public class BehaviorActivity extends AppCompatActivity implements BehaviorFirst
                             docData.put("relationship", MainActivity.relationship);
                             docData.put("cid", MainActivity.cid);
 
-                            if(editBehaviorState == true) {
+                            if(editBehavior != null) {
                                 docData.put("updated_at", cal.getTime());
 
                                 MainActivity.db.collection("behaviors").document(editBehavior.bid)
@@ -297,7 +299,6 @@ public class BehaviorActivity extends AppCompatActivity implements BehaviorFirst
                                                 BehaviorDetailActivity.behavior_before.setText(docData.get("before_behavior").toString());
                                                 BehaviorDetailActivity.behavior_after.setText(docData.get("after_behavior").toString());
 
-                                                editBehaviorState = false;
                                                 f9.mProgressView.setVisibility(View.GONE);
                                                 getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
                                                 finish();
@@ -333,8 +334,6 @@ public class BehaviorActivity extends AppCompatActivity implements BehaviorFirst
                                                 finish();
                                                 Toast toast = Toast.makeText(BehaviorActivity.this, "행동 생성이 완료되었습니다.", Toast.LENGTH_SHORT);
                                                 toast.show();
-
-                                                ChartDayFragment.mProgressView.setVisibility(View.VISIBLE);
                                             }
                                         })
                                         .addOnFailureListener(new OnFailureListener() {
@@ -395,30 +394,39 @@ public class BehaviorActivity extends AppCompatActivity implements BehaviorFirst
             switch (position) {
                 case 0:
                     BehaviorFirstFragment tab1 = new BehaviorFirstFragment();
+                    tab1.purpose = purpose;
                     return tab1;
                 case 1:
                     BehaviorSecondFragment tab2 = new BehaviorSecondFragment();
+                    tab2.purpose = purpose;
                     return tab2;
                 case 2:
                     BehaviorThirdFragment tab3 = new BehaviorThirdFragment();
+                    tab3.purpose = purpose;
                     return tab3;
                 case 3:
                     BehaviorFourthFragment tab4 = new BehaviorFourthFragment();
+                    tab4.purpose = purpose;
                     return tab4;
                 case 4:
                     BehaviorFifthFragment tab5 = new BehaviorFifthFragment();
+                    tab5.purpose = purpose;
                     return tab5;
                 case 5:
                     BehaviorSixthFragment tab6 = new BehaviorSixthFragment();
+                    tab6.purpose = purpose;
                     return tab6;
                 case 6:
                     BehaviorSeventhFragment tab7 = new BehaviorSeventhFragment();
+                    tab7.purpose = purpose;
                     return tab7;
                 case 7:
                     BehaviorEighthFragment tab8 = new BehaviorEighthFragment();
+                    tab8.purpose = purpose;
                     return tab8;
                 case 8:
                     BehaviorNinthFragment tab9 = new BehaviorNinthFragment();
+                    tab9.purpose = purpose;
                     return tab9;
                 default:
                     return null;

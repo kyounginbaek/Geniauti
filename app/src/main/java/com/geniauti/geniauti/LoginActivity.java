@@ -210,6 +210,12 @@ public class LoginActivity extends AppCompatActivity {
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
         mProgressView.bringToFront();
+
+        if(TimerWidget.widgetUsed == true) {
+            TimerWidget.widgetUsed = false;
+            TimerWidget.second = 0;
+        }
+
     }
 
     private boolean isNetworkConnected() {

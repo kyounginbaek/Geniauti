@@ -31,12 +31,14 @@ public class BehaviorEighthFragment extends Fragment {
     private String mParam2;
 
     public static int seekbarValue;
-    SeekBar seek;
+    private SeekBar seek;
     private TextView intensityOne;
     private TextView intensityTwo;
     private TextView intensityThree;
     private TextView intensityFour;
     private TextView intensityFive;
+
+    public String purpose = "";
 
     private OnFragmentInteractionListener mListener;
 
@@ -120,15 +122,15 @@ public class BehaviorEighthFragment extends Fragment {
             }
         });
 
-        if(BehaviorActivity.bookmarkState == true && BehaviorActivity.tmpBookmark != null) {
+        if(purpose.equals("tmpBookmark")) {
             seek.setProgress(BehaviorActivity.tmpBookmark.intensity-1);
         }
 
-        if(BehaviorActivity.editBehaviorState == true && BehaviorActivity.editBehavior != null) {
+        if(purpose.equals("editBehavior")) {
             seek.setProgress(BehaviorActivity.editBehavior.intensity-1);
         }
 
-        if(BookmarkActivity.editBookmarkState == true && BookmarkActivity.editBookmark != null) {
+        if(purpose.equals("editBookmark")) {
             seek.setProgress(BookmarkActivity.editBookmark.intensity-1);
         }
 

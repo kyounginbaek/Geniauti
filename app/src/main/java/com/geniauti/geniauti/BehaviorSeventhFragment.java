@@ -39,8 +39,9 @@ public class BehaviorSeventhFragment extends Fragment {
     private String mParam2;
 
     public static HashMap<String,Boolean> checkbox_type = new HashMap<String,Boolean>();
-    private BehaviorSeventhFragment.Type[] types ;
-    public static ArrayAdapter<BehaviorSeventhFragment.Type> listAdapter ;
+    private BehaviorSeventhFragment.Type[] types;
+    public static ArrayAdapter<BehaviorSeventhFragment.Type> listAdapter;
+    public String purpose = "";
 
     private OnFragmentInteractionListener mListener;
 
@@ -173,7 +174,7 @@ public class BehaviorSeventhFragment extends Fragment {
     }
 
     /** Custom adapter for displaying an array of type objects. */
-    private static class TypeArrayAdapter extends ArrayAdapter<BehaviorSeventhFragment.Type> {
+    private class TypeArrayAdapter extends ArrayAdapter<BehaviorSeventhFragment.Type> {
 
         private LayoutInflater inflater;
 
@@ -204,7 +205,7 @@ public class BehaviorSeventhFragment extends Fragment {
                 // call findViewById() later when we reuse the row.
                 convertView.setTag( new BehaviorSeventhFragment.TypeViewHolder(checkBox) );
 
-                if(BehaviorActivity.bookmarkState == true && BehaviorActivity.tmpBookmark != null) {
+                if(purpose.equals("tmpBookmark")) {
                     Iterator it = BehaviorActivity.tmpBookmark.type.entrySet().iterator();
                     while (it.hasNext()) {
                         Map.Entry pair = (Map.Entry)it.next();
@@ -214,7 +215,7 @@ public class BehaviorSeventhFragment extends Fragment {
                     }
                 }
 
-                if(BehaviorActivity.editBehaviorState == true && BehaviorActivity.editBehavior != null) {
+                if(purpose.equals("editBehavior")) {
                     Iterator it = BehaviorActivity.editBehavior.type.entrySet().iterator();
                     while (it.hasNext()) {
                         Map.Entry pair = (Map.Entry)it.next();
@@ -224,7 +225,7 @@ public class BehaviorSeventhFragment extends Fragment {
                     }
                 }
 
-                if(BookmarkActivity.editBookmarkState == true && BookmarkActivity.editBookmark != null) {
+                if(purpose.equals("editBookmark")) {
                     Iterator it = BookmarkActivity.editBookmark.type.entrySet().iterator();
                     while (it.hasNext()) {
                         Map.Entry pair = (Map.Entry)it.next();

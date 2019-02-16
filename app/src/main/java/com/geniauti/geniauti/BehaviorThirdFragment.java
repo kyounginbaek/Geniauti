@@ -63,6 +63,7 @@ public class BehaviorThirdFragment extends Fragment {
 
     private LinearLayout titleCancel;
     private LinearLayout titleAdd;
+    public  String purpose = "";
 
     private OnFragmentInteractionListener mListener;
 
@@ -137,19 +138,19 @@ public class BehaviorThirdFragment extends Fragment {
                                 }
                             }
 
-                            if(BehaviorActivity.bookmarkState == true && BehaviorActivity.tmpBookmark != null) {
+                            if(purpose.equals("tmpBookmark")) {
                                 if(!arrayList.contains(BehaviorActivity.tmpBookmark.categorization)) {
                                     arrayList.add(BehaviorActivity.tmpBookmark.categorization);
                                 }
                             }
 
-                            if(BehaviorActivity.editBehaviorState== true && BehaviorActivity.editBehavior != null) {
+                            if(purpose.equals("editBehavior")) {
                                 if(!arrayList.contains(BehaviorActivity.editBehavior.categorization)) {
                                     arrayList.add(BehaviorActivity.editBehavior.categorization);
                                 }
                             }
 
-                            if(BookmarkActivity.editBookmarkState== true && BookmarkActivity.editBookmark != null) {
+                            if(purpose.equals("editBookmark")) {
                                 if(!arrayList.contains(BookmarkActivity.editBookmark.categorization)) {
                                     arrayList.add(BookmarkActivity.editBookmark.categorization);
                                 }
@@ -215,21 +216,21 @@ public class BehaviorThirdFragment extends Fragment {
             }
 
             // 자주 쓰는 기록을 사용하는 경우
-            if(BehaviorActivity.bookmarkState == true && BehaviorActivity.tmpBookmark != null && selectedPosition == -1) {
+            if(purpose.equals("tmpBookmark") && selectedPosition == -1) {
                 if(arrayList.get(i).equals(BehaviorActivity.tmpBookmark.categorization)) {
                     selectedPosition = i;
                 }
             }
 
             // 행동 기록을 수정하는 경우
-            if(BehaviorActivity.editBehaviorState== true && BehaviorActivity.editBehavior != null && selectedPosition == -1) {
+            if(purpose.equals("editBehavior") && selectedPosition == -1) {
                 if(arrayList.get(i).equals(BehaviorActivity.editBehavior.categorization)) {
                     selectedPosition = i;
                 }
             }
 
             // 자주 쓰는 기록을 수정하는 경우
-            if(BookmarkActivity.editBookmarkState== true && BookmarkActivity.editBookmark != null && selectedPosition == -1) {
+            if(purpose.equals("editBookmark") && selectedPosition == -1) {
                 if(arrayList.get(i).equals(BookmarkActivity.editBookmark.categorization)) {
                     selectedPosition = i;
                 }

@@ -53,12 +53,13 @@ import static java.lang.Integer.parseInt;
 
 public class ChildEditActivity extends AppCompatActivity {
 
-    EditText mChildName;
-    EditText mChildAge;
-    EditText mChildRelationship;
-    RadioGroup radioGroupAge, radioGroupSex;
-    RadioButton radioMonth, radioYear;
-    RadioButton radioBoy, radioGirl;
+    private EditText mChildName;
+    private EditText mChildAge;
+    private EditText mChildRelationship;
+    private RadioGroup radioGroupAge, radioGroupSex;
+    private RadioButton radioMonth, radioYear;
+    private RadioButton radioBoy, radioGirl;
+    private RadioButton radioBtnAge;
 
     private View mProgressView;
     private Button childEditButton;
@@ -70,8 +71,13 @@ public class ChildEditActivity extends AppCompatActivity {
     private UploadTask uploadTask;
 
     private long currentTime;
-    private int childAge;
+    private String childName;
+    private String childYear;
+    private String childAge;
+    private int childAgeNumber;
+    private String childSex;
     private RadioButton radioBtnSex;
+    private String relationship;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -145,17 +151,27 @@ public class ChildEditActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : task.getResult()) {
 
-                                mChildName.setText(document.getData().get("name").toString());
+                                childName = document.getData().get("name").toString();
+                                mChildName.setText(childName);
+
                                 if(parseInt(document.getData().get("age").toString()) % 12 == 0) {
                                     radioYear.setChecked(true);
                                     int age = Integer.parseInt(document.getData().get("age").toString()) / 12;
-                                    mChildAge.setText(String.valueOf(age));
+
+                                    childYear = "세";
+                                    childAge = String.valueOf(age);
+
+                                    mChildAge.setText(childAge);
                                 } else {
                                     radioMonth.setChecked(true);
-                                    mChildAge.setText(document.getData().get("age").toString());
+                                    childYear = "개월";
+                                    childAge = document.getData().get("age").toString();
+
+                                    mChildAge.setText(childAge);
                                 }
 
-                                if(document.getData().get("sex").equals("남자")) {
+                                childSex = document.getData().get("sex").toString();
+                                if(childSex.equals("남자")) {
                                     radioBoy.setChecked(true);
                                 } else {
                                     radioGirl.setChecked(true);
@@ -164,7 +180,8 @@ public class ChildEditActivity extends AppCompatActivity {
                                 HashMap<String, Object> child = (HashMap<String, Object>)  document.getData().get("users");
                                 HashMap<String, Object> users = (HashMap<String, Object>)  child.get(MainActivity.user.getUid());
 
-                                mChildRelationship.setText(users.get("relationship").toString());
+                                relationship = users.get("relationship").toString();
+                                mChildRelationship.setText(relationship);
 
                                 StorageReference pathReference = storageRef.child("childs/"+MainActivity.cid);
                                 pathReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
@@ -231,7 +248,25 @@ public class ChildEditActivity extends AppCompatActivity {
                     if(image != null) {
                         childImageEdit();
                     } else {
-                        childInfoEdit();
+
+                        int selectedAge = radioGroupAge.getCheckedRadioButtonId();
+                        // find the radiobutton by returned id
+                        radioBtnAge = (RadioButton) findViewById(selectedAge);
+
+                        int selectedSex = radioGroupSex.getCheckedRadioButtonId();
+                        // find the radiobutton by returned id
+                        radioBtnSex = (RadioButton) findViewById(selectedSex);
+
+                        if(!relationship.equals(mChildRelationship.getText().toString()) || !childName.equals(mChildName.getText().toString()) || !childAge.equals(mChildAge.getText().toString())
+                                || !childYear.equals(radioBtnAge.getText().toString()) || !childSex.equals(radioBtnSex.getText().toString().substring(0,2))) {
+                            childInfoEdit();
+                        } else {
+                            childEditButton.setEnabled(true);
+                            mProgressView.setVisibility(View.GONE);
+                            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                            Toast toast = Toast.makeText(ChildEditActivity.this, "아이 정보를 수정해주세요.", Toast.LENGTH_SHORT);
+                            toast.show();
+                        }
                     }
                 }
             }
@@ -267,22 +302,6 @@ public class ChildEditActivity extends AppCompatActivity {
 
     private void childInfoEdit() {
 
-        currentTime = System.currentTimeMillis();
-
-        int selectedAge = radioGroupAge.getCheckedRadioButtonId();
-        // find the radiobutton by returned id
-        RadioButton radioBtnAge = (RadioButton) findViewById(selectedAge);
-
-        childAge = parseInt(mChildAge.getText().toString());
-
-        if(radioBtnAge.getText().equals("세")) {
-            childAge = parseInt(mChildAge.getText().toString()) * 12;
-        }
-
-        int selectedSex = radioGroupSex.getCheckedRadioButtonId();
-        // find the radiobutton by returned id
-        radioBtnSex = (RadioButton) findViewById(selectedSex);
-
 //        Map<String, Object> nestedNestedData = new HashMap<>();
 //        nestedNestedData.put("name", MainActivity.user.getDisplayName());
 //        nestedNestedData.put("profile_pic", "");
@@ -303,14 +322,39 @@ public class ChildEditActivity extends AppCompatActivity {
             @Override
             public Void apply(Transaction transaction) throws FirebaseFirestoreException {
                 DocumentSnapshot snapshot = transaction.get(sfDocRef);
-                Map<String, Object> childsMap = (Map<String, Object>) snapshot.getData();
-                childsMap.put("name", mChildName.getText().toString());
+                Map<String, Object> childsMap = snapshot.getData();
+
+                // relationship edit
+                if(!relationship.equals(mChildRelationship.getText())) {
+                    Map<String, Object> parentsMap = (Map<String, Object>) childsMap.get("users");
+                    Map<String, Object> myProfileMap = (Map<String, Object>) parentsMap.get(MainActivity.user.getUid());
+                    myProfileMap.put("relationship", mChildRelationship.getText().toString());
+                    parentsMap.put(MainActivity.user.getUid(), myProfileMap);
+                    childsMap.put("users", parentsMap);
+                }
+
+                if(!childName.equals(mChildName.getText())) {
+                    childsMap.put("name", mChildName.getText().toString());
+                }
 
                 if(image != null) {
+                    currentTime = System.currentTimeMillis();
                     childsMap.put("profile_pic", "childs/"+MainActivity.cid+"_"+String.valueOf(currentTime));
                 }
-                childsMap.put("age", childAge);
-                childsMap.put("sex", radioBtnSex.getText().toString().substring(0,2));
+
+                if(!childAge.equals(mChildAge.getText().toString()) || !childYear.equals(radioBtnAge.getText().toString())) {
+                    childAgeNumber = parseInt(mChildAge.getText().toString());
+
+                    if(radioBtnAge.getText().toString().equals("세")) {
+                        childAgeNumber = parseInt(mChildAge.getText().toString()) * 12;
+                    }
+
+                    childsMap.put("age", childAgeNumber);
+                }
+
+                if(!childSex.equals(radioBtnSex.getText().toString().substring(0,2))) {
+                    childsMap.put("sex", radioBtnSex.getText().toString().substring(0,2));
+                }
 
                 transaction.update(sfDocRef, childsMap);
 
@@ -320,11 +364,24 @@ public class ChildEditActivity extends AppCompatActivity {
         }).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
-                mProgressView.setVisibility(View.GONE);
-                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
-                finish();
-                Toast toast = Toast.makeText(ChildEditActivity.this, "아이 정보가 수정되었습니다.", Toast.LENGTH_SHORT);
-                toast.show();
+
+                if(!relationship.equals(mChildRelationship.getText())) {
+
+                    // behavior edit
+                    mProgressView.setVisibility(View.GONE);
+                    getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                    finish();
+                    Toast toast = Toast.makeText(ChildEditActivity.this, "아이 정보가 수정되었습니다.", Toast.LENGTH_SHORT);
+                    toast.show();
+
+
+                } else {
+                    mProgressView.setVisibility(View.GONE);
+                    getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                    finish();
+                    Toast toast = Toast.makeText(ChildEditActivity.this, "아이 정보가 수정되었습니다.", Toast.LENGTH_SHORT);
+                    toast.show();
+                }
             }
         })
                 .addOnFailureListener(new OnFailureListener() {
