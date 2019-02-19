@@ -57,7 +57,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
         Cases c = cases.get(groupPosition).get(childPosition);
 
-        child_text.setText(c.case_title);
+        child_text.setText(c.title);
         return convertView;
     }
 

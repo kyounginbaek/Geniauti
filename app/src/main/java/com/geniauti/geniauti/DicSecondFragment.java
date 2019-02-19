@@ -103,11 +103,11 @@ public class DicSecondFragment extends Fragment {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 HashMap<String,String> case_tags = new HashMap<String,String>();
-                                case_tags = (HashMap<String,String>) document.get("case_tags");
+                                case_tags = (HashMap<String,String>) document.get("tags_type");
 
-                                Cases c = new Cases(document.get("case_title").toString(), document.get("case_backgroundInfo").toString(), document.get("case_behavior").toString(),
-                                        (List<HashMap<String, String>>) document.get("case_cause"), (List<HashMap<String, String>>) document.get("case_solution"), document.get("case_effect").toString(),
-                                        (HashMap<String, String>) document.get("case_tags"), document.getId());
+                                Cases c = new Cases(document.get("title").toString(), document.get("backgroundInfo").toString(), document.get("behavior").toString(),
+                                        (List<HashMap<String, String>>) document.get("cause"), (List<HashMap<String, String>>) document.get("solution"), document.get("effect").toString(),
+                                        (HashMap<String, String>) document.get("tags_reason"), (HashMap<String, String>) document.get("tags_type"), document.getId());
 
                                 if(case_tags.get("self-injury")!=null) {
                                     c_selfHarm.add(c);
@@ -220,7 +220,7 @@ public class DicSecondFragment extends Fragment {
                                         // 만약 검색한 기록이 없으면, 새로 추가
                                         if(result != null) {
                                             for(Map.Entry me : result.entrySet()) {
-                                                if(me.getKey().toString().equals(tmp.case_id)) {
+                                                if(me.getKey().toString().equals(tmp.id)) {
                                                     bookmark_check = true;
                                                 }
                                             }
@@ -230,7 +230,7 @@ public class DicSecondFragment extends Fragment {
                                             Object docData = tmp.firebase_input_data();
 
                                             MainActivity.db.collection("users").document(MainActivity.user.getUid())
-                                                    .update("cases."+tmp.case_id, docData)
+                                                    .update("cases."+tmp.id, docData)
                                                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                                                         @Override
                                                         public void onSuccess(Void aVoid) {

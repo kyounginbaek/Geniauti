@@ -6,15 +6,16 @@ import java.util.List;
 
 public class Cases implements Serializable {
 
-    public Cases(String case_title, String case_backgroundInfo, String case_behavior, List<HashMap<String,String>> case_cause, List<HashMap<String,String>> case_solution, String case_effect, HashMap<String,String> case_tags, String case_id) {
-        this.case_title = case_title;
-        this.case_backgroundInfo = case_backgroundInfo;
-        this.case_behavior = case_behavior;
-        this.case_cause = case_cause;
-        this.case_solution = case_solution;
-        this.case_effect = case_effect;
-        this.case_tags = case_tags;
-        this.case_id = case_id;
+    public Cases(String title, String backgroundInfo, String behavior, List<HashMap<String,String>> cause, List<HashMap<String,String>> solution, String effect, HashMap<String,String> tags_reason, HashMap<String,String> tags_type,  String id) {
+        this.title = title;
+        this.backgroundInfo = backgroundInfo;
+        this.behavior = behavior;
+        this.cause = cause;
+        this.solution = solution;
+        this.effect = effect;
+        this.tags_reason = tags_reason;
+        this.tags_type = tags_type;
+        this.id = id;
 
 
     }
@@ -22,23 +23,25 @@ public class Cases implements Serializable {
     public HashMap<String, Object> firebase_input_data() {
         HashMap<String, Object> data = new HashMap<>();
 
-        data.put("case_title", case_title);
-        data.put("case_backgroundInfo", case_backgroundInfo);
-        data.put("case_behavior", case_behavior);
-        data.put("case_cause", case_cause);
-        data.put("case_solution", case_solution);
-        data.put("case_effect", case_effect);
-        data.put("case_tags", case_tags);
+        data.put("title", title);
+        data.put("backgroundInfo", backgroundInfo);
+        data.put("behavior", behavior);
+        data.put("cause", cause);
+        data.put("solution", solution);
+        data.put("effect", effect);
+        data.put("tags_reason", tags_reason);
+        data.put("tags_type", tags_type);
 
         return data;
     }
 
-    public String case_title;
-    public String case_backgroundInfo;
-    public String case_behavior;
-    public List<HashMap<String,String>> case_cause;
-    public List<HashMap<String,String>> case_solution;
-    public String case_effect;
-    public HashMap<String,String> case_tags;
-    public String case_id;
+    public String title;
+    public String backgroundInfo;
+    public String behavior;
+    public List<HashMap<String,String>> cause;
+    public List<HashMap<String,String>> solution;
+    public String effect;
+    public HashMap<String,String> tags_reason;
+    public HashMap<String,String> tags_type;
+    public String id;
 }

@@ -66,62 +66,62 @@ public class CaseDetailActivity extends AppCompatActivity {
         String tmp_reason = "행동 원인 > ";
         String tmp_type = "행동 종류 > ";
 
-        if(selectedCase.case_tags.get("attention")!=null) {
+        if(selectedCase.tags_reason.get("attention")!=null) {
             tmp_reason = tmp_reason + "관심 / ";
         }
-        if(selectedCase.case_tags.get("self-sitmulatory behaviour")!=null) {
+        if(selectedCase.tags_reason.get("self-sitmulatory behaviour")!=null) {
             tmp_reason = tmp_reason + "자기 자극 / ";
         }
-        if(selectedCase.case_tags.get("escape")!=null) {
+        if(selectedCase.tags_reason.get("escape")!=null) {
             tmp_reason = tmp_reason + "과제 회피 / ";
         }
-        if(selectedCase.case_tags.get("tangibles")!=null) {
+        if(selectedCase.tags_reason.get("tangibles")!=null) {
             tmp_reason = tmp_reason + "요구 / ";
         }
 
         caseReasons.setText(tmp_reason.substring(0, tmp_reason.length()-2));
 
-        if(selectedCase.case_tags.get("self-injury")!=null) {
+        if(selectedCase.tags_type.get("self-injury")!=null) {
             tmp_type = tmp_type + "자해 / ";
         }
-        if(selectedCase.case_tags.get("aggression")!=null) {
+        if(selectedCase.tags_type.get("aggression")!=null) {
             tmp_type = tmp_type + "타해 / ";
         }
-        if(selectedCase.case_tags.get("disruption")!=null) {
+        if(selectedCase.tags_type.get("disruption")!=null) {
             tmp_type = tmp_type + "파괴 / ";
         }
-        if(selectedCase.case_tags.get("elopement")!=null) {
+        if(selectedCase.tags_type.get("elopement")!=null) {
             tmp_type = tmp_type + "이탈 / ";
         }
-        if(selectedCase.case_tags.get("sexual behaviors")!=null) {
+        if(selectedCase.tags_type.get("sexual behaviors")!=null) {
             tmp_type = tmp_type + "성적 / ";
         }
-        if(selectedCase.case_tags.get("other behaviors")!=null) {
+        if(selectedCase.tags_type.get("other behaviors")!=null) {
             tmp_type = tmp_type + "기타 / ";
         }
 
         caseTypes.setText(tmp_type.substring(0, tmp_type.length()-2));
 
-        caseTitle.setText(selectedCase.case_title);
-        caseBackgroundInfo.setText(selectedCase.case_backgroundInfo);
-        caseBehavior.setText(selectedCase.case_behavior);
+        caseTitle.setText(selectedCase.title);
+        caseBackgroundInfo.setText(selectedCase.backgroundInfo);
+        caseBehavior.setText(selectedCase.behavior);
 
         List<HashMap<String,String>> case_cause = new ArrayList<HashMap<String,String>>();
-        case_cause = (List<HashMap<String,String>>) selectedCase.case_cause;
+        case_cause = (List<HashMap<String,String>>) selectedCase.cause;
         caseCauseTitle1.setText(case_cause.get(0).get("title"));
         caseCauseTitle2.setText(case_cause.get(1).get("title"));
         caseCauseDescription1.setText(case_cause.get(0).get("description"));
         caseCauseDescription2.setText(case_cause.get(1).get("description"));
 
         List<HashMap<String,String>> case_solution = new ArrayList<HashMap<String,String>>();
-        case_solution = (List<HashMap<String,String>>) selectedCase.case_solution;
+        case_solution = (List<HashMap<String,String>>) selectedCase.solution;
         caseSolutionTitle1.setText(case_solution.get(0).get("title"));
         caseSolutionTitle2.setText(case_solution.get(1).get("title"));
         caseSolutionTitle3.setText(case_solution.get(2).get("title"));
         caseSolutionDescription1.setText(case_solution.get(0).get("description"));
         caseSolutionDescription2.setText(case_solution.get(1).get("description"));
         caseSolutionDescription3.setText(case_solution.get(2).get("description"));
-        caseEffect.setText(selectedCase.case_effect);
+        caseEffect.setText(selectedCase.effect);
 
         mProgressView.setVisibility(View.GONE);
     }

@@ -141,9 +141,9 @@ public class SearchFragment extends Fragment {
                                 if(result != null) {
                                     for(Map.Entry me : result.entrySet()) {
                                         Object i = me.getKey();
-                                        Cases item = new Cases(result.get(i).get("case_title").toString(), result.get(i).get("case_backgroundInfo").toString(), result.get(i).get("case_behavior").toString(),
-                                                (List<HashMap<String, String>>) result.get(i).get("case_cause"), (List<HashMap<String, String>>) result.get(i).get("case_solution"),
-                                                result.get(i).get("case_effect").toString(), (HashMap<String, String>) result.get(i).get("case_tags"), (String) me.getKey());
+                                        Cases item = new Cases(result.get(i).get("title").toString(), result.get(i).get("backgroundInfo").toString(), result.get(i).get("behavior").toString(),
+                                                (List<HashMap<String, String>>) result.get(i).get("cause"), (List<HashMap<String, String>>) result.get(i).get("solution"),
+                                                result.get(i).get("effect").toString(), (HashMap<String, String>) result.get(i).get("tags_reason"), (HashMap<String, String>) result.get(i).get("tags_type"), (String) me.getKey());
                                         bookmark.add(item);
                                     }
                                 } else {
@@ -178,9 +178,9 @@ public class SearchFragment extends Fragment {
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : task.getResult()) {
-                                Cases item = new Cases(document.get("case_title").toString(), document.get("case_backgroundInfo").toString(), document.get("case_behavior").toString(),
-                                        (List<HashMap<String, String>>) document.get("case_cause"), (List<HashMap<String, String>>) document.get("case_solution"), document.get("case_effect").toString(),
-                                        (HashMap<String, String>) document.get("case_tags"), document.getId());
+                                Cases item = new Cases(document.get("title").toString(), document.get("backgroundInfo").toString(), document.get("behavior").toString(),
+                                        (List<HashMap<String, String>>) document.get("cause"), (List<HashMap<String, String>>) document.get("solution"), document.get("effect").toString(),
+                                        (HashMap<String, String>) document.get("tags_reason"), (HashMap<String, String>) document.get("tags_type"), document.getId());
                                 allCases.add(item);
                             }
                             tmpCases.addAll(allCases);
@@ -216,7 +216,7 @@ public class SearchFragment extends Fragment {
                                         // 만약 검색한 기록이 없으면, 새로 추가
                                         if(result != null) {
                                             for(Map.Entry me : result.entrySet()) {
-                                                if(me.getKey().toString().equals(tmp.case_id)) {
+                                                if(me.getKey().toString().equals(tmp.id)) {
                                                     bookmark_check = true;
                                                 }
                                             }
@@ -226,7 +226,7 @@ public class SearchFragment extends Fragment {
                                             Object docData = tmp.firebase_input_data();
 
                                             MainActivity.db.collection("users").document(MainActivity.user.getUid())
-                                                    .update("cases."+tmp.case_id, docData)
+                                                    .update("cases."+tmp.id, docData)
                                                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                                                         @Override
                                                         public void onSuccess(Void aVoid) {
@@ -307,7 +307,7 @@ public class SearchFragment extends Fragment {
             for(int i = 0;i < tmpCases.size(); i++)
             {
                 // arraylist의 모든 데이터에 입력받은 단어(charText)가 포함되어 있으면 true를 반환한다.
-                if (tmpCases.get(i).case_title.toLowerCase().contains(charText))
+                if (tmpCases.get(i).title.toLowerCase().contains(charText))
                 {
                     // 검색된 데이터를 리스트에 추가한다.
                     allCases.add(tmpCases.get(i));
@@ -350,7 +350,7 @@ public class SearchFragment extends Fragment {
 
             Cases listviewitem = data.get(position);
             TextView case_title = (TextView) convertView.findViewById(R.id.search_title);
-            case_title.setText(listviewitem.case_title);
+            case_title.setText(listviewitem.title);
 
             TextView case_tag_reason = (TextView) convertView.findViewById(R.id.search_reason);
             TextView case_tag_type = (TextView) convertView.findViewById(R.id.search_type);
@@ -358,37 +358,37 @@ public class SearchFragment extends Fragment {
             String tmp_reason = "행동 원인 > ";
             String tmp_type = "행동 종류 > ";
 
-            if(listviewitem.case_tags.get("attention")!=null) {
+            if(listviewitem.tags_reason.get("attention")!=null) {
                 tmp_reason = tmp_reason + "관심 / ";
             }
-            if(listviewitem.case_tags.get("self-stimulatory behaviour")!=null) {
+            if(listviewitem.tags_reason.get("self-stimulatory behaviour")!=null) {
                 tmp_reason = tmp_reason + "자기 자극 / ";
             }
-            if(listviewitem.case_tags.get("escape")!=null) {
+            if(listviewitem.tags_reason.get("escape")!=null) {
                 tmp_reason = tmp_reason + "과제 회피 / ";
             }
-            if(listviewitem.case_tags.get("tangibles")!=null) {
+            if(listviewitem.tags_reason.get("tangibles")!=null) {
                 tmp_reason = tmp_reason + "요구 / ";
             }
 
             case_tag_reason.setText(tmp_reason.substring(0, tmp_reason.length()-2));
 
-            if(listviewitem.case_tags.get("self-injury")!=null) {
+            if(listviewitem.tags_type.get("self-injury")!=null) {
                 tmp_type = tmp_type + "자해 / ";
             }
-            if(listviewitem.case_tags.get("aggression")!=null) {
+            if(listviewitem.tags_type.get("aggression")!=null) {
                 tmp_type = tmp_type + "타해 / ";
             }
-            if(listviewitem.case_tags.get("disruption")!=null) {
+            if(listviewitem.tags_type.get("disruption")!=null) {
                 tmp_type = tmp_type + "파괴 / ";
             }
-            if(listviewitem.case_tags.get("elopement")!=null) {
+            if(listviewitem.tags_type.get("elopement")!=null) {
                 tmp_type = tmp_type + "이탈 / ";
             }
-            if(listviewitem.case_tags.get("sexual behaviors")!=null) {
+            if(listviewitem.tags_type.get("sexual behaviors")!=null) {
                 tmp_type = tmp_type + "성적 / ";
             }
-            if(listviewitem.case_tags.get("other behaviors")!=null) {
+            if(listviewitem.tags_type.get("other behaviors")!=null) {
                 tmp_type = tmp_type + "기타 / ";
             }
 
@@ -411,7 +411,7 @@ public class SearchFragment extends Fragment {
                                         Cases tmp = (Cases) adapterBookmark.getItem(position);
 
                                         MainActivity.db.collection("users").document(MainActivity.user.getUid())
-                                                .update("cases."+tmp.case_id, delete_data)
+                                                .update("cases."+tmp.id, delete_data)
                                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                                     @Override
                                                     public void onSuccess(Void aVoid) {
