@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
+import com.google.firebase.auth.FirebaseAuth;
+
 public class ChildRegisterActivity extends AppCompatActivity {
 
     @Override
@@ -33,10 +35,14 @@ public class ChildRegisterActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
         if(TimerWidget.widgetUsed == true) {
             TimerWidget.widgetUsed = false;
             TimerWidget.second = 0;
         }
-
     }
 }

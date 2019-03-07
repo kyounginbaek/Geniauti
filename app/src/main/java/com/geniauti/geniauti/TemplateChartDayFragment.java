@@ -334,34 +334,24 @@ public class TemplateChartDayFragment extends Fragment {
         YAxis yAxisLeftFrequency = chartFrequency.getAxisLeft();
         yAxisLeftFrequency.setEnabled(false);
         yAxisLeftFrequency.setStartAtZero(true);
+        YAxis yAxisRightFrequency = chartFrequency.getAxisRight();
+        yAxisRightFrequency.setEnabled(true);
+        yAxisRightFrequency.setStartAtZero(true);
 
         List<Integer> list = Arrays.asList(hour0, hour1, hour2, hour3, hour4, hour5, hour6, hour7, hour8, hour9, hour10,
                 hour11, hour12, hour13, hour14, hour15, hour16, hour17, hour18, hour19, hour20, hour21, hour22, hour23);
         int maxFrequency = Collections.max(list);
 
-        yAxisLeftFrequency.setLabelCount(maxFrequency, false);
         yAxisLeftFrequency.setAxisMaxValue(maxFrequency);
-
-        YAxis yAxisRightFrequency = chartFrequency.getAxisRight();
-        yAxisRightFrequency.setEnabled(true);
-        yAxisRightFrequency.setStartAtZero(true);
-        yAxisRightFrequency.setLabelCount(maxFrequency, false);
         yAxisRightFrequency.setAxisMaxValue(maxFrequency);
 
-//        if(dayNumber == 0) {
-//            yAxisRightFrequency.mAxisMaximum = 2;
-//        } else {
-//            List<Integer> list = Arrays.asList(hour0, hour1, hour2, hour3, hour4, hour5, hour6, hour7, hour8, hour9, hour10,
-//                    hour11, hour12, hour13, hour14, hour15, hour16, hour17, hour18, hour19, hour20, hour21, hour22, hour23);
-//
-//            int max = Collections.max(list);
-//            if(max == 1) {
-//                yAxisRightFrequency.setAxisMaximum(2);
-//            } else {
-//                yAxisRightFrequency.mAxisMaximum = max;
-//                yAxisRightFrequency.setLabelCount(max);
-//            }
-//        }
+        if(maxFrequency == 1) {
+            yAxisLeftFrequency.setLabelCount(maxFrequency, true);
+            yAxisRightFrequency.setLabelCount(maxFrequency, true);
+        } else {
+            yAxisLeftFrequency.setLabelCount(maxFrequency, false);
+            yAxisRightFrequency.setLabelCount(maxFrequency, false);
+        }
 
         yFrequency.add(new BarEntry(0, hour0));
         yFrequency.add(new BarEntry(1, hour1));
@@ -444,7 +434,6 @@ public class TemplateChartDayFragment extends Fragment {
         chartReasons.setTouchEnabled(false);
 
         xLabelsReasons = new ArrayList<>();
-        xLabelsReasons.add("기타");
         xLabelsReasons.add("과제회피");
         xLabelsReasons.add("자기자극");
         xLabelsReasons.add("요구");
@@ -460,18 +449,23 @@ public class TemplateChartDayFragment extends Fragment {
             }
 
         });
+        xAxisReasons.setLabelCount(4,false);
 
         YAxis yAxisLeftReasons = chartReasons.getAxisLeft();
         yAxisLeftReasons.setStartAtZero(true);
-        yAxisLeftReasons.setEnabled(false);
-        int maxReason = maxNumber4(taskevation, selfstimulation, demand, interest);
-        yAxisLeftReasons.setLabelCount(maxReason, false);
-        yAxisLeftReasons.setAxisMaxValue(maxReason);
-
         YAxis yAxisRightReasons = chartReasons.getAxisRight();
         yAxisRightReasons.setStartAtZero(true);
-        yAxisRightReasons.setLabelCount(maxReason, false);
+        yAxisLeftReasons.setEnabled(false);
+        int maxReason = maxNumber4(taskevation, selfstimulation, demand, interest);
+        yAxisLeftReasons.setAxisMaxValue(maxReason);
         yAxisRightReasons.setAxisMaxValue(maxReason);
+        if(maxReason == 1) {
+            yAxisLeftReasons.setLabelCount(maxReason, true);
+            yAxisRightReasons.setLabelCount(maxReason, true);
+        } else {
+            yAxisLeftReasons.setLabelCount(maxReason, false);
+            yAxisRightReasons.setLabelCount(maxReason, false);
+        }
 
         yReasons.add(new BarEntry(0, taskevation));
         yReasons.add(new BarEntry(1, selfstimulation));
@@ -515,14 +509,19 @@ public class TemplateChartDayFragment extends Fragment {
         YAxis yAxisLeftTypes = chartTypes.getAxisLeft();
         yAxisLeftTypes.setStartAtZero(true);
         yAxisLeftTypes.setEnabled(false);
-        int maxType = maxNumber6(typeEtc, sexual, breakaway, destruction, harm, selfharm);
-        yAxisLeftTypes.setLabelCount(maxType, false);
-        yAxisLeftTypes.setAxisMaxValue(maxType);
-
         YAxis yAxisRightTypes = chartTypes.getAxisRight();
         yAxisRightTypes.setStartAtZero(true);
-        yAxisRightTypes.setLabelCount(maxType, false);
+        int maxType = maxNumber6(typeEtc, sexual, breakaway, destruction, harm, selfharm);
+        yAxisLeftTypes.setAxisMaxValue(maxType);
         yAxisRightTypes.setAxisMaxValue(maxType);
+
+        if(maxType == 1) {
+            yAxisLeftTypes.setLabelCount(maxType, true);
+            yAxisRightTypes.setLabelCount(maxType, true);
+        } else {
+            yAxisLeftTypes.setLabelCount(maxType, false);
+            yAxisRightTypes.setLabelCount(maxType, false);
+        }
 
         yTypes.add(new BarEntry(0, typeEtc));
         yTypes.add(new BarEntry(1, sexual));
@@ -552,11 +551,15 @@ public class TemplateChartDayFragment extends Fragment {
             Iterator it_location = xLocations.entrySet().iterator();
             while (it_location.hasNext()) {
                 Map.Entry pair = (Map.Entry)it_location.next();
-                xLabelsLocations.add(pair.getKey().toString());
+                if(pair.getKey().toString().length() >= 5) {
+                    xLabelsLocations.add(TextEllipse(pair.getKey().toString()));
+                } else {
+                    xLabelsLocations.add(pair.getKey().toString());
+                }
             }
         }
         xLabelsLocations.add("학교");
-        xLabelsLocations.add("식당가");
+        xLabelsLocations.add("식당");
         xLabelsLocations.add("마트");
         xLabelsLocations.add("집");
 
@@ -570,21 +573,26 @@ public class TemplateChartDayFragment extends Fragment {
             }
 
         });
+        xAxisLocations.setLabelCount(xLabelsLocations.size(),false);
 
         YAxis yAxisLeftLocations = chartLocations.getAxisLeft();
         yAxisLeftLocations.setStartAtZero(true);
         yAxisLeftLocations.setEnabled(false);
+        YAxis yAxisRightLocations = chartLocations.getAxisRight();
+        yAxisRightLocations.setStartAtZero(true);
 
         // for loop
         int maxLocation = maxNumberLocation(xLocations, school, restaurant, mart, home);
-
-        yAxisLeftLocations.setLabelCount(maxLocation, false);
         yAxisLeftLocations.setAxisMaxValue(maxLocation);
-
-        YAxis yAxisRightLocations = chartLocations.getAxisRight();
-        yAxisRightLocations.setStartAtZero(true);
-        yAxisRightLocations.setLabelCount(maxLocation, false);
         yAxisRightLocations.setAxisMaxValue(maxLocation);
+
+        if(maxLocation == 1) {
+            yAxisLeftLocations.setLabelCount(maxLocation, true);
+            yAxisRightLocations.setLabelCount(maxLocation, true);
+        } else {
+            yAxisLeftLocations.setLabelCount(maxLocation, false);
+            yAxisRightLocations.setLabelCount(maxLocation, false);
+        }
 
         // for loop
         int nLocations = 0;
@@ -611,204 +619,12 @@ public class TemplateChartDayFragment extends Fragment {
         chartLocations.setData(dataLocations);
         chartLocations.setFitBars(true);
 
-        // Behavior ArrayList
-//        for(int i = 0; i < behaviorData.size(); i++) {
-//            Behavior behavior =  behaviorData.get(i);
-//
-//            Date startTime = behavior.start_time;
-//
-//            if(sdf.format(startTime).equals(DateandTime)){
-//                // frequency
-//
-//                String sTime = sdfTime.format(startTime);
-//                int iTime = Integer.parseInt(sTime.substring(3,5));
-//                if(sTime.substring(0,2).equals("오후")) {
-//                    if(!sTime.substring(3,5).equals("12")) {
-//                        iTime = iTime + 12;
-//                    }
-//                } else {
-//                    if(sTime.substring(3,5).equals("12")) {
-//                        iTime = iTime - 12;
-//                    }
-//                }
-//                switch(iTime) {
-//                    case 0:
-//                        hour0 += 1;
-//                        intensity0 += behavior.intensity;
-//                        break;
-//                    case 1:
-//                        hour1 += 1;
-//                        intensity1 += behavior.intensity;
-//                        break;
-//                    case 2:
-//                        hour2 += 1;
-//                        intensity2 += behavior.intensity;
-//                        break;
-//                    case 3:
-//                        hour3 += 1;
-//                        intensity3 += behavior.intensity;
-//                        break;
-//                    case 4:
-//                        hour4 += 1;
-//                        intensity4 += behavior.intensity;
-//                        break;
-//                    case 5:
-//                        hour5 += 1;
-//                        intensity5 += behavior.intensity;
-//                        break;
-//                    case 6:
-//                        hour6 += 1;
-//                        intensity6 += behavior.intensity;
-//                        break;
-//                    case 7:
-//                        hour7 += 1;
-//                        intensity7 += behavior.intensity;
-//                        break;
-//                    case 8:
-//                        hour8 += 1;
-//                        intensity8 += behavior.intensity;
-//                        break;
-//                    case 9:
-//                        hour9 += 1;
-//                        intensity9 += behavior.intensity;
-//                        break;
-//                    case 10:
-//                        hour10 += 1;
-//                        intensity10 += behavior.intensity;
-//                        break;
-//                    case 11:
-//                        hour11 += 1;
-//                        intensity11 += behavior.intensity;
-//                        break;
-//                    case 12:
-//                        hour12 += 1;
-//                        intensity12 += behavior.intensity;
-//                        break;
-//                    case 13:
-//                        hour13 += 1;
-//                        intensity13 += behavior.intensity;
-//                        break;
-//                    case 14:
-//                        hour14 += 1;
-//                        intensity14 += behavior.intensity;
-//                        break;
-//                    case 15:
-//                        hour15 += 1;
-//                        intensity15 += behavior.intensity;
-//                        break;
-//                    case 16:
-//                        hour16 += 1;
-//                        intensity16 += behavior.intensity;
-//                        break;
-//                    case 17:
-//                        hour17 += 1;
-//                        intensity17 += behavior.intensity;
-//                        break;
-//                    case 18:
-//                        hour18 += 1;
-//                        intensity18 += behavior.intensity;
-//                        break;
-//                    case 19:
-//                        hour19 += 1;
-//                        intensity19 += behavior.intensity;
-//                        break;
-//                    case 20:
-//                        hour20 += 1;
-//                        intensity20 += behavior.intensity;
-//                        break;
-//                    case 21:
-//                        hour21 += 1;
-//                        intensity21 += behavior.intensity;
-//                        break;
-//                    case 22:
-//                        hour22 += 1;
-//                        intensity22 += behavior.intensity;
-//                        break;
-//                    case 23:
-//                        hour23 += 1;
-//                        intensity23 += behavior.intensity;
-//                        break;
-//                }
-//
-//                // number
-//                dayNumber += 1;
-//
-//                // time
-//                long timeDiff = behavior.end_time.getTime() - behavior.start_time.getTime();
-//                dayTime = dayTime + (timeDiff/(1000*60));
-//
-//                // intensity
-//                dayIntensity += behavior.intensity;
-//
-//                // Reasons
-//                HashMap<String, Object> reason = (HashMap<String, Object>) behavior.reason_type;
-//                HashMap.Entry<String,Object> entryRaason = reason.entrySet().iterator().next();
-//
-//                // Color Code
-//                switch(entryReason.getKey()) {
-//                    case "interest":
-//                        interest += 1;
-//                        break;
-//                    case "selfstimulation":
-//                        selfstimulation += 1;
-//                        break;
-//                    case "taskevation":
-//                        taskevation += 1;
-//                        break;
-//                    case "demand":
-//                        demand += 1;
-//                        break;
-//                    case "etc":
-//                        reasonEtc += 1;
-//                        break;
-//                }
-//
-//                // Types
-//                HashMap<String, Object> type = (HashMap<String, Object>) behavior.type;
-//                HashMap.Entry<String,Object> entryType = type.entrySet().iterator().next();
-//
-//                // Color Code
-//                switch(entryType.getKey()) {
-//                    case "selfharm":
-//                        selfharm += 1;
-//                        break;
-//                    case "harm":
-//                        harm += 1;
-//                        break;
-//                    case "destruction":
-//                        destruction += 1;
-//                        break;
-//                    case "breakaway":
-//                        breakaway += 1;
-//                        break;
-//                    case "sexual":
-//                        sexual += 1;
-//                        break;
-//                    case "etc":
-//                        typeEtc += 1;
-//                        break;
-//                }
-//
-//                // Locations
-//                switch(behavior.place) {
-//                    case "집":
-//                        home += 1;
-//                        break;
-//                    case "마트":
-//                        mart += 1;
-//                        break;
-//                    case "식당":
-//                        restaurant += 1;
-//                        break;
-//                    case "학교":
-//                        school += 1;
-//                        break;
-//                }
-//
-//            }
-//        }
-
         return v;
+    }
+
+    public String TextEllipse(String text){
+
+        return text.substring(0,3) + "..";
     }
 
     public int colorIntensity(int intensity, int number) {

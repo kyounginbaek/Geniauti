@@ -498,6 +498,11 @@ public class ProfileFragment extends Fragment {
 
             TextView parentName = (TextView) v.findViewById(R.id.list_parent_name);
             TextView parentRelationship = (TextView) v.findViewById(R.id.list_parent_relationship);
+            TextView parentSelf = (TextView) v.findViewById(R.id.list_parent_self);
+
+            if(position == 0) {
+                parentSelf.setVisibility(View.VISIBLE);
+            }
 
             parentName.setText(parentData.name);
             parentRelationship.setText(parentData.relationship);

@@ -7,18 +7,6 @@
     android:background="#ffffff"
     >
 
-    <ProgressBar
-        android:id="@+id/dic_first_progress"
-        style="?android:attr/progressBarStyleLarge"
-        android:layout_width="wrap_content"
-        android:layout_height="fill_parent"
-        android:layout_gravity="center"
-        android:indeterminate="true"
-        android:layout_centerInParent="true"
-        android:layout_marginBottom="8dp"
-        android:visibility="gone"
-        />
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

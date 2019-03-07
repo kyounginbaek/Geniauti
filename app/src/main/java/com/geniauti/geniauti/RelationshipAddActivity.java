@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Html;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.WindowManager;
@@ -91,7 +92,8 @@ public class RelationshipAddActivity extends AppCompatActivity {
 
                             for (QueryDocumentSnapshot document : task.getResult()) {
 
-                                titleText.setText(document.getData().get("name").toString()+"과의 관계를\n입력해주세요");
+                                String colorName = "<font color='#2dc76d'>"+document.getData().get("name").toString()+"</font>";
+                                titleText.setText(Html.fromHtml(colorName+"과의 관계를<br />입력해주세요"));
                                 childName.setText(document.getData().get("name").toString());
                                 cid = document.getId();
 
@@ -206,8 +208,9 @@ public class RelationshipAddActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+        super.onBackPressed();
         startActivity(new Intent(RelationshipAddActivity.this, ChildCodeAddActivity.class));
         finish();
-        super.onBackPressed();
+        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
     }
 }

@@ -40,7 +40,7 @@
                 android:textStyle="bold"
                 android:lineSpacingExtra="4dp"
                 android:letterSpacing="-0.02"
-                android:text="이다솔과의 관계를\n입력해주세요"
+                android:text=" \n "
                 />
 
             <LinearLayout
@@ -67,7 +67,7 @@
                     android:letterSpacing="0.01"
                     android:lineSpacingExtra="15sp"
                     android:gravity="center_horizontal"
-                    android:text="이다솔"
+                    android:text=" "
                     />
 
                 <TextView

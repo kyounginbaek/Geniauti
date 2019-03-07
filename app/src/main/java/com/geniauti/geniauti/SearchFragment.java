@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -71,7 +72,6 @@ public class SearchFragment extends Fragment {
     private static ArrayList<Cases> tmpCases;
 
     private OnFragmentInteractionListener mListener;
-    private View mProgressView;
 
     public SearchFragment() {
         // Required empty public constructor
@@ -109,8 +109,6 @@ public class SearchFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_search, container, false);
-        mProgressView = (View) v.findViewById(R.id.search_progress);
-        mProgressView.bringToFront();
 
         setupUI(v);
 
@@ -142,8 +140,8 @@ public class SearchFragment extends Fragment {
                                     for(Map.Entry me : result.entrySet()) {
                                         Object i = me.getKey();
                                         Cases item = new Cases(result.get(i).get("title").toString(), result.get(i).get("backgroundInfo").toString(), result.get(i).get("behavior").toString(),
-                                                (List<HashMap<String, String>>) result.get(i).get("cause"), (List<HashMap<String, String>>) result.get(i).get("solution"),
-                                                result.get(i).get("effect").toString(), (HashMap<String, String>) result.get(i).get("tags_reason"), (HashMap<String, String>) result.get(i).get("tags_type"), (String) me.getKey());
+                                                (List<HashMap<String, Object>>) result.get(i).get("cause"), (List<HashMap<String, Object>>) result.get(i).get("solution"),
+                                                result.get(i).get("effect").toString(), (HashMap<String, Object>) result.get(i).get("tags_reason"), (HashMap<String, Object>) result.get(i).get("tags_type"), (String) me.getKey());
                                         bookmark.add(item);
                                     }
                                 } else {
@@ -179,8 +177,8 @@ public class SearchFragment extends Fragment {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 Cases item = new Cases(document.get("title").toString(), document.get("backgroundInfo").toString(), document.get("behavior").toString(),
-                                        (List<HashMap<String, String>>) document.get("cause"), (List<HashMap<String, String>>) document.get("solution"), document.get("effect").toString(),
-                                        (HashMap<String, String>) document.get("tags_reason"), (HashMap<String, String>) document.get("tags_type"), document.getId());
+                                        (List<HashMap<String, Object>>) document.get("cause"), (List<HashMap<String, Object>>) document.get("solution"), document.get("effect").toString(),
+                                        (HashMap<String, Object>) document.get("tags_reason"), (HashMap<String, Object>) document.get("tags_type"), document.getId());
                                 allCases.add(item);
                             }
                             tmpCases.addAll(allCases);
@@ -196,82 +194,82 @@ public class SearchFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
 
-                mProgressView.setVisibility(View.VISIBLE);
-                getActivity().getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
-                        WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                final Cases tmp = (Cases) adapterAll.getItem(position);
+                bookmarkCheck(tmp);
 
-                MainActivity.db.collection("users").document(MainActivity.user.getUid())
-                        .get()
-                        .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                            @Override
-                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                                if (task.isSuccessful()) {
-                                    DocumentSnapshot document = task.getResult();
-                                    if(document.exists()) {
-                                        HashMap<String, HashMap<String, Object>> result = (HashMap<String, HashMap<String, Object>>) document.get("cases");
-                                        boolean bookmark_check = false;
-
-                                        final Cases tmp = (Cases) adapterAll.getItem(position);
-                                        // 만약 이미 검색한 기록이 있으면, 바로 이동
-                                        // 만약 검색한 기록이 없으면, 새로 추가
-                                        if(result != null) {
-                                            for(Map.Entry me : result.entrySet()) {
-                                                if(me.getKey().toString().equals(tmp.id)) {
-                                                    bookmark_check = true;
-                                                }
-                                            }
-                                        }
-
-                                        if(!bookmark_check) {
-                                            Object docData = tmp.firebase_input_data();
-
-                                            MainActivity.db.collection("users").document(MainActivity.user.getUid())
-                                                    .update("cases."+tmp.id, docData)
-                                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                        @Override
-                                                        public void onSuccess(Void aVoid) {
-
-                                                            bookmark.add(0, tmp);
-                                                            adapterBookmark.notifyDataSetChanged();
-
-                                                            mProgressView.setVisibility(View.GONE);
-                                                            getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
-
-                                                            Intent intent = new Intent(getActivity(), CaseDetailActivity.class);
-                                                            intent.putExtra("temp", tmp);
-                                                            startActivity(intent);
-                                                        }
-                                                    })
-                                                    .addOnFailureListener(new OnFailureListener() {
-                                                        @Override
-                                                        public void onFailure(@NonNull Exception e) {
-//                                                          Log.w(TAG, "Error writing document", e);
-                                                        }
-                                                    });
-                                        } else {
-                                            mProgressView.setVisibility(View.GONE);
-                                            getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
-
-                                            Intent intent = new Intent(getActivity(), CaseDetailActivity.class);
-                                            intent.putExtra("temp", (Cases) adapterAll.getItem(position));
-                                            startActivity(intent);
-                                        }
-                                    } else {
-
-                                    }
-                                } else {
-                                    mProgressView.setVisibility(View.GONE);
-                                    getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
-
-                                    Toast toast = Toast.makeText(getActivity(), "오류가 발생했습니다. 다시 한번 시도해주세요.", Toast.LENGTH_SHORT);
-                                    toast.show();
-                                }
-                            }
-                        });
+                Intent intent = new Intent(getActivity(), CaseDetailActivity.class);
+                intent.putExtra("temp", tmp);
+                startActivity(intent);
             }
         });
 
         return v;
+    }
+
+    public void bookmarkCheck(final Cases tmp) {
+
+        final Handler mHandler = new Handler();
+
+        final Thread t = new Thread(new Runnable(){
+            @Override
+            public void run() {
+                mHandler.post(new Runnable(){
+                    @Override public void run() {
+                        MainActivity.db.collection("users").document(MainActivity.user.getUid())
+                                .get()
+                                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                        if (task.isSuccessful()) {
+                                            DocumentSnapshot document = task.getResult();
+                                            if(document.exists()) {
+                                                HashMap<String, HashMap<String, Object>> result = (HashMap<String, HashMap<String, Object>>) document.get("cases");
+                                                boolean bookmark_check = false;
+
+                                                // 만약 이미 검색한 기록이 있으면, 바로 이동
+                                                // 만약 검색한 기록이 없으면, 새로 추가
+                                                if(result != null) {
+                                                    for(Map.Entry me : result.entrySet()) {
+                                                        if(me.getKey().toString().equals(tmp.id)) {
+                                                            bookmark_check = true;
+                                                        }
+                                                    }
+                                                }
+
+                                                if(!bookmark_check) {
+                                                    Object docData = tmp.firebase_input_data();
+
+                                                    MainActivity.db.collection("users").document(MainActivity.user.getUid())
+                                                            .update("cases."+tmp.id, docData)
+                                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                @Override
+                                                                public void onSuccess(Void aVoid) {
+                                                                    bookmark.add(0, tmp);
+                                                                    adapterBookmark.notifyDataSetChanged();
+
+                                                                }
+                                                            })
+                                                            .addOnFailureListener(new OnFailureListener() {
+                                                                @Override
+                                                                public void onFailure(@NonNull Exception e) {
+
+                                                                }
+                                                            });
+                                                }
+
+                                            } else {
+
+                                            }
+                                        } else {
+
+                                        }
+                                    }
+                                });
+                    }
+                });
+            }
+        });
+        t.start();
     }
 
     public void listviewAllShow() {
@@ -346,6 +344,10 @@ public class SearchFragment extends Fragment {
         public View getView(final int position, View convertView, ViewGroup parent){
             if(convertView == null){
                 convertView = inflater.inflate(layout, parent, false);
+            }
+
+            if(data.size() == 0) {
+                searchLine.setVisibility(View.GONE);
             }
 
             Cases listviewitem = data.get(position);

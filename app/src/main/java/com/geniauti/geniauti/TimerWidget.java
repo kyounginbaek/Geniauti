@@ -95,9 +95,10 @@ public class TimerWidget extends AppWidgetProvider {
                 timerOn = false;
                 updateAppWidget(context, AppWidgetManager.getInstance(context), id);
 
+                // splash activity intent
                 Intent i = new Intent();
                 i.setClassName(context.getPackageName(), SplashActivity.class.getName());
-                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 context.startActivity(i);
             } else {
                 second = 0;

@@ -31,6 +31,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -235,109 +236,140 @@ public class ChildAddActivity extends AppCompatActivity {
     }
 
     private void childInfoAdd() {
-        currentTime = System.currentTimeMillis();
+        int code = randInt(0,99999);
+        childAdd(code);
+    }
 
-        int selectedAge = radioGroupAge.getCheckedRadioButtonId();
-        // find the radiobutton by returned id
-        RadioButton radioBtnAge = (RadioButton) findViewById(selectedAge);
+    public void childAdd(final int code) {
 
-        childAge = Integer.parseInt(mChildAge.getText().toString());
-
-        if(radioBtnAge.getText().equals("세")) {
-            childAge = Integer.parseInt(mChildAge.getText().toString()) * 12;
-        }
-
-        int selectedSex = radioGroupSex.getCheckedRadioButtonId();
-        // find the radiobutton by returned id
-        radioBtnSex = (RadioButton) findViewById(selectedSex);
-
-        Map<String, Object> nestedNestedData = new HashMap<>();
-        nestedNestedData.put("name", user.getDisplayName());
-        nestedNestedData.put("profile_pic", "");
-        nestedNestedData.put("relationship", mChildRelation.getText().toString());
-
-        Map<String, Object> nestedData = new HashMap<>();
-        nestedData.put(user.getUid(), nestedNestedData);
-
-        Map<String, Object> docData = new HashMap<>();
-        docData.put("name", mChildName.getText().toString());
-        docData.put("profile_pic", "childs/"+cid+"_"+String.valueOf(currentTime));
-        docData.put("age", childAge);
-        docData.put("sex", radioBtnSex.getText().toString().substring(0,2));
-        docData.put("code", randInt(0,9999));
-        docData.put("users", nestedData);
-
-        db.collection("childs").document()
-                .set(docData)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
+        db.collection("childs")
+                .whereEqualTo("code", code)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
-                    public void onSuccess(Void aVoid) {
-                        db.collection("childs")
-                                .whereGreaterThanOrEqualTo("users."+user.getUid()+".name", "")
-                                .get()
-                                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                        if (task.isSuccessful()) {
-                                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                                cid = document.getId();
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            QuerySnapshot document = task.getResult();
 
-                                                Map<String, Object> childNestedData = new HashMap<>();
-                                                childNestedData.put("name", mChildName.getText().toString());
-                                                childNestedData.put("profile_pic", "childs/"+cid+"_"+String.valueOf(currentTime));
-                                                childNestedData.put("age", childAge);
-                                                childNestedData.put("sex", radioBtnSex.getText().toString().substring(0,2));
-                                                childNestedData.put("code", randInt(0,9999));
+                            if(document.size()!=0) {
+                                int childCode = randInt(0,99999);
+                                childAdd(childCode);
+                            } else {
 
-                                                Map<String, Object> nestedData = new HashMap<>();
-                                                nestedData.put(cid, childNestedData);
+                                currentTime = System.currentTimeMillis();
 
-                                                Map<String, Object> userData = new HashMap<>();
-                                                userData.put("name", user.getDisplayName());
-                                                userData.put("childs", nestedData);
+                                int selectedAge = radioGroupAge.getCheckedRadioButtonId();
+                                // find the radiobutton by returned id
+                                RadioButton radioBtnAge = (RadioButton) findViewById(selectedAge);
 
-                                                db.collection("users").document(user.getUid())
-                                                        .set(userData)
-                                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                childAge = Integer.parseInt(mChildAge.getText().toString());
+
+                                if(radioBtnAge.getText().equals("세")) {
+                                    childAge = Integer.parseInt(mChildAge.getText().toString()) * 12;
+                                }
+
+                                int selectedSex = radioGroupSex.getCheckedRadioButtonId();
+                                // find the radiobutton by returned id
+                                radioBtnSex = (RadioButton) findViewById(selectedSex);
+
+                                Map<String, Object> nestedNestedData = new HashMap<>();
+                                nestedNestedData.put("name", user.getDisplayName());
+                                nestedNestedData.put("profile_pic", "");
+                                nestedNestedData.put("relationship", mChildRelation.getText().toString());
+
+                                Map<String, Object> nestedData = new HashMap<>();
+                                nestedData.put(user.getUid(), nestedNestedData);
+
+                                final Map<String, Object> docData = new HashMap<>();
+                                docData.put("name", mChildName.getText().toString());
+                                docData.put("profile_pic", "childs/"+cid+"_"+String.valueOf(currentTime));
+                                docData.put("age", childAge);
+                                docData.put("sex", radioBtnSex.getText().toString().substring(0,2));
+                                docData.put("code", code);
+                                docData.put("users", nestedData);
+
+                                db.collection("childs").document()
+                                        .set(docData)
+                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(Void aVoid) {
+                                                db.collection("childs")
+                                                        .whereGreaterThanOrEqualTo("users."+user.getUid()+".name", "")
+                                                        .get()
+                                                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                                                             @Override
-                                                            public void onSuccess(Void aVoid) {
-                                                                if(image != null) {
-                                                                    childImageAdd();
+                                                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                                                if (task.isSuccessful()) {
+                                                                    for (QueryDocumentSnapshot document : task.getResult()) {
+                                                                        cid = document.getId();
+
+                                                                        Map<String, Object> childNestedData = new HashMap<>();
+                                                                        childNestedData.put("name", mChildName.getText().toString());
+                                                                        childNestedData.put("profile_pic", "childs/"+cid+"_"+String.valueOf(currentTime));
+                                                                        childNestedData.put("age", childAge);
+                                                                        childNestedData.put("sex", radioBtnSex.getText().toString().substring(0,2));
+                                                                        childNestedData.put("code", code);
+
+                                                                        Map<String, Object> nestedData = new HashMap<>();
+                                                                        nestedData.put(cid, childNestedData);
+
+                                                                        Map<String, Object> userData = new HashMap<>();
+                                                                        userData.put("name", user.getDisplayName());
+                                                                        userData.put("childs", nestedData);
+
+                                                                        db.collection("users").document(user.getUid())
+                                                                                .set(userData)
+                                                                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                                    @Override
+                                                                                    public void onSuccess(Void aVoid) {
+                                                                                        if(image != null) {
+                                                                                            childImageAdd();
+                                                                                        } else {
+                                                                                            mProgressView.setVisibility(View.GONE);
+                                                                                            Intent intent=new Intent(ChildAddActivity.this,MainActivity.class);
+                                                                                            startActivity(intent);
+                                                                                            finish();
+                                                                                        }
+                                                                                    }
+                                                                                })
+                                                                                .addOnFailureListener(new OnFailureListener() {
+                                                                                    @Override
+                                                                                    public void onFailure(@NonNull Exception e) {
+                                                                                        mChildAddButton.setEnabled(true);
+                                                                                        mProgressView.setVisibility(View.GONE);
+                                                                                        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                                                                                        Toast toast = Toast.makeText(ChildAddActivity.this, "에러가 발생했습니다. 다시 한번 시도해주세요", Toast.LENGTH_SHORT);
+                                                                                        toast.show();
+                                                                                    }
+                                                                                });
+                                                                    }
                                                                 } else {
-                                                                    mProgressView.setVisibility(View.GONE);
-                                                                    Intent intent=new Intent(ChildAddActivity.this,MainActivity.class);
-                                                                    startActivity(intent);
-                                                                    finish();
+
                                                                 }
-                                                            }
-                                                        })
-                                                        .addOnFailureListener(new OnFailureListener() {
-                                                            @Override
-                                                            public void onFailure(@NonNull Exception e) {
-                                                                mChildAddButton.setEnabled(true);
-                                                                mProgressView.setVisibility(View.GONE);
-                                                                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
-                                                                Toast toast = Toast.makeText(ChildAddActivity.this, "에러가 발생했습니다. 다시 한번 시도해주세요", Toast.LENGTH_SHORT);
-                                                                toast.show();
                                                             }
                                                         });
                                             }
-                                        } else {
-
-                                        }
-                                    }
-                                });
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
+                                        })
+                                        .addOnFailureListener(new OnFailureListener() {
+                                            @Override
+                                            public void onFailure(@NonNull Exception e) {
 //                                Log.w(TAG, "Error writing document", e);
-                        mChildAddButton.setEnabled(true);
-                        mProgressView.setVisibility(View.GONE);
-                        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
-                        Toast toast = Toast.makeText(ChildAddActivity.this, "에러가 발생했습니다. 다시 한번 시도해주세요", Toast.LENGTH_SHORT);
-                        toast.show();
+                                                mChildAddButton.setEnabled(true);
+                                                mProgressView.setVisibility(View.GONE);
+                                                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                                                Toast toast = Toast.makeText(ChildAddActivity.this, "에러가 발생했습니다. 다시 한번 시도해주세요", Toast.LENGTH_SHORT);
+                                                toast.show();
+                                            }
+                                        });
+                            }
+
+                        } else {
+                            mChildAddButton.setEnabled(true);
+                            mProgressView.setVisibility(View.GONE);
+                            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                            Toast toast = Toast.makeText(ChildAddActivity.this, "에러가 발생했습니다. 다시 한번 시도해주세요", Toast.LENGTH_SHORT);
+                            toast.show();
+                        }
                     }
                 });
     }
@@ -379,8 +411,9 @@ public class ChildAddActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+        super.onBackPressed();
         startActivity(new Intent(ChildAddActivity.this, ChildRegisterActivity.class));
         finish();
-        super.onBackPressed();
+        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
     }
 }

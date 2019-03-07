@@ -19,34 +19,56 @@
             android:src="@drawable/ic_profile_default"
             />
 
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginLeft="17dp"
-            android:gravity="center_vertical"
-            android:orientation="vertical">
+            >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:orientation="vertical"
+                >
+
+                <TextView
+                    android:id="@+id/list_parent_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    android:textColor="#de000000"
+                    android:lineSpacingExtra="8sp"
+                    android:text="장동호"
+                    />
+
+                <TextView
+                    android:id="@+id/list_parent_relationship"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="14sp"
+                    android:textColor="#8b000000"
+                    android:lineSpacingExtra="6sp"
+                    android:text="아빠"
+                    />
+
+            </LinearLayout>
 
             <TextView
-                android:id="@+id/list_parent_name"
+                android:id="@+id/list_parent_self"
+                android:layout_alignParentRight="true"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="16sp"
-                android:textColor="#de000000"
-                android:lineSpacingExtra="8sp"
-                android:text="장동호"
-                />
-
-            <TextView
-                android:id="@+id/list_parent_relationship"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_marginRight="16dp"
                 android:textSize="14sp"
                 android:textColor="#8b000000"
                 android:lineSpacingExtra="6sp"
-                android:text="아빠"
+                android:text="나"
+                android:layout_centerInParent="true"
+                android:visibility="gone"
                 />
 
-        </LinearLayout>
+        </RelativeLayout>
 
     </LinearLayout>
 

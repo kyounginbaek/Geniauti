@@ -136,7 +136,7 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:paddingTop="28dp"
                     android:orientation="vertical">
@@ -158,58 +158,17 @@
                         android:textSize="18sp"
                         android:text="왜 그런 행동을 할까요?" />
 
-                    <LinearLayout
-                        android:layout_width="wrap_content"
+                    <com.geniauti.geniauti.CustomListView
+                        android:id="@+id/case_cause_list"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:paddingTop="16dp"
-                        android:orientation="vertical">
+                        android:divider="#fff"
+                        android:listSelector="@android:color/transparent"
+                        android:cacheColorHint="@android:color/transparent"
+                        android:scrollbars="none"
+                        >
 
-                        <TextView
-                            android:id="@+id/case_cause_title1"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:lineSpacingExtra="10sp"
-                            android:textColor="#2bc76d"
-                            android:textSize="14sp"
-                            tools:text="감각 추구" />
-
-                        <TextView
-                            android:id="@+id/case_cause_description1"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:paddingTop="10dp"
-                            android:lineSpacingExtra="10sp"
-                            android:textColor="#3b3b3b"
-                            android:textSize="16sp"
-                            tools:text="손가락 빠는 게 기분이 좋아서 그랬어요." />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:paddingTop="14dp"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:id="@+id/case_cause_title2"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:lineSpacingExtra="10sp"
-                            android:textColor="#2bc76d"
-                            android:textSize="14sp"
-                            tools:text="관심" />
-
-                        <TextView
-                            android:id="@+id/case_cause_description2"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:paddingTop="10dp"
-                            android:lineSpacingExtra="10sp"
-                            android:textColor="#3b3b3b"
-                            android:textSize="16sp"
-                            tools:text="주위 어른들의 관심을 얻고자 했어요." />
-
-                    </LinearLayout>
+                    </com.geniauti.geniauti.CustomListView>
 
                 </LinearLayout>
 
@@ -236,88 +195,19 @@
                         android:textSize="18sp"
                         android:text="어떻게 대처했을까요?" />
 
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:paddingTop="16dp"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:id="@+id/case_solution_title1"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:lineSpacingExtra="10sp"
-                            android:textColor="#2bc76d"
-                            android:textSize="14sp"
-                            tools:text="1. 대체 행동 찾고 만들기 (1주)" />
-
-                        <TextView
-                            android:id="@+id/case_solution_description1"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:paddingTop="10dp"
-                            android:lineSpacingExtra="10sp"
-                            android:textColor="#3b3b3b"
-                            android:textSize="16sp"
-                            tools:text="‘빠는 동작’을 아이가 좋아한다고 생각했어요. 그래서 ‘막대 사탕 빨기’를 다른 대체 행동으로 시도하였으나 큰 효과를 보지 못했어요. ‘공갈 젖꼭지 빨기’를 두번째로 시도했으나 이것도 큰 효과가 없었어요." />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:paddingTop="28dp"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:id="@+id/case_solution_title2"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:lineSpacingExtra="10sp"
-                            android:textColor="#2bc76d"
-                            android:textSize="14sp"
-                            tools:text="2. 차별 행동 강화 (1주)" />
-
-                        <TextView
-                            android:id="@+id/case_solution_description2"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:paddingTop="10dp"
-                            android:lineSpacingExtra="10sp"
-                            android:textColor="#3b3b3b"
-                            android:textSize="16sp"
-                            tools:text="손가락 빨기가 일어나지 못하도록 손에 다른 물건을 쥐고 있게 했어요. 아이의 손 크기에 맞는 블록, 장난감 등을 쥐고 있게 했어요. 이렇게 ‘차별 행동’으로 손가락 빠는 행동을 줄이려 했어요." />
-
-                    </LinearLayout>
-
                 </LinearLayout>
 
-                <LinearLayout
-                    android:layout_width="wrap_content"
+                <com.geniauti.geniauti.CustomListView
+                    android:id="@+id/case_solution_list"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:paddingTop="28dp"
-                    android:orientation="vertical">
+                    android:divider="#fff"
+                    android:listSelector="@android:color/transparent"
+                    android:cacheColorHint="@android:color/transparent"
+                    android:scrollbars="none"
+                    >
 
-                    <TextView
-                        android:id="@+id/case_solution_title3"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:lineSpacingExtra="10sp"
-                        android:textColor="#2bc76d"
-                        android:textSize="14sp"
-                        tools:text="3. 일반 적응 행동 중재 (1주)" />
-
-                    <TextView
-                        android:id="@+id/case_solution_description3"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:paddingTop="10dp"
-                        android:textSize="16sp"
-                        android:textColor="#3b3b3b"
-                        android:lineSpacingExtra="10sp"
-                        tools:text="곰 세 마리, 주먹 쥐고 손을 펴서, 씨앗 등의 노래에 맞춰 손으로 율동을 했어요. 이렇게 손가락 율동을 함으로써 손가락 빨기 행동을 줄이려고 했어요."
-                        />
-
-                </LinearLayout>
+                </com.geniauti.geniauti.CustomListView>
 
                 <LinearLayout
                     android:layout_width="wrap_content"

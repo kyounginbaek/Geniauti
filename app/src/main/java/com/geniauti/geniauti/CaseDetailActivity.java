@@ -1,15 +1,25 @@
 package com.geniauti.geniauti;
 
+import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.AttributeSet;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.ListAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+import static com.geniauti.geniauti.ProfileFragment.setListViewHeightBasedOnChildren;
+import static java.security.AccessController.getContext;
 
 public class CaseDetailActivity extends AppCompatActivity {
 
@@ -49,16 +59,6 @@ public class CaseDetailActivity extends AppCompatActivity {
         caseTitle = findViewById(R.id.case_title);
         caseBackgroundInfo = findViewById(R.id.case_backgroundInfo);
         caseBehavior = findViewById(R.id.case_behavior);
-        caseCauseTitle1 = findViewById(R.id.case_cause_title1);
-        caseCauseTitle2 = findViewById(R.id.case_cause_title2);
-        caseCauseDescription1 = findViewById(R.id.case_cause_description1);
-        caseCauseDescription2 = findViewById(R.id.case_cause_description2);
-        caseSolutionTitle1 = findViewById(R.id.case_solution_title1);
-        caseSolutionTitle2 = findViewById(R.id.case_solution_title2);
-        caseSolutionTitle3 = findViewById(R.id.case_solution_title3);
-        caseSolutionDescription1 = findViewById(R.id.case_solution_description1);
-        caseSolutionDescription2 = findViewById(R.id.case_solution_description2);
-        caseSolutionDescription3 = findViewById(R.id.case_solution_description3);
         caseEffect = findViewById(R.id.case_effect);
 
         Cases selectedCase = (Cases) getIntent().getSerializableExtra("temp");
@@ -106,21 +106,14 @@ public class CaseDetailActivity extends AppCompatActivity {
         caseBackgroundInfo.setText(selectedCase.backgroundInfo);
         caseBehavior.setText(selectedCase.behavior);
 
-        List<HashMap<String,String>> case_cause = new ArrayList<HashMap<String,String>>();
-        case_cause = (List<HashMap<String,String>>) selectedCase.cause;
-        caseCauseTitle1.setText(case_cause.get(0).get("title"));
-        caseCauseTitle2.setText(case_cause.get(1).get("title"));
-        caseCauseDescription1.setText(case_cause.get(0).get("description"));
-        caseCauseDescription2.setText(case_cause.get(1).get("description"));
+        CustomListView causeListView = (CustomListView) findViewById(R.id.case_cause_list);
+        CauseListViewAdapter causeAdapter = new CauseListViewAdapter(getApplication(), R.layout.list_case_cause, selectedCase.cause);
+        causeListView.setAdapter(causeAdapter);
 
-        List<HashMap<String,String>> case_solution = new ArrayList<HashMap<String,String>>();
-        case_solution = (List<HashMap<String,String>>) selectedCase.solution;
-        caseSolutionTitle1.setText(case_solution.get(0).get("title"));
-        caseSolutionTitle2.setText(case_solution.get(1).get("title"));
-        caseSolutionTitle3.setText(case_solution.get(2).get("title"));
-        caseSolutionDescription1.setText(case_solution.get(0).get("description"));
-        caseSolutionDescription2.setText(case_solution.get(1).get("description"));
-        caseSolutionDescription3.setText(case_solution.get(2).get("description"));
+        CustomListView solutionListView = (CustomListView) findViewById(R.id.case_solution_list);
+        SolutionListViewAdapter solutionAdapter = new SolutionListViewAdapter(getApplication(), R.layout.list_case_solution, selectedCase.solution);
+        solutionListView.setAdapter(solutionAdapter);
+
         caseEffect.setText(selectedCase.effect);
 
         mProgressView.setVisibility(View.GONE);
@@ -141,5 +134,84 @@ public class CaseDetailActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
+    public class CauseListViewAdapter extends BaseAdapter {
+
+        private LayoutInflater inflater;
+        private List<HashMap<String,Object>>  data;
+        private int layout;
+
+        public CauseListViewAdapter(Context context, int layout, List<HashMap<String,Object>>  data){
+            this.inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            this.data = data;
+            this.layout = layout;
+        }
+
+        @Override
+        public int getCount(){return data.size();}
+
+        @Override
+        public Object getItem(int position){
+            return data.get(position);
+        }
+
+        @Override
+        public long getItemId(int position){return position;}
+
+        @Override
+        public View getView(int position, View v, ViewGroup parent){
+            if(v == null){
+                v = inflater.inflate(R.layout.list_case_cause, parent, false);
+            }
+
+            TextView causeTitle = (TextView) v.findViewById(R.id.case_cause_title);
+            TextView causeDescription = (TextView) v.findViewById(R.id.case_cause_description);
+
+            causeTitle.setText(data.get(position).get("title").toString());
+            causeDescription.setText(data.get(position).get("description").toString());
+
+            return v;
+        }
+    }
+
+    public class SolutionListViewAdapter extends BaseAdapter {
+
+        private LayoutInflater inflater;
+        private List<HashMap<String,Object>> data;
+        private int layout;
+
+        public SolutionListViewAdapter(Context context, int layout, List<HashMap<String,Object>> data){
+            this.inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            this.data = data;
+            this.layout = layout;
+        }
+
+        @Override
+        public int getCount(){return data.size();}
+
+        @Override
+        public Object getItem(int position){
+            return data.get(position);
+        }
+
+        @Override
+        public long getItemId(int position){return position;}
+
+        @Override
+        public View getView(int position, View v, ViewGroup parent){
+            if(v == null){
+                v = inflater.inflate(R.layout.list_case_solution, parent, false);
+            }
+
+            TextView solutionTitle = (TextView) v.findViewById(R.id.case_solution_title);
+            TextView solutionDescription = (TextView) v.findViewById(R.id.case_solution_description);
+
+            solutionTitle.setText(data.get(position).get("title").toString());
+            solutionDescription.setText(data.get(position).get("description").toString());
+
+            return v;
+        }
+    }
+
 
 }

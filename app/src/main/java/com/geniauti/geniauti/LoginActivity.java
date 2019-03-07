@@ -211,11 +211,15 @@ public class LoginActivity extends AppCompatActivity {
         mProgressView = findViewById(R.id.login_progress);
         mProgressView.bringToFront();
 
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
         if(TimerWidget.widgetUsed == true) {
             TimerWidget.widgetUsed = false;
             TimerWidget.second = 0;
         }
-
     }
 
     private boolean isNetworkConnected() {

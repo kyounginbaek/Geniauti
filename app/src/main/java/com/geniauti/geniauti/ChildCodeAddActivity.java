@@ -127,9 +127,10 @@ public class ChildCodeAddActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+        super.onBackPressed();
         startActivity(new Intent(ChildCodeAddActivity.this, ChildRegisterActivity.class));
         finish();
-        super.onBackPressed();
+        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
     }
 
 }

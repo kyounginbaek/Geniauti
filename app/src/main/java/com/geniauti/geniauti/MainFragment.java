@@ -21,6 +21,7 @@ import android.view.animation.Animation;
 import android.view.animation.Transformation;
 import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -341,6 +342,7 @@ public class MainFragment extends Fragment {
                                 if(getActivity()!=null) {
                                     bookmarkAdapter = new BookmarkListviewAdapter(getContext(), R.layout.list_bookmark_profile, bookmarkData);
                                     bookmarkListView.setAdapter(bookmarkAdapter);
+                                    setListViewHeightBasedOnChildren(bookmarkListView);
                                 }
                             } else {
                                 behavior_add_line.setVisibility(View.GONE);
@@ -414,12 +416,6 @@ public class MainFragment extends Fragment {
                                 cardAdapter = new CardListviewAdapter(getContext(), R.layout.list_behavior_card, cardData);
                                 cardListView.setAdapter(cardAdapter);
                             }
-                        }
-
-                        if(TimerWidget.widgetUsed == true) {
-                            TimerWidget.widgetUsed = false;
-                            Intent intent = new Intent(getActivity(), BehaviorActivity.class);
-                            startActivity(intent);
                         }
                     }
                 });
@@ -708,6 +704,25 @@ public class MainFragment extends Fragment {
 
             return convertView;
         }
+    }
+
+    public static void setListViewHeightBasedOnChildren(ListView listView) {
+        ListAdapter listAdapter = listView.getAdapter();
+        if (listAdapter == null) {
+            // pre-condition
+            return;
+        }
+
+        int totalHeight = 0;
+        for (int i = 0; i < listAdapter.getCount(); i++) {
+            View listItem = listAdapter.getView(i, null, listView);
+            listItem.measure(0, 0);
+            totalHeight += listItem.getMeasuredHeight();
+        }
+
+        ViewGroup.LayoutParams params = listView.getLayoutParams();
+        params.height = totalHeight + (listView.getDividerHeight() * (listAdapter.getCount() - 1));
+        listView.setLayoutParams(params);
     }
 
     // TODO: Rename method, update argument and hook method into UI event

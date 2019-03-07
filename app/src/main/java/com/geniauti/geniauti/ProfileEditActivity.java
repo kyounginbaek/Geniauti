@@ -27,18 +27,24 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.Transaction;
+import com.google.firebase.firestore.WriteBatch;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
+import java.util.List;
 import java.util.Map;
 
 public class ProfileEditActivity extends AppCompatActivity {
@@ -263,7 +269,6 @@ public class ProfileEditActivity extends AppCompatActivity {
                                                 .setDisplayName(newName)
                                                 .build();
 
-
                                         MainActivity.user.updateProfile(profileUpdates)
                                                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                                                     @Override
@@ -271,7 +276,34 @@ public class ProfileEditActivity extends AppCompatActivity {
                                                         if (task.isSuccessful()) {
 
                                                             // behaviors name edit
+                                                            FirebaseFirestore rootRef = FirebaseFirestore.getInstance();
+                                                            final CollectionReference itemsRef = rootRef.collection("behaviors");
 
+                                                            Query query = MainActivity.db.collection("behaviors").whereEqualTo("uid", MainActivity.user.getUid());
+                                                            query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                                                @Override
+                                                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                                                    if (task.isSuccessful()) {
+
+                                                                        for (DocumentSnapshot document : task.getResult()) {
+                                                                            itemsRef.document(document.getId()).update("name", newName);
+                                                                        }
+
+                                                                        mProgressView.setVisibility(View.GONE);
+                                                                        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                                                                        finish();
+                                                                        Toast toast = Toast.makeText(ProfileEditActivity.this, "프로필 정보가 수정되었습니다.", Toast.LENGTH_SHORT);
+                                                                        toast.show();
+
+                                                                    } else {
+                                                                        btnProfileEdit.setEnabled(true);
+                                                                        mProgressView.setVisibility(View.GONE);
+                                                                        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                                                                        Toast toast = Toast.makeText(ProfileEditActivity.this, "에러가 발생했습니다. 다시 한번 시도해주세요.", Toast.LENGTH_SHORT);
+                                                                        toast.show();
+                                                                    }
+                                                                }
+                                                            });
 
                                                         } else {
                                                             btnProfileEdit.setEnabled(true);

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="16dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/case_cause_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:lineSpacingExtra="10sp"
+            android:textColor="#2bc76d"
+            android:textSize="14sp"
+            tools:text="감각 추구" />
+
+        <TextView
+            android:id="@+id/case_cause_description"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="10dp"
+            android:lineSpacingExtra="10sp"
+            android:textColor="#3b3b3b"
+            android:textSize="16sp"
+            tools:text="손가락 빠는 게 기분이 좋아서 그랬어요." />
+    </LinearLayout>
+
+</LinearLayout>

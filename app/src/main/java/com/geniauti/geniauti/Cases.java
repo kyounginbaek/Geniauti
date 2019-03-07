@@ -6,7 +6,7 @@ import java.util.List;
 
 public class Cases implements Serializable {
 
-    public Cases(String title, String backgroundInfo, String behavior, List<HashMap<String,String>> cause, List<HashMap<String,String>> solution, String effect, HashMap<String,String> tags_reason, HashMap<String,String> tags_type,  String id) {
+    public Cases(String title, String backgroundInfo, String behavior, List<HashMap<String,Object>> cause, List<HashMap<String,Object>> solution, String effect, HashMap<String,Object> tags_reason, HashMap<String,Object> tags_type,  String id) {
         this.title = title;
         this.backgroundInfo = backgroundInfo;
         this.behavior = behavior;
@@ -38,10 +38,10 @@ public class Cases implements Serializable {
     public String title;
     public String backgroundInfo;
     public String behavior;
-    public List<HashMap<String,String>> cause;
-    public List<HashMap<String,String>> solution;
+    public List<HashMap<String,Object>> cause;
+    public List<HashMap<String,Object>> solution;
     public String effect;
-    public HashMap<String,String> tags_reason;
-    public HashMap<String,String> tags_type;
+    public HashMap<String,Object> tags_reason;
+    public HashMap<String,Object> tags_type;
     public String id;
 }

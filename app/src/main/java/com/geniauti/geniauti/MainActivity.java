@@ -3,6 +3,7 @@ package com.geniauti.geniauti;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -30,6 +31,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
@@ -54,6 +57,7 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnFr
     public static StorageReference storageRef;
 
     public static String cid;
+    public static String token;
     public static String relationship;
 
     @Override
@@ -144,6 +148,44 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnFr
                 return true;
             }
         });
+
+        // Get token
+        FirebaseInstanceId.getInstance().getInstanceId()
+                .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<InstanceIdResult> task) {
+//                        if (!task.isSuccessful()) {
+//                            Log.w(TAG, "getInstanceId failed", task.getException());
+//                            return;
+//                        }
+
+                        // Get new Instance ID token
+                        final String token = task.getResult().getToken();
+                        // users(ok)
+                        MainActivity.db.collection("users").document(MainActivity.user.getUid())
+                                .update("notificationTokens", token)
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+
+                                        // childs(ok)
+                                        MainActivity.db.collection("childs").document(MainActivity.cid)
+                                                .update("users."+MainActivity.user.getUid()+".notificationTokens", token)
+                                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                    @Override
+                                                    public void onSuccess(Void aVoid) {
+
+                                                    }
+                                                });
+                                    }
+                                });
+
+                        // Log and toast
+//                        String msg = getString(R.string.msg_token_fmt, token);
+//                        Log.d(TAG, msg);
+//                        Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     public class BackPressCloseHandler {
@@ -220,6 +262,16 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnFr
             return 4;
         }
 
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        if(TimerWidget.widgetUsed == true) {
+            TimerWidget.widgetUsed = false;
+            Intent intent = new Intent(MainActivity.this, BehaviorActivity.class);
+            startActivity(intent);
+        }
     }
 
     @Override

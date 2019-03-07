@@ -13,6 +13,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -270,10 +271,12 @@ public class BehaviorDetailActivity extends AppCompatActivity {
         setReasonType(selectedBehavior.reason_type);
         setIntensity(selectedBehavior.intensity);
 
+
         bookmarkSubmit = (LinearLayout) mView.findViewById(R.id.bookmark_submit);
         bookmarkSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 bookmarkSubmit.setEnabled(false);
 
                 presetData = new HashMap<>();

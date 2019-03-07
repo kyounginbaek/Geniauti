@@ -332,222 +332,6 @@ public class TemplateChartMonthFragment extends Fragment {
             }
         }
 
-        // Behavior ArrayList
-//        for (int i = 0; i < behaviorData.size(); i++) {
-//            Behavior behavior = behaviorData.get(i);
-//
-//            Date startTime = behavior.start_time;
-//
-//            if (sdf.format(startTime).equals(DateandTime)) {
-//                // frequency
-//
-//                String sTime = sdfTime.format(startTime);
-//
-//                switch (Integer.parseInt(sTime)) {
-//                    case 1:
-//                        day1 += 1;
-//                        intensity1 += behavior.intensity;
-//                        break;
-//                    case 2:
-//                        day2 += 1;
-//                        intensity2 += behavior.intensity;
-//                        break;
-//                    case 3:
-//                        day3 += 1;
-//                        intensity3 += behavior.intensity;
-//                        break;
-//                    case 4:
-//                        day4 += 1;
-//                        intensity4 += behavior.intensity;
-//                        break;
-//                    case 5:
-//                        day5 += 1;
-//                        intensity5 += behavior.intensity;
-//                        break;
-//                    case 6:
-//                        day6 += 1;
-//                        intensity6 += behavior.intensity;
-//                        break;
-//                    case 7:
-//                        day7 += 1;
-//                        intensity7 += behavior.intensity;
-//                        break;
-//                    case 8:
-//                        day8 += 1;
-//                        intensity8 += behavior.intensity;
-//                        break;
-//                    case 9:
-//                        day9 += 1;
-//                        intensity9 += behavior.intensity;
-//                        break;
-//                    case 10:
-//                        day10 += 1;
-//                        intensity10 += behavior.intensity;
-//                        break;
-//                    case 11:
-//                        day11 += 1;
-//                        intensity11 += behavior.intensity;
-//                        break;
-//                    case 12:
-//                        day12 += 1;
-//                        intensity12 += behavior.intensity;
-//                        break;
-//                    case 13:
-//                        day13 += 1;
-//                        intensity13 += behavior.intensity;
-//                        break;
-//                    case 14:
-//                        day14 += 1;
-//                        intensity14 += behavior.intensity;
-//                        break;
-//                    case 15:
-//                        day15 += 1;
-//                        intensity15 += behavior.intensity;
-//                        break;
-//                    case 16:
-//                        day16 += 1;
-//                        intensity16 += behavior.intensity;
-//                        break;
-//                    case 17:
-//                        day17 += 1;
-//                        intensity17 += behavior.intensity;
-//                        break;
-//                    case 18:
-//                        day18 += 1;
-//                        intensity18 += behavior.intensity;
-//                        break;
-//                    case 19:
-//                        day19 += 1;
-//                        intensity19 += behavior.intensity;
-//                        break;
-//                    case 20:
-//                        day20 += 1;
-//                        intensity20 += behavior.intensity;
-//                        break;
-//                    case 21:
-//                        day21 += 1;
-//                        intensity21 += behavior.intensity;
-//                        break;
-//                    case 22:
-//                        day22 += 1;
-//                        intensity22 += behavior.intensity;
-//                        break;
-//                    case 23:
-//                        day23 += 1;
-//                        intensity23 += behavior.intensity;
-//                        break;
-//                    case 24:
-//                        day24 += 1;
-//                        intensity24 += behavior.intensity;
-//                        break;
-//                    case 25:
-//                        day25 += 1;
-//                        intensity25 += behavior.intensity;
-//                        break;
-//                    case 26:
-//                        day26 += 1;
-//                        intensity26 += behavior.intensity;
-//                        break;
-//                    case 27:
-//                        day27 += 1;
-//                        intensity27 += behavior.intensity;
-//                        break;
-//                    case 28:
-//                        day28 += 1;
-//                        intensity28 += behavior.intensity;
-//                        break;
-//                    case 29:
-//                        day29 += 1;
-//                        intensity29 += behavior.intensity;
-//                        break;
-//                    case 30:
-//                        day30 += 1;
-//                        intensity30 += behavior.intensity;
-//                        break;
-//                    case 31:
-//                        day31 += 1;
-//                        intensity31 += behavior.intensity;
-//                        break;
-//                }
-//
-//                // number
-//                monthNumber += 1;
-//
-//                // time
-//                long timeDiff = behavior.end_time.getTime() - behavior.start_time.getTime();
-//                monthTime = monthTime + (timeDiff / (1000 * 60));
-//
-//                // intensity
-//                monthIntensity += behavior.intensity;
-//
-//                // Reasons
-//                HashMap<String, Object> reason = (HashMap<String, Object>) behavior.reason_type;
-//                HashMap.Entry<String, Object> entryRaason = reason.entrySet().iterator().next();
-//
-//                // Color Code
-//                switch (entryRaason.getKey()) {
-//                    case "interest":
-//                        interest += 1;
-//                        break;
-//                    case "selfstimulation":
-//                        selfstimulation += 1;
-//                        break;
-//                    case "taskevation":
-//                        taskevation += 1;
-//                        break;
-//                    case "demand":
-//                        demand += 1;
-//                        break;
-//                    case "etc":
-//                        reasonEtc += 1;
-//                        break;
-//                }
-//
-//                // Types
-//                HashMap<String, Object> type = (HashMap<String, Object>) behavior.type;
-//                HashMap.Entry<String, Object> entryType = type.entrySet().iterator().next();
-//
-//                // Color Code
-//                switch (entryType.getKey()) {
-//                    case "selfharm":
-//                        selfharm += 1;
-//                        break;
-//                    case "harm":
-//                        harm += 1;
-//                        break;
-//                    case "destruction":
-//                        destruction += 1;
-//                        break;
-//                    case "breakaway":
-//                        breakaway += 1;
-//                        break;
-//                    case "sexual":
-//                        sexual += 1;
-//                        break;
-//                    case "etc":
-//                        typeEtc += 1;
-//                        break;
-//                }
-//
-//                // Locations
-//                switch (behavior.place) {
-//                    case "집":
-//                        home += 1;
-//                        break;
-//                    case "마트":
-//                        mart += 1;
-//                        break;
-//                    case "식당":
-//                        restaurant += 1;
-//                        break;
-//                    case "학교":
-//                        school += 1;
-//                        break;
-//                }
-//
-//            }
-//        }
-
         // Frequency
         chartFrequency = v.findViewById(R.id.chart_month_frequency);
         chartFrequency.getDescription().setEnabled(false);
@@ -561,32 +345,25 @@ public class TemplateChartMonthFragment extends Fragment {
         YAxis yAxisLeftFrequency = chartFrequency.getAxisLeft();
         yAxisLeftFrequency.setEnabled(false);
         yAxisLeftFrequency.setStartAtZero(true);
+        YAxis yAxisRightFrequency = chartFrequency.getAxisRight();
+        yAxisRightFrequency.setEnabled(true);
+        yAxisRightFrequency.setStartAtZero(true);
 
         List<Integer> list = Arrays.asList(day1, day2, day3, day4, day5, day6, day7, day8, day9, day10,
                 day11, day12, day13, day14, day15, day16, day17, day18, day19, day20,
                 day21, day22, day23, day24, day25, day26, day27, day28, day29, day30, day31);
         int maxFrequency = Collections.max(list);
 
-        yAxisLeftFrequency.setLabelCount(maxFrequency, false);
         yAxisLeftFrequency.setAxisMaxValue(maxFrequency);
-
-        YAxis yAxisRightFrequency = chartFrequency.getAxisRight();
-        yAxisRightFrequency.setEnabled(true);
-        yAxisRightFrequency.setStartAtZero(true);
-        yAxisRightFrequency.setLabelCount(maxFrequency, false);
         yAxisRightFrequency.setAxisMaxValue(maxFrequency);
 
-//        if(monthNumber == 0) {
-//            yAxisRightFrequency.mAxisMaximum = 1;
-//            yAxisRightFrequency.setLabelCount(1);
-//        } else {
-//            List<Integer> list = Arrays.asList(day1, day2, day3, day4, day5, day6, day7, day8, day9, day10,
-//                    day11, day12, day13, day14, day15, day16, day17, day18, day19, day20,
-//                    day21, day22, day23, day24, day25, day26, day27, day28, day29, day30, day31);
-//
-//            yAxisRightFrequency.mAxisMaximum = Collections.max(list);
-//            yAxisRightFrequency.setLabelCount(Collections.max(list));
-//        }
+        if(maxFrequency == 1) {
+            yAxisLeftFrequency.setLabelCount(maxFrequency, true);
+            yAxisRightFrequency.setLabelCount(maxFrequency, true);
+        } else {
+            yAxisLeftFrequency.setLabelCount(maxFrequency, false);
+            yAxisRightFrequency.setLabelCount(maxFrequency, false);
+        }
 
         yFrequency.add(new BarEntry(1, day1));
         yFrequency.add(new BarEntry(2, day2));
@@ -677,7 +454,6 @@ public class TemplateChartMonthFragment extends Fragment {
         chartReasons.setTouchEnabled(false);
 
         xLabelsReasons = new ArrayList<>();
-        xLabelsReasons.add("기타");
         xLabelsReasons.add("과제회피");
         xLabelsReasons.add("자기자극");
         xLabelsReasons.add("요구");
@@ -693,18 +469,25 @@ public class TemplateChartMonthFragment extends Fragment {
             }
 
         });
+        xAxisReasons.setLabelCount(4,false);
 
         YAxis yAxisLeftReasons = chartReasons.getAxisLeft();
         yAxisLeftReasons.setStartAtZero(true);
         yAxisLeftReasons.setEnabled(false);
-        int maxReason = maxNumber4(taskevation, selfstimulation, demand, interest);
-        yAxisLeftReasons.setLabelCount(maxReason, false);
-        yAxisLeftReasons.setAxisMaxValue(maxReason);
-
         YAxis yAxisRightReasons = chartReasons.getAxisRight();
         yAxisRightReasons.setStartAtZero(true);
-        yAxisRightReasons.setLabelCount(maxReason, false);
+
+        int maxReason = maxNumber4(taskevation, selfstimulation, demand, interest);
+        yAxisLeftReasons.setAxisMaxValue(maxReason);
         yAxisRightReasons.setAxisMaxValue(maxReason);
+
+        if(maxReason == 1) {
+            yAxisLeftReasons.setLabelCount(maxReason, true);
+            yAxisRightReasons.setLabelCount(maxReason, true);
+        } else {
+            yAxisLeftReasons.setLabelCount(maxReason, false);
+            yAxisRightReasons.setLabelCount(maxReason, false);
+        }
 
         yReasons.add(new BarEntry(0, taskevation));
         yReasons.add(new BarEntry(1, selfstimulation));
@@ -747,14 +530,20 @@ public class TemplateChartMonthFragment extends Fragment {
         YAxis yAxisLeftTypes = chartTypes.getAxisLeft();
         yAxisLeftTypes.setStartAtZero(true);
         yAxisLeftTypes.setEnabled(false);
-        int maxType = maxNumber6(typeEtc, sexual, breakaway, destruction, harm, selfharm);
-        yAxisLeftTypes.setLabelCount(maxType, false);
-        yAxisLeftTypes.setAxisMaxValue(maxType);
-
         YAxis yAxisRightTypes = chartTypes.getAxisRight();
         yAxisRightTypes.setStartAtZero(true);
-        yAxisRightTypes.setLabelCount(maxType, false);
+
+        int maxType = maxNumber6(typeEtc, sexual, breakaway, destruction, harm, selfharm);
+        yAxisLeftTypes.setAxisMaxValue(maxType);
         yAxisRightTypes.setAxisMaxValue(maxType);
+
+        if(maxType == 1) {
+            yAxisLeftTypes.setLabelCount(maxType, true);
+            yAxisRightTypes.setLabelCount(maxType, true);
+        } else {
+            yAxisLeftTypes.setLabelCount(maxType, false);
+            yAxisRightTypes.setLabelCount(maxType, false);
+        }
 
         yTypes.add(new BarEntry(0, typeEtc));
         yTypes.add(new BarEntry(1, sexual));
@@ -783,7 +572,11 @@ public class TemplateChartMonthFragment extends Fragment {
             Iterator it_location = xLocations.entrySet().iterator();
             while (it_location.hasNext()) {
                 Map.Entry pair = (Map.Entry)it_location.next();
-                xLabelsLocations.add(pair.getKey().toString());
+                if(pair.getKey().toString().length() >= 5) {
+                    xLabelsLocations.add(TextEllipse(pair.getKey().toString()));
+                } else {
+                    xLabelsLocations.add(pair.getKey().toString());
+                }
             }
         }
         xLabelsLocations.add("학교");
@@ -801,20 +594,26 @@ public class TemplateChartMonthFragment extends Fragment {
             }
 
         });
+        xAxisLocations.setLabelCount(xLabelsLocations.size(),false);
 
         YAxis yAxisLeftLocations = chartLocations.getAxisLeft();
         yAxisLeftLocations.setStartAtZero(true);
         yAxisLeftLocations.setEnabled(false);
+        YAxis yAxisRightLocations = chartLocations.getAxisRight();
+        yAxisRightLocations.setStartAtZero(true);
 
         // for loop
         int maxLocation = maxNumberLocation(xLocations, school, restaurant, mart, home);
-        yAxisLeftLocations.setLabelCount(maxLocation, false);
         yAxisLeftLocations.setAxisMaxValue(maxLocation);
-
-        YAxis yAxisRightLocations = chartLocations.getAxisRight();
-        yAxisRightLocations.setStartAtZero(true);
-        yAxisRightLocations.setLabelCount(maxLocation, false);
         yAxisRightLocations.setAxisMaxValue(maxLocation);
+
+        if(maxLocation == 1) {
+            yAxisLeftLocations.setLabelCount(maxLocation, true);
+            yAxisRightLocations.setLabelCount(maxLocation, true);
+        } else {
+            yAxisLeftLocations.setLabelCount(maxLocation, false);
+            yAxisRightLocations.setLabelCount(maxLocation, false);
+        }
 
         // for loop
         int nLocations = 0;
@@ -841,6 +640,11 @@ public class TemplateChartMonthFragment extends Fragment {
         chartLocations.setFitBars(true);
 
         return v;
+    }
+
+    public String TextEllipse(String text){
+
+        return text.substring(0,3) + "..";
     }
 
     public int colorIntensity(int intensity, int number) {

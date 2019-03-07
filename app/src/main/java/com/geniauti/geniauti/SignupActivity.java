@@ -131,9 +131,10 @@ public class SignupActivity extends AppCompatActivity implements LoaderCallbacks
 
     @Override
     public void onBackPressed() {
+        super.onBackPressed();
         startActivity(new Intent(SignupActivity.this, LoginActivity.class));
         finish();
-        super.onBackPressed();
+        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
     }
 
     private void populateAutoComplete() {

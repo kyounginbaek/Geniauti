@@ -32,10 +32,12 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.Transaction;
@@ -368,12 +370,34 @@ public class ChildEditActivity extends AppCompatActivity {
                 if(!relationship.equals(mChildRelationship.getText())) {
 
                     // behavior edit
-                    mProgressView.setVisibility(View.GONE);
-                    getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
-                    finish();
-                    Toast toast = Toast.makeText(ChildEditActivity.this, "아이 정보가 수정되었습니다.", Toast.LENGTH_SHORT);
-                    toast.show();
+                    FirebaseFirestore rootRef = FirebaseFirestore.getInstance();
+                    final CollectionReference itemsRef = rootRef.collection("behaviors");
 
+                    Query query = MainActivity.db.collection("behaviors").whereEqualTo("uid", MainActivity.user.getUid());
+                    query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            if (task.isSuccessful()) {
+
+                                for (DocumentSnapshot document : task.getResult()) {
+                                    itemsRef.document(document.getId()).update("relationship", mChildRelationship.getText().toString());
+                                }
+
+                                mProgressView.setVisibility(View.GONE);
+                                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                                finish();
+                                Toast toast = Toast.makeText(ChildEditActivity.this, "아이 정보가 수정되었습니다.", Toast.LENGTH_SHORT);
+                                toast.show();
+
+                            } else {
+                                childEditButton.setEnabled(true);
+                                mProgressView.setVisibility(View.GONE);
+                                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                                Toast toast = Toast.makeText(ChildEditActivity.this, "오류가 발생했습니다. 다시 한번 시도해주세요.", Toast.LENGTH_SHORT);
+                                toast.show();
+                            }
+                        }
+                    });
 
                 } else {
                     mProgressView.setVisibility(View.GONE);
