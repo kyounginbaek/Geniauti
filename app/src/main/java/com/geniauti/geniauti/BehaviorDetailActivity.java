@@ -510,24 +510,24 @@ public class BehaviorDetailActivity extends AppCompatActivity {
 
         int id = item.getItemId();
 
-        MenuItem behaviorEdit = menu.findItem(R.id.behavior_edit);
-        if(editMode){
-            behaviorEdit.setTitle("수정 취소");
-        } else {
-            behaviorEdit.setTitle("수정");
-        }
+//        MenuItem behaviorEdit = menu.findItem(R.id.behavior_edit);
+//        if(editMode){
+//            behaviorEdit.setTitle("수정 취소");
+//        } else {
+//            behaviorEdit.setTitle("수정");
+//        }
 
         if (id == android.R.id.home) {
             finish();
-        } else if(id == R.id.behavior_bookmark){
+        } else if(id == R.id.behavior_bookmark) {
             bookmarkDialog.show();
-        } else if(id == R.id.behavior_edit) {
-
-            if(editMode == false) {
-                editModeOn();
-            } else {
-                editModeOff();
-            }
+//        } else if(id == R.id.behavior_edit) {
+//
+//            if(editMode == false) {
+//                editModeOn();
+//            } else {
+//                editModeOff();
+//            }
 
         } else if(id == R.id.behavior_delete) {
 

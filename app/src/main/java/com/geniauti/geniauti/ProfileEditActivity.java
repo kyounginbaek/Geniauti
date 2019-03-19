@@ -28,6 +28,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
+import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
@@ -363,11 +364,22 @@ public class ProfileEditActivity extends AppCompatActivity {
                                 }
                             }
                         } else {
+
                             btnProfileEdit.setEnabled(true);
                             mProgressView.setVisibility(View.GONE);
                             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
-                            Toast toast = Toast.makeText(ProfileEditActivity.this, "이미 등록되어 있는 이메일입니다. 새로운 이메일을 입력해주세요.", Toast.LENGTH_SHORT);
-                            toast.show();
+
+                            FirebaseAuthException e = (FirebaseAuthException )task.getException();
+                            if(e.getErrorCode()=="ERROR_INVALID_EMAIL") {
+                                profileEmail.setError("잘못된 이메일 형식입니다.");
+                                return;
+                            } else if(e.getErrorCode()=="ERROR_EMAIL_ALREADY_IN_USE") {
+                                profileEmail.setError("이미 가입된 이메일 주소입니다.");
+                                return;
+                            } else {
+                                Toast.makeText(ProfileEditActivity.this, "에러가 발생했습니다. 다시 한번 시도해주세요.", Toast.LENGTH_SHORT).show();
+                                return;
+                            }
                         }
                     }
                 });

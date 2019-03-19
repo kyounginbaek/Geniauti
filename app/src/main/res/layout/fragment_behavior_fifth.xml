@@ -56,7 +56,7 @@
                 android:textSize="16sp"
                 android:textColor="#3b3b3b"
                 android:lineSpacingExtra="8sp"
-                android:hint="예) 다솔이가 밥을 먹다 말고 울고 소리를 지르며 바닥에서 굴렀다"
+                android:hint="예) 좋아하는 고기만 계속 먹으려고 하길래, 고기를 주지 않고 브로콜리를 주었다."
                 android:inputType="textMultiLine"
                 android:scrollbars="vertical"
                 android:backgroundTint="@drawable/focus_tint_list"

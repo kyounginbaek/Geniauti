@@ -241,7 +241,7 @@ public class BehaviorThirdFragment extends Fragment {
                 LinearLayout addListLayout = (LinearLayout) view.findViewById(R.id.add_list_layout);
 
                 if(addListText != null && addListLayout != null) {
-                    addListText.setText("장소 추가하기");
+                    addListText.setText("제목 추가하기");
                     addListLayout.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {

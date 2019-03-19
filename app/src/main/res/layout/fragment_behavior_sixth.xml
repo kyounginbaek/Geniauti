@@ -56,7 +56,7 @@
                 android:textSize="16sp"
                 android:textColor="#3b3b3b"
                 android:lineSpacingExtra="8sp"
-                android:hint="예) 다솔이가 밥을 먹다 말고 울고 소리를 지르며 바닥에서 굴렀다"
+                android:hint="예) 울음을 멈출 때 까지 가만히 지켜보았다. 밥 먹던 것을 다 치웠더니 30분 후 아이가 스스로 울음을 그쳤다."
                 android:inputType="textMultiLine"
                 android:scrollbars="vertical"
                 android:backgroundTint="@drawable/focus_tint_list"

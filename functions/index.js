@@ -49,21 +49,23 @@ exports.sendNotification = functions.firestore
 
 		    tokensSnapshot = result.data().users;
 	        tokens_to_send_to = [];
-	        console.log(Object.keys(tokensSnapshot).length);
 
-	        for (var i=0; i<Object.keys(tokensSnapshot).length; ++i) {
+	        console.log("작동중");
 
+	        for(var i in tokensSnapshot) {
 	        	var map = tokensSnapshot[i];
 
-	        	if(obj.hasOwnProperty("notificationTokens")) {
-        			console.log(map);
-
-        			if(map['notificationTokens'] !== getDeviceTokensPromise) {
-		        		tokens_to_send_to.push(map['notificationTokens']);
-		        		console.log(map['notificationTokens']);
-		        	}
-        		}
-		    }
+	        	for(var obj in map){
+	        		if (map.hasOwnProperty(obj)) {
+				        if(obj === 'notificationTokens') {
+				        	if(obj !== getDeviceTokensPromise) {
+				        		console.log(map[obj]);
+				        		tokens_to_send_to.push(map[obj]);
+				        	}
+				        }
+				    }
+	        	}
+	        }
 
 		    // Notification details.
 	        const payload = {

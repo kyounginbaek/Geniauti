@@ -1,5 +1,6 @@
 package com.geniauti.geniauti;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -8,9 +9,11 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -106,6 +109,7 @@ public class BehaviorSecondFragment extends Fragment {
                 ((ViewGroup) v.getParent()).removeView(v);
             return v;
         }
+
         v = inflater.inflate(R.layout.fragment_behavior_second, container, false);
 
         listView = (ListView) v.findViewById(R.id.radio_listview_second);

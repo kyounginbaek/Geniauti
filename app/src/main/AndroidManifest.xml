@@ -53,7 +53,7 @@
             android:name=".BehaviorActivity"
             android:label="@string/title_activity_behavior"
             android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="stateHidden" />
+            android:windowSoftInputMode="stateAlwaysHidden" />
         <activity
             android:name=".BookmarkActivity"
             android:label="BehaviorBookmarkActivity"

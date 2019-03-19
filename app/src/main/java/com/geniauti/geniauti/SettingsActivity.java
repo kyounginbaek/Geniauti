@@ -106,7 +106,6 @@ public class SettingsActivity extends AppCompatActivity {
                 csv = (Environment.getExternalStorageDirectory().getAbsolutePath() + "/BehaviorData.csv"); // Here csv file name is MyCsvFile.csv
                 writer = null;
 
-
                 try {
                     FileOutputStream fos = new FileOutputStream(csv);
                     writer = new CSVWriter(new OutputStreamWriter(fos, "EUC-KR"));
