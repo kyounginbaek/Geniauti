@@ -69,7 +69,7 @@ public class CaseDetailActivity extends AppCompatActivity {
         if(selectedCase.tags_reason.get("attention")!=null) {
             tmp_reason = tmp_reason + "관심 / ";
         }
-        if(selectedCase.tags_reason.get("self-sitmulatory behaviour")!=null) {
+        if(selectedCase.tags_reason.get("self-stimulatory behaviour")!=null) {
             tmp_reason = tmp_reason + "자기 자극 / ";
         }
         if(selectedCase.tags_reason.get("escape")!=null) {

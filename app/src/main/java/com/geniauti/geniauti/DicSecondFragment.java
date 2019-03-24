@@ -126,8 +126,8 @@ public class DicSecondFragment extends Fragment {
 //                                (TAG, document.getId() + " => " + document.getData());
 
                                 // Adding header and childs to hash map
-                                c_Array.add(c_harm);
                                 c_Array.add(c_selfHarm);
+                                c_Array.add(c_harm);
                                 c_Array.add(c_destruction);
                                 c_Array.add(c_leave);
                                 c_Array.add(c_sexual);

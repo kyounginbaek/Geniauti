@@ -55,6 +55,7 @@
                 android:layout_height="wrap_content"
                 android:hint="예) 집에서 점심을 먹는 도중 갑자기 소리를 지르며 숟가락을 내던지고 울기 시작하여 30분 동안 울음을 그치지 않았다."
                 android:inputType="textMultiLine"
+                android:gravity="bottom"
                 android:lineSpacingExtra="8sp"
                 android:paddingTop="20dp"
                 android:scrollbars="vertical"

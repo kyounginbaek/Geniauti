@@ -58,6 +58,7 @@
                 android:lineSpacingExtra="8sp"
                 android:hint="예) 울음을 멈출 때 까지 가만히 지켜보았다. 밥 먹던 것을 다 치웠더니 30분 후 아이가 스스로 울음을 그쳤다."
                 android:inputType="textMultiLine"
+                android:gravity="bottom"
                 android:scrollbars="vertical"
                 android:backgroundTint="@drawable/focus_tint_list"
                 />

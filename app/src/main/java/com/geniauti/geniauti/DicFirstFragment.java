@@ -112,9 +112,9 @@ public class DicFirstFragment extends Fragment {
                             }
 
                             // Adding header and childs to hash map
-                            c_Array.add(c_taskEvation);
-                            c_Array.add(c_selfStimulation);
                             c_Array.add(c_interest);
+                            c_Array.add(c_selfStimulation);
+                            c_Array.add(c_taskEvation);
                             c_Array.add(c_demand);
 
                             adapter = new ExpandableListAdapter(getActivity(), header, hashMap, c_Array);

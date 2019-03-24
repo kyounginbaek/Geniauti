@@ -305,6 +305,7 @@ public class TemplateChartYearFragment extends Fragment {
             yAxisLeftFrequency.setLabelCount(maxFrequency, true);
             yAxisRightFrequency.setLabelCount(maxFrequency, true);
         } else {
+            yAxisRightFrequency.setGranularityEnabled(true);
 //            yAxisLeftFrequency.setLabelCount(maxFrequency, false);
 //            yAxisRightFrequency.setLabelCount(maxFrequency, false);
         }
@@ -432,6 +433,7 @@ public class TemplateChartYearFragment extends Fragment {
             yAxisLeftReasons.setLabelCount(maxReason, true);
             yAxisRightReasons.setLabelCount(maxReason, true);
         } else {
+            yAxisRightReasons.setGranularityEnabled(true);
 //            yAxisLeftReasons.setLabelCount(maxReason, false);
 //            yAxisRightReasons.setLabelCount(maxReason, false);
         }
@@ -488,6 +490,7 @@ public class TemplateChartYearFragment extends Fragment {
             yAxisLeftTypes.setLabelCount(maxType, true);
             yAxisRightTypes.setLabelCount(maxType, true);
         } else {
+            yAxisRightTypes.setGranularityEnabled(true);
 //            yAxisLeftTypes.setLabelCount(maxType, false);
 //            yAxisRightTypes.setLabelCount(maxType, false);
         }
@@ -558,6 +561,7 @@ public class TemplateChartYearFragment extends Fragment {
             yAxisLeftLocations.setLabelCount(maxLocation, true);
             yAxisRightLocations.setLabelCount(maxLocation, true);
         } else {
+            yAxisRightLocations.setGranularityEnabled(true);
 //            yAxisLeftLocations.setLabelCount(maxLocation, false);
 //            yAxisRightLocations.setLabelCount(maxLocation, false);
         }
