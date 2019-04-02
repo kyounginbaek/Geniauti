@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:background="#66f3f3f3"
     >
 
@@ -10,11 +10,12 @@
         android:paddingTop="12dp"
         android:paddingBottom="12dp"
         android:paddingLeft="21dp"
+        android:paddingRight="16dp"
         android:layout_width="fill_parent"
-        android:layout_height="48dp"
+        android:layout_height="wrap_content"
         android:textColor="#de3b3b3b"
         android:textSize="16sp"
-
+        android:inputType="textMultiLine"
         />
 
-</LinearLayout>
+</RelativeLayout>
