@@ -168,12 +168,12 @@ public class SettingsActivity extends AppCompatActivity {
 
                                             HashMap<String, Boolean> reason = (HashMap<String, Boolean>) document.get("reason");
                                             String tmpReason = "";
-                                            if(reason.get("attention1")!=null) {
-                                                tmpReason = tmpReason + "자신에게 관심을 갖는 것이 좋아서 / ";
-                                            }
-                                            if(reason.get("attention2")!=null) {
-                                                tmpReason = tmpReason + "타인에게 주목 받는 것을 즐겨서 / ";
-                                            }
+//                                            if(reason.get("attention1")!=null) {
+//                                                tmpReason = tmpReason + "자신에게 관심을 갖는 것이 좋아서 / ";
+//                                            }
+//                                            if(reason.get("attention2")!=null) {
+//                                                tmpReason = tmpReason + "타인에게 주목 받는 것을 즐겨서 / ";
+//                                            }
                                             if(reason.get("attention3")!=null) {
                                                 tmpReason = tmpReason + "관심의 대상이 되고 싶어서 / ";
                                             }
@@ -183,18 +183,18 @@ public class SettingsActivity extends AppCompatActivity {
                                             if(reason.get("self-stimulatory behaviour1")!=null){
                                                 tmpReason = tmpReason + "행동을 통해 얻는 감각이 좋아서 / ";
                                             }
-                                            if(reason.get("self-stimulatory behaviour2")!=null){
-                                                tmpReason = tmpReason + "행동을 하는 것 자체가 좋아서 / ";
-                                            }
+//                                            if(reason.get("self-stimulatory behaviour2")!=null){
+//                                                tmpReason = tmpReason + "행동을 하는 것 자체가 좋아서 / ";
+//                                            }
                                             if(reason.get("self-stimulatory behaviour3")!=null){
                                                 tmpReason = tmpReason + "행동이 주는 자극을 얻으려고 / ";
                                             }
-                                            if(reason.get("escape1")!=null){
-                                                tmpReason = tmpReason + "시키는 일을 거부하려고 / ";
-                                            }
-                                            if(reason.get("escape2")!=null){
-                                                tmpReason = tmpReason + "하려고 한 일이 힘들어서 / ";
-                                            }
+//                                            if(reason.get("escape1")!=null){
+//                                                tmpReason = tmpReason + "시키는 일을 거부하려고 / ";
+//                                            }
+//                                            if(reason.get("escape2")!=null){
+//                                                tmpReason = tmpReason + "하려고 한 일이 힘들어서 / ";
+//                                            }
                                             if(reason.get("escape3")!=null){
                                                 tmpReason = tmpReason + "주어진 일을 하기 싫어서 / ";
                                             }
@@ -202,16 +202,19 @@ public class SettingsActivity extends AppCompatActivity {
                                                 tmpReason = tmpReason + "시키는 일이 어려워 피하려고 / ";
                                             }
                                             if(reason.get("tangibles1")!=null){
-                                                tmpReason = tmpReason + "원하는 것을 즉각 얻지 못해서 / ";
+                                                tmpReason = tmpReason + "원하는 것을 얻지 못해서 / ";
                                             }
-                                            if(reason.get("tangibles2")!=null){
-                                                tmpReason = tmpReason + "원하는 물건을 가질 수 없어서 / ";
-                                            }
-                                            if(reason.get("tangibles3")!=null){
-                                                tmpReason = tmpReason + "어떤 물건(장난감)을 갖기 위해서 / ";
-                                            }
+//                                            if(reason.get("tangibles2")!=null){
+//                                                tmpReason = tmpReason + "원하는 물건을 가질 수 없어서 / ";
+//                                            }
+//                                            if(reason.get("tangibles3")!=null){
+//                                                tmpReason = tmpReason + "어떤 물건(장난감)을 갖기 위해서 / ";
+//                                            }
                                             if(reason.get("tangibles4")!=null){
                                                 tmpReason = tmpReason + "본인이 갖고 싶은 물건을 얻으려고 / ";
+                                            }
+                                            if(reason.get("tangibles5")!=null){
+                                                tmpReason = tmpReason + "자신의 요구를 들어주지 않아서 / ";
                                             }
 
                                             data.add(new String[]{formatter.format(document.get("start_time")), formatter.format(document.get("end_time")), document.get("place").toString(), document.get("categorization").toString(),

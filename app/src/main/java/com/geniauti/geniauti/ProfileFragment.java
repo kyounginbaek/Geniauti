@@ -199,10 +199,12 @@ public class ProfileFragment extends Fragment {
 
                                 Parent item = new Parent(data.get("name").toString(), data.get("profile_pic").toString(), data.get("relationship").toString(), pair.getKey().toString());
 
-                                if(pair.getKey().toString().equals(MainActivity.user.getUid())) {
-                                    parentData.add(0, item);
-                                } else {
-                                    parentData.add(item);
+                                if(pair.getKey()!=null) {
+                                    if(pair.getKey().toString().equals(MainActivity.user.getUid())) {
+                                        parentData.add(0, item);
+                                    } else {
+                                        parentData.add(item);
+                                    }
                                 }
                             }
 

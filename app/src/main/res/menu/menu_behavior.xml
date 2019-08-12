@@ -15,9 +15,9 @@
                 app:showAsAction="ifRoom"
                 android:title="자주 쓰는 기록으로 저장" />
 
-            <!--<item android:id="@+id/behavior_edit"-->
-                <!--app:showAsAction="ifRoom"-->
-                <!--android:title="수정" />-->
+            <item android:id="@+id/behavior_edit"
+                app:showAsAction="ifRoom"
+                android:title="수정" />
 
             <item android:id="@+id/behavior_delete"
                 app:showAsAction="ifRoom"

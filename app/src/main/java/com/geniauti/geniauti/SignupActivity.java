@@ -209,12 +209,12 @@ public class SignupActivity extends AppCompatActivity implements LoaderCallbacks
         boolean cancel = false;
 
         // Check for a valid password, if the user entered one.
-        if (TextUtils.isEmpty(password) && !isPasswordValid(password)) {
+        if (TextUtils.isEmpty(password) || !isPasswordValid(password)) {
             mPasswordView.setError("6자리 이상의 비밀번호를 입력해주세요.");
             cancel = true;
         }
 
-        if (TextUtils.isEmpty(password_check) && !isPasswordValid(password_check)) {
+        if (TextUtils.isEmpty(password_check) || !isPasswordValid(password_check)) {
             mPasswordCheckView.setError("6자리 이상의 비밀번호를 입력해주세요.");
             cancel = true;
         }

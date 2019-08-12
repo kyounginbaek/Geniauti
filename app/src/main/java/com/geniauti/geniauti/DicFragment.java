@@ -117,14 +117,14 @@ public class DicFragment extends Fragment implements SearchFragment.OnFragmentIn
             ft.add(R.id.dic_fragment, f, "search");
         }
 
-        ft.hide(f).commit();
+        ft.hide(f).commitAllowingStateLoss();
 
         mSearch.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
             @Override
             public boolean onMenuItemActionExpand(MenuItem item) {
                 SearchFragment f = (SearchFragment) fm.findFragmentByTag("search");
                 FragmentTransaction ft = fm.beginTransaction();
-                ft.show(f).commit();
+                ft.show(f).commitAllowingStateLoss();
                 return true;
             }
 
@@ -132,7 +132,7 @@ public class DicFragment extends Fragment implements SearchFragment.OnFragmentIn
             public boolean onMenuItemActionCollapse(MenuItem item) {
                 SearchFragment f = (SearchFragment) fm.findFragmentByTag("search");
                 FragmentTransaction ft = fm.beginTransaction();
-                ft.hide(f).commit();
+                ft.hide(f).commitAllowingStateLoss();
                 return true;
             }
         });
@@ -146,12 +146,14 @@ public class DicFragment extends Fragment implements SearchFragment.OnFragmentIn
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                if(newText.equals("")){
-                    f.listviewBookmarkShow();
-                } else {
-                    f.listviewAllShow();
+                if(newText!=null){
+                    if(newText.equals("")){
+                        f.listviewBookmarkShow();
+                    } else {
+                        f.listviewAllShow();
+                    }
+                    SearchFragment.getFilter(newText);
                 }
-                SearchFragment.getFilter(newText);
                 return true;
             }
         });
@@ -164,7 +166,7 @@ public class DicFragment extends Fragment implements SearchFragment.OnFragmentIn
         Fragment currentFragment = fm.findFragmentById(R.id.dic_fragment);
         FragmentTransaction ft = fm.beginTransaction();
         if(currentFragment instanceof SearchFragment) {
-            ft.hide(f).commit();
+            ft.hide(f).commitAllowingStateLoss();
         } else {
 
         }

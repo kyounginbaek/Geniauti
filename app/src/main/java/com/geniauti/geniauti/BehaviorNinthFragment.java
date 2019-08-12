@@ -105,21 +105,22 @@ public class BehaviorNinthFragment extends Fragment {
         reasons = (Reason[]) onRetainCustomNonConfigurationInstance() ;
         if ( reasons == null ) {
             reasons = new Reason[] {
-                    new Reason("자신에게 관심을 갖는 것이 좋아서", "attention", "attention1"),
-                    new Reason("타인에게 주목 받는 것을 즐겨서", "attention", "attention2"),
+//                    new Reason("자신에게 관심을 갖는 것이 좋아서", "attention", "attention1"),
+//                    new Reason("타인에게 주목 받는 것을 즐겨서", "attention", "attention2"),
                     new Reason("관심의 대상이 되고 싶어서", "attention", "attention3"),
                     new Reason("다른 사람의 관심을 끌려고", "attention", "attention4"),
                     new Reason("행동을 통해 얻는 감각이 좋아서", "self-stimulatory behaviour", "self-stimulatory behaviour1"),
-                    new Reason("행동을 하는 것 자체가 좋아서", "self-stimulatory behaviour", "self-stimulatory behaviour2"),
+//                    new Reason("행동을 하는 것 자체가 좋아서", "self-stimulatory behaviour", "self-stimulatory behaviour2"),
                     new Reason("행동이 주는 자극을 얻으려고", "self-stimulatory behaviour", "self-stimulatory behaviour3"),
-                    new Reason("시키는 일을 거부하려고", "escape", "escape1"),
-                    new Reason("하려고 한 일이 힘들어서", "escape", "escape2"),
+//                    new Reason("시키는 일을 거부하려고", "escape", "escape1"),
+//                    new Reason("하려고 한 일이 힘들어서", "escape", "escape2"),
                     new Reason("주어진 일을 하기 싫어서", "escape", "escape3"),
                     new Reason("시키는 일이 어려워 피하려고", "escape", "escape4"),
-                    new Reason("원하는 것을 즉각 얻지 못해서", "tangibles", "tangibles1"),
-                    new Reason("원하는 물건을 가질 수 없어서", "tangibles", "tangibles2"),
-                    new Reason("어떤 물건(장난감)을 갖기 위해서", "tangibles", "tangibles3"),
-                    new Reason("본인이 갖고 싶은 물건을 얻으려고", "tangibles", "tangibles4")
+                    new Reason("원하는 것을 얻지 못해서", "tangibles", "tangibles1"),
+//                    new Reason("원하는 물건을 가질 수 없어서", "tangibles", "tangibles2"),
+//                    new Reason("어떤 물건(장난감)을 갖기 위해서", "tangibles", "tangibles3"),
+                    new Reason("본인이 갖고 싶은 물건을 얻으려고", "tangibles", "tangibles4"),
+                    new Reason("자신의 요구를 들어주지 않아서", "tangibles", "tangibles5")
             };
         }
         ArrayList<Reason> reasonList = new ArrayList<Reason>();

@@ -168,15 +168,19 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnFr
                                     @Override
                                     public void onSuccess(Void aVoid) {
 
-                                        // childs(ok)
-                                        MainActivity.db.collection("childs").document(MainActivity.cid)
-                                                .update("users."+MainActivity.user.getUid()+".notificationTokens", token)
-                                                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                    @Override
-                                                    public void onSuccess(Void aVoid) {
+                                        if(MainActivity.cid != null) {
+                                            // childs(ok)
+                                            MainActivity.db.collection("childs").document(MainActivity.cid)
+                                                    .update("users."+MainActivity.user.getUid()+".notificationTokens", token)
+                                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                        @Override
+                                                        public void onSuccess(Void aVoid) {
 
-                                                    }
-                                                });
+                                                        }
+                                                    });
+                                        } else {
+
+                                        }
                                     }
                                 });
 

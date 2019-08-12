@@ -29,6 +29,8 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -64,6 +66,10 @@ public class BehaviorThirdFragment extends Fragment {
     private LinearLayout titleCancel;
     private LinearLayout titleAdd;
     public  String purpose = "";
+
+    private FirebaseUser user;
+    private FirebaseFirestore db;
+    private String cid;
 
     private OnFragmentInteractionListener mListener;
 
@@ -117,50 +123,70 @@ public class BehaviorThirdFragment extends Fragment {
         arrayList.add("떼쓰기");
         arrayList.add("물건 던지기");
 
-        MainActivity.db.collection("childs").document(MainActivity.cid)
+        user = FirebaseAuth.getInstance().getCurrentUser();
+        db = FirebaseFirestore.getInstance();
+
+        db.collection("childs")
+                .whereGreaterThanOrEqualTo("users."+user.getUid()+".name", "")
                 .get()
-                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
-                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
-                            DocumentSnapshot document = task.getResult();
-                            if(document.exists()) {
-                                HashMap<String, Object> preset = (HashMap<String, Object>)  document.get("preset");
-                                if(preset != null) {
-                                    HashMap<String, Boolean> categorization = (HashMap<String, Boolean>)  preset.get("categorization_preset");
-                                    if(categorization != null){
-                                        Iterator it = categorization.entrySet().iterator();
-                                        while (it.hasNext()) {
-                                            Map.Entry pair = (Map.Entry)it.next();
-                                            arrayList.add(pair.getKey().toString());
-                                        }
-                                    }
-                                }
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                cid = document.getId();
                             }
 
-                            if(purpose.equals("tmpBookmark")) {
-                                if(!arrayList.contains(BehaviorActivity.tmpBookmark.categorization)) {
-                                    arrayList.add(BehaviorActivity.tmpBookmark.categorization);
-                                }
-                            }
+                            db.collection("childs").document(cid)
+                                    .get()
+                                    .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                            if (task.isSuccessful()) {
+                                                DocumentSnapshot document = task.getResult();
+                                                if(document.exists()) {
+                                                    HashMap<String, Object> preset = (HashMap<String, Object>)  document.get("preset");
+                                                    if(preset != null) {
+                                                        HashMap<String, Boolean> categorization = (HashMap<String, Boolean>)  preset.get("categorization_preset");
+                                                        if(categorization != null){
+                                                            Iterator it = categorization.entrySet().iterator();
+                                                            while (it.hasNext()) {
+                                                                Map.Entry pair = (Map.Entry)it.next();
+                                                                arrayList.add(pair.getKey().toString());
+                                                            }
+                                                        }
+                                                    }
+                                                }
 
-                            if(purpose.equals("editBehavior")) {
-                                if(!arrayList.contains(BehaviorActivity.editBehavior.categorization)) {
-                                    arrayList.add(BehaviorActivity.editBehavior.categorization);
-                                }
-                            }
+                                                if(purpose.equals("tmpBookmark")) {
+                                                    if(!arrayList.contains(BehaviorActivity.tmpBookmark.categorization)) {
+                                                        arrayList.add(BehaviorActivity.tmpBookmark.categorization);
+                                                    }
+                                                }
 
-                            if(purpose.equals("editBookmark")) {
-                                if(!arrayList.contains(BookmarkActivity.editBookmark.categorization)) {
-                                    arrayList.add(BookmarkActivity.editBookmark.categorization);
-                                }
-                            }
+                                                if(purpose.equals("editBehavior")) {
+                                                    if(!arrayList.contains(BehaviorActivity.editBehavior.categorization)) {
+                                                        arrayList.add(BehaviorActivity.editBehavior.categorization);
+                                                    }
+                                                }
 
-                            arrayList.add("제목 추가하기");
-                            adapter = new GridListAdapter(getContext(), arrayList);
-                            listView.setAdapter(adapter);
-                        } else {
+                                                if(purpose.equals("editBookmark")) {
+                                                    if(!arrayList.contains(BookmarkActivity.editBookmark.categorization)) {
+                                                        arrayList.add(BookmarkActivity.editBookmark.categorization);
+                                                    }
+                                                }
+
+                                                arrayList.add("제목 추가하기");
+                                                adapter = new GridListAdapter(getContext(), arrayList);
+                                                listView.setAdapter(adapter);
+                                            } else {
 //                            Log.d(TAG, "Error getting documents: ", task.getException());
+                                            }
+                                        }
+                                    });
+
+                        } else {
+//                                Log.d(TAG, "Error getting documents: ", task.getException());
                         }
                     }
                 });
@@ -286,7 +312,7 @@ public class BehaviorThirdFragment extends Fragment {
 
                                     } else {
 
-                                        MainActivity.db.collection("childs").document(MainActivity.cid)
+                                        db.collection("childs").document(cid)
                                                 .update("preset.categorization_preset."+txtTitle.getText().toString(), true)
                                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                                     @Override
@@ -340,7 +366,7 @@ public class BehaviorThirdFragment extends Fragment {
                                     public void onClick(DialogInterface dialog, int id) {
                                         // Action for 'Yes' Button
                                         Object delete_data = FieldValue.delete();
-                                        MainActivity.db.collection("childs").document(MainActivity.cid)
+                                        db.collection("childs").document(cid)
                                                 .update("preset.categorization_preset."+arrayList.get(i), delete_data)
                                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                                     @Override

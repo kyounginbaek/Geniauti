@@ -83,7 +83,6 @@
                         android:layout_height="wrap_content"
                         android:textSize="22sp"
                         android:textColor="#de000000"
-                        android:textFontWeight="bold"
                         android:lineSpacingExtra="8sp"
                         android:text="숟가락으로 머리 치기"
                         />

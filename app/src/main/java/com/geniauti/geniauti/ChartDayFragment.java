@@ -1,5 +1,7 @@
 package com.geniauti.geniauti;
 
+import android.content.Context;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -12,14 +14,20 @@ import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.github.mikephil.charting.data.BarData;
+import com.github.mikephil.charting.data.BarDataSet;
+import com.github.mikephil.charting.data.BarEntry;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -27,9 +35,9 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
@@ -52,22 +60,23 @@ public class ChartDayFragment extends Fragment implements TemplateChartDayFragme
     private String mParam1;
     private String mParam2;
 
+    private FirebaseUser user;
+    private FirebaseFirestore db;
+    private String cid;
+
     private View v;
-    public static HashMap<String, Statistics> statisticsHashMap;
+    private ArrayList<BehaviorChart> behaviorData;
 
     private OnFragmentInteractionListener mListener;
     public static ViewPager viewPager;
     public static ViewPagerAdapter adapter;
-    public static TextView todayDate;
+    private TextView todayDate;
     private Calendar cal, tmpcal;
-    private SimpleDateFormat sdf, sdfNew;
-    public static ImageView forwardButton;
-    public static ImageView backButton;
+    private SimpleDateFormat sdf;
+    private ImageView forwardButton;
     private String todayDateandTime;
-    private String previousDateandTime;
+    private String yesterdayDateandTime;
     private int lastPage;
-
-    public static View mProgressView;
 
     public ChartDayFragment() {
         // Required empty public constructor
@@ -106,15 +115,19 @@ public class ChartDayFragment extends Fragment implements TemplateChartDayFragme
         // Inflate the layout for this fragment
         v = inflater.inflate(R.layout.fragment_chart_day, container, false);
 
-        mProgressView = (View) v.findViewById(R.id.chart_day_progress);
-        mProgressView.bringToFront();
-
         todayDate = v.findViewById(R.id.txt_chart_day);
         sdf = new SimpleDateFormat("yyyy년 MM월 dd일 E요일", Locale.KOREAN);
-        sdfNew = new SimpleDateFormat("yyyyMMdd", Locale.KOREAN);
+        cal = Calendar.getInstance();
+        todayDateandTime = sdf.format(cal.getTime());
+        todayDate.setText(todayDateandTime);
 
-        backButton = v.findViewById(R.id.chart_day_back);
+        tmpcal = Calendar.getInstance();
+        tmpcal.add(Calendar.DATE, -1);
+        yesterdayDateandTime = sdf.format(tmpcal.getTime());
+
+        ImageView backButton = v.findViewById(R.id.chart_day_back);
         forwardButton = v.findViewById(R.id.chart_day_forward);
+        forwardButton.setVisibility(View.GONE);
 
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -132,160 +145,81 @@ public class ChartDayFragment extends Fragment implements TemplateChartDayFragme
 
         viewPager = (ViewPager) v.findViewById(R.id.chart_day_viewpager);
 
-
-        MainActivity.db.collection("statistics").document(MainActivity.cid).collection("day")
+        MainActivity.db.collection("behaviors")
+                .whereEqualTo("cid", MainActivity.cid)
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@Nullable QuerySnapshot value,
-                                @Nullable FirebaseFirestoreException e) {
-                if (e != null) {
+                    @Override
+                    public void onEvent(@Nullable QuerySnapshot value,
+                                        @Nullable FirebaseFirestoreException e) {
+                        if (e != null) {
 //                            Log.w(TAG, "Listen failed.", e);
-                    return;
-                }
-
-                statisticsHashMap = new HashMap<>();
-
-                for (QueryDocumentSnapshot doc : value) {
-                    Statistics item = new Statistics(doc.getId(), (HashMap<String, Object>) doc.get("behavior_freq"), (HashMap<String, Object>) doc.get("summary"),
-                            (HashMap<String, Object>) doc.get("type"), (HashMap<String, Object>) doc.get("reason_type"), (HashMap<String, Object>) doc.get("place"));
-                    statisticsHashMap.put(doc.getId(), item);
-                }
-
-                if(getActivity()!=null) {
-                    forwardButton.setVisibility(View.GONE);
-
-                    cal = Calendar.getInstance();
-                    todayDateandTime = sdf.format(cal.getTime());
-                    todayDate.setText(todayDateandTime);
-
-                    tmpcal = Calendar.getInstance();
-                    tmpcal.add(Calendar.DATE, -1);
-                    previousDateandTime = sdf.format(tmpcal.getTime());
-
-                    adapter = new ViewPagerAdapter(getFragmentManager());
-                    viewPager.setAdapter(adapter);
-                    lastPage = adapter.getCount()-1;
-                    viewPager.clearOnPageChangeListeners();
-                    viewPager.setCurrentItem(adapter.getCount()-1);
-                    viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener()
-                    {
-                        @Override
-                        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels)
-                        {
-
+                            return;
                         }
 
-                        @Override
-                        public void onPageSelected(int position)
-                        {
-                            if(position < lastPage) {
-                                cal.add(Calendar.DATE, -1);
-                                todayDate.setText(sdf.format(cal.getTime()));
+                        behaviorData = new ArrayList<>();
 
-                                if(sdf.format(cal.getTime()).equals(previousDateandTime)) {
-                                    forwardButton.setVisibility(View.VISIBLE);
+                        for (QueryDocumentSnapshot doc : value) {
+                            BehaviorChart item = new BehaviorChart((Date) doc.getDate("start_time"), (Date) doc.getDate("end_time"), doc.get("place").toString(), doc.get("categorization").toString(),
+                                    doc.get("current_behavior").toString(), doc.get("before_behavior").toString(), doc.get("after_behavior").toString(), (HashMap<String, Object>) doc.get("type"),
+                                    Integer.parseInt(doc.get("intensity").toString()), (HashMap<String, Object>) doc.get("reason"), doc.get("created_at").toString(),  doc.get("updated_at").toString(),
+                                    doc.get("uid").toString(), doc.get("name").toString(), doc.get("cid").toString(), "");
+                            behaviorData.add(item);
+                        }
+
+                        if(getActivity()!=null) {
+                            // Setting ViewPager for each Tabs
+                            setupViewPager(viewPager);
+                            lastPage = adapter.getCount()-1;
+
+                            viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener()
+                            {
+                                @Override
+                                public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels)
+                                {
+
                                 }
-                            } else if(position > lastPage) {
-                                cal.add(Calendar.DATE, 1);
-                                todayDate.setText(sdf.format(cal.getTime()));
 
-                                if(sdf.format(cal.getTime()).equals(todayDateandTime)) {
-                                    forwardButton.setVisibility(View.GONE);
+                                @Override
+                                public void onPageSelected(int position)
+                                {
+                                    if(position < lastPage) {
+                                        cal.add(Calendar.DATE, -1);
+                                        todayDate.setText(sdf.format(cal.getTime()));
+
+                                        if(sdf.format(cal.getTime()).equals(yesterdayDateandTime)) {
+                                            forwardButton.setVisibility(View.VISIBLE);
+                                        }
+                                    } else if(position > lastPage) {
+                                        cal.add(Calendar.DATE, 1);
+                                        todayDate.setText(sdf.format(cal.getTime()));
+
+                                        if(sdf.format(cal.getTime()).equals(todayDateandTime)) {
+                                            forwardButton.setVisibility(View.GONE);
+                                        }
+                                    }
+
+                                    lastPage = position;
                                 }
-                            }
 
-                            lastPage = position;
+                                @Override
+                                public void onPageScrollStateChanged(int state) {
+
+                                }
+                            });
                         }
 
-                        @Override
-                        public void onPageScrollStateChanged(int state) {
-
-                        }
-                    });
-
-                }
-            }
-        });
-
-//        db.collection("childs")
-//                .whereGreaterThanOrEqualTo("users."+user.getUid()+".name", "")
-//                .get()
-//                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-//                    @Override
-//                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-//                        if (task.isSuccessful()) {
-//                            for (QueryDocumentSnapshot document : task.getResult()) {
-//                                cid = document.getId();
-//                            }
-//
-//                            db.collection("behaviors")
-//                                    .whereEqualTo("cid", cid)
-//                                    .get()
-//                                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-//                                        @Override
-//                                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-//                                            if (task.isSuccessful()) {
-//                                                for (QueryDocumentSnapshot document : task.getResult()) {
-//                                                    Behavior item = new Behavior(document.getId(), (Date) document.getDate("start_time"), (Date) document.getDate("end_time"), document.get("place").toString(), document.get("categorization").toString(), document.get("current_behavior").toString(), document.get("before_behavior").toString(), document.get("after_behavior").toString(), (HashMap<String, Object>) document.get("type"), Integer.parseInt(document.get("intensity").toString()), (HashMap<String, Object>) document.get("reason_type"), (HashMap<String, Object>) document.get("reason"), document.get("created_at").toString(),  document.get("updated_at").toString(), document.get("uid").toString(), document.get("name").toString(), document.get("cid").toString(), "");
-//                                                    behaviorData.add(item);
-//                                                }
-//
-//                                                // Setting ViewPager for each Tabs
-//                                                viewPager = (ViewPager) v.findViewById(R.id.chart_day_viewpager);
-//                                                setupViewPager(viewPager);
-//                                                lastPage = adapter.getCount()-1;
-//
-//                                                viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener()
-//                                                {
-//                                                    @Override
-//                                                    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels)
-//                                                    {
-//
-//                                                    }
-//
-//                                                    @Override
-//                                                    public void onPageSelected(int position)
-//                                                    {
-//                                                        if(position < lastPage) {
-//                                                            cal.add(Calendar.DATE, -1);
-//                                                            todayDate.setText(sdf.format(cal.getTime()));
-//
-//                                                            if(sdf.format(cal.getTime()).equals(previousDateandTime)) {
-//                                                                forwardButton.setVisibility(View.VISIBLE);
-//                                                            }
-//                                                        } else if(position > lastPage) {
-//                                                            cal.add(Calendar.DATE, 1);
-//                                                            todayDate.setText(sdf.format(cal.getTime()));
-//
-//                                                            if(sdf.format(cal.getTime()).equals(todayDateandTime)) {
-//                                                                forwardButton.setVisibility(View.GONE);
-//                                                            }
-//                                                        }
-//
-//                                                        lastPage = position;
-//                                                    }
-//
-//                                                    @Override
-//                                                    public void onPageScrollStateChanged(int state) {
-//
-//                                                    }
-//                                                });
-//
-//                                            } else {
-//
-//                                            }
-//                                        }
-//                                    });
-//                        } else {
-////                                Log.d(TAG, "Error getting documents: ", task.getException());
-//                        }
-//                    }
-//                });
-
+                    }
+                });
 
         return v;
     }
 
+    private void setupViewPager(ViewPager viewPager) {
+        adapter = new ViewPagerAdapter(getFragmentManager());
+        viewPager.setAdapter(adapter);
+        viewPager.setCurrentItem(adapter.getCount()-1);
+
+    }
 
     public class ViewPagerAdapter extends FragmentStatePagerAdapter {
 
@@ -298,9 +232,7 @@ public class ChartDayFragment extends Fragment implements TemplateChartDayFragme
 
         @Override
         public Fragment getItem(int position) {
-
-            return TemplateChartDayFragment.newInstance(position);
-
+            return TemplateChartDayFragment.newInstance(position, behaviorData);
         }
 
         @Override

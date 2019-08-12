@@ -32,6 +32,8 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -66,6 +68,10 @@ public class BehaviorSecondFragment extends Fragment {
     private LinearLayout locationCancel;
     private LinearLayout locationAdd;
     public String purpose = "";
+
+    private FirebaseUser user;
+    private FirebaseFirestore db;
+    private String cid;
 
     private OnFragmentInteractionListener mListener;
 
@@ -120,51 +126,71 @@ public class BehaviorSecondFragment extends Fragment {
         arrayList.add("식당");
         arrayList.add("학교");
 
-        MainActivity.db.collection("childs").document(MainActivity.cid)
+        user = FirebaseAuth.getInstance().getCurrentUser();
+        db = FirebaseFirestore.getInstance();
+
+        db.collection("childs")
+                .whereGreaterThanOrEqualTo("users."+user.getUid()+".name", "")
                 .get()
-                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
-                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
-                            DocumentSnapshot document = task.getResult();
-
-                            if(document.exists()) {
-                                HashMap<String, Object> preset = (HashMap<String, Object>)  document.get("preset");
-                                if(preset != null) {
-                                    HashMap<String, Boolean> place = (HashMap<String, Boolean>)  preset.get("place_preset");
-                                    if(place != null){
-                                        Iterator it = place.entrySet().iterator();
-                                        while (it.hasNext()) {
-                                            Map.Entry pair = (Map.Entry)it.next();
-                                            arrayList.add(pair.getKey().toString());
-                                        }
-                                    }
-                                }
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                cid = document.getId();
                             }
 
-                            if(purpose.equals("tmpBookmark")) {
-                                if(!arrayList.contains(BehaviorActivity.tmpBookmark.place)) {
-                                    arrayList.add(BehaviorActivity.tmpBookmark.place);
-                                }
-                            }
+                            db.collection("childs").document(cid)
+                                    .get()
+                                    .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                            if (task.isSuccessful()) {
+                                                DocumentSnapshot document = task.getResult();
 
-                            if(purpose.equals("editBehavior")) {
-                                if(!arrayList.contains(BehaviorActivity.editBehavior.place)) {
-                                    arrayList.add(BehaviorActivity.editBehavior.place);
-                                }
-                            }
+                                                if(document.exists()) {
+                                                    HashMap<String, Object> preset = (HashMap<String, Object>)  document.get("preset");
+                                                    if(preset != null) {
+                                                        HashMap<String, Boolean> place = (HashMap<String, Boolean>)  preset.get("place_preset");
+                                                        if(place != null){
+                                                            Iterator it = place.entrySet().iterator();
+                                                            while (it.hasNext()) {
+                                                                Map.Entry pair = (Map.Entry)it.next();
+                                                                arrayList.add(pair.getKey().toString());
+                                                            }
+                                                        }
+                                                    }
+                                                }
 
-                            if(purpose.equals("editBookmark")) {
-                                if(!arrayList.contains(BookmarkActivity.editBookmark.place)) {
-                                    arrayList.add(BookmarkActivity.editBookmark.place);
-                                }
-                            }
+                                                if("tmpBookmark".equals(purpose)) {
+                                                    if(!arrayList.contains(BehaviorActivity.tmpBookmark.place)) {
+                                                        arrayList.add(BehaviorActivity.tmpBookmark.place);
+                                                    }
+                                                }
 
-                            arrayList.add("장소 추가하기");
-                            adapter = new GridListAdapter(getContext(), arrayList);
-                            listView.setAdapter(adapter);
-                        } else {
+                                                if("editBehavior".equals(purpose)) {
+                                                    if(!arrayList.contains(BehaviorActivity.editBehavior.place)) {
+                                                        arrayList.add(BehaviorActivity.editBehavior.place);
+                                                    }
+                                                }
+
+                                                if("editBookmark".equals(purpose)) {
+                                                    if(!arrayList.contains(BookmarkActivity.editBookmark.place)) {
+                                                        arrayList.add(BookmarkActivity.editBookmark.place);
+                                                    }
+                                                }
+
+                                                arrayList.add("장소 추가하기");
+                                                adapter = new GridListAdapter(getContext(), arrayList);
+                                                listView.setAdapter(adapter);
+                                            } else {
 //                            Log.d(TAG, "Error getting documents: ", task.getException());
+                                            }
+                                        }
+                                    });
+
+                        } else {
+//                                Log.d(TAG, "Error getting documents: ", task.getException());
                         }
                     }
                 });
@@ -220,23 +246,29 @@ public class BehaviorSecondFragment extends Fragment {
             }
 
             // 자주 쓰는 기록을 사용하는 경우
-            if(purpose.equals("tmpBookmark") && selectedPosition == -1) {
-                if(arrayList.get(i).equals(BehaviorActivity.tmpBookmark.place)) {
-                    selectedPosition = i;
+            if("tmpBookmark".equals(purpose) && selectedPosition == -1) {
+                if(arrayList.get(i)!=null) {
+                    if(arrayList.get(i).equals(BehaviorActivity.tmpBookmark.place)) {
+                        selectedPosition = i;
+                    }
                 }
             }
 
             // 행동 기록을 수정하는 경우
-            if(purpose.equals("editBehavior") && selectedPosition == -1) {
-                if(arrayList.get(i).equals(BehaviorActivity.editBehavior.place)) {
-                    selectedPosition = i;
+            if("editBehavior".equals(purpose) && selectedPosition == -1) {
+                if(arrayList.get(i)!=null) {
+                    if(arrayList.get(i).equals(BehaviorActivity.editBehavior.place)) {
+                        selectedPosition = i;
+                    }
                 }
             }
 
             // 자주 쓰는 기록을 수정하는 경우
-            if(purpose.equals("editBookmark") && selectedPosition == -1) {
-                if(arrayList.get(i).equals(BookmarkActivity.editBookmark.place)) {
-                    selectedPosition = i;
+            if("editBookmark".equals(purpose) && selectedPosition == -1) {
+                if(arrayList.get(i)!=null) {
+                    if(arrayList.get(i).equals(BookmarkActivity.editBookmark.place)) {
+                        selectedPosition = i;
+                    }
                 }
             }
 
@@ -281,7 +313,7 @@ public class BehaviorSecondFragment extends Fragment {
                                         cancel = true;
                                     }
 
-                                    if(location.equals("")) {
+                                    if("".equals(location)) {
                                         Toast.makeText(getActivity(), "빈칸을 입력해주세요.", Toast.LENGTH_SHORT).show();
                                         cancel = true;
                                     }
@@ -290,7 +322,7 @@ public class BehaviorSecondFragment extends Fragment {
 
                                     } else {
 
-                                        MainActivity.db.collection("childs").document(MainActivity.cid)
+                                        db.collection("childs").document(cid)
                                                 .update("preset.place_preset."+txtLocation.getText().toString(), true)
                                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                                     @Override
@@ -344,7 +376,7 @@ public class BehaviorSecondFragment extends Fragment {
                                     public void onClick(DialogInterface dialog, int id) {
                                         // Action for 'Yes' Button
                                         Object delete_data = FieldValue.delete();
-                                        MainActivity.db.collection("childs").document(MainActivity.cid)
+                                        db.collection("childs").document(cid)
                                                 .update("preset.place_preset."+arrayList.get(i), delete_data)
                                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                                     @Override

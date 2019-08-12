@@ -1,5 +1,6 @@
 package com.geniauti.geniauti;
 
+import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -19,7 +20,6 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -53,22 +53,23 @@ public class ChartWeekFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
+    private FirebaseUser user;
+    private FirebaseFirestore db;
+    private String cid;
+
     private View v;
-    public static HashMap<String, Statistics> statisticsHashMap;
+    private ArrayList<BehaviorChart> behaviorData;
 
     private OnFragmentInteractionListener mListener;
     public static ViewPager viewPager;
     public static ViewPagerAdapter adapter;
-    public static TextView weekDate;
+    private TextView weekDate;
     private Calendar cal, calSunday, calSaturday, tmpcal;
-    private SimpleDateFormat sdf, sdfNew, sdfCompare, sdfDay;
-    public static ImageView forwardButton;
-    public static ImageView backButton;
+    private SimpleDateFormat sdf, sdfCompare, sdfDay;
+    private ImageView forwardButton;
     private String weekDateandTime;
-    private String previousDateandTime;
+    private String yesterdayDateandTime;
     private int lastPage;
-
-    public static View mProgressView;
 
     public ChartWeekFragment() {
         // Required empty public constructor
@@ -107,17 +108,47 @@ public class ChartWeekFragment extends Fragment {
         // Inflate the layout for this fragment
         v = inflater.inflate(R.layout.fragment_chart_week, container, false);
 
-        mProgressView = (View) v.findViewById(R.id.chart_week_progress);
-        mProgressView.bringToFront();
-
         weekDate = v.findViewById(R.id.txt_chart_week);
         sdf = new SimpleDateFormat("yyyy년 MM월", Locale.KOREAN);
-        sdfNew = new SimpleDateFormat("yyyyMMdd", Locale.KOREAN);
         sdfCompare = new SimpleDateFormat("yyyy년 MM월 dd일", Locale.KOREAN);
         sdfDay = new SimpleDateFormat("dd일", Locale.KOREAN);
+        cal = Calendar.getInstance();
+        calSunday = Calendar.getInstance();
+        calSaturday = Calendar.getInstance();
+        weekDateandTime = sdfCompare.format(cal.getTime());
 
-        backButton = v.findViewById(R.id.chart_week_back);
+        int dayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
+        if (Calendar.MONDAY == dayOfWeek) {
+            calSunday.add(Calendar.DATE, -1);
+            calSaturday.add(Calendar.DATE, +5);
+        } else if (Calendar.TUESDAY == dayOfWeek) {
+            calSunday.add(Calendar.DATE, -2);
+            calSaturday.add(Calendar.DATE, +4);
+        } else if (Calendar.WEDNESDAY == dayOfWeek) {
+            calSunday.add(Calendar.DATE, -3);
+            calSaturday.add(Calendar.DATE, +3);
+        } else if (Calendar.THURSDAY == dayOfWeek) {
+            calSunday.add(Calendar.DATE, -4);
+            calSaturday.add(Calendar.DATE, +2);
+        } else if (Calendar.FRIDAY == dayOfWeek) {
+            calSunday.add(Calendar.DATE, -5);
+            calSaturday.add(Calendar.DATE, +1);
+        } else if (Calendar.SATURDAY == dayOfWeek) {
+            calSunday.add(Calendar.DATE, -6);
+            calSaturday.add(Calendar.DATE, +0);
+        } else if (Calendar.SUNDAY == dayOfWeek) {
+            calSunday.add(Calendar.DATE, -0);
+            calSaturday.add(Calendar.DATE, +6);
+        }
+        weekDate.setText(weekDateResult(cal, calSunday, calSaturday));
+
+        tmpcal = Calendar.getInstance();
+        tmpcal.add(Calendar.DATE, -7);
+        yesterdayDateandTime = sdfCompare.format(tmpcal.getTime());
+
+        ImageView backButton = v.findViewById(R.id.chart_week_back);
         forwardButton = v.findViewById(R.id.chart_week_forward);
+        forwardButton.setVisibility(View.GONE);
 
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -135,7 +166,8 @@ public class ChartWeekFragment extends Fragment {
 
         viewPager = (ViewPager) v.findViewById(R.id.chart_week_viewpager);
 
-        MainActivity.db.collection("statistics").document(MainActivity.cid).collection("day")
+        MainActivity.db.collection("behaviors")
+                .whereEqualTo("cid", MainActivity.cid)
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(@Nullable QuerySnapshot value,
@@ -145,56 +177,21 @@ public class ChartWeekFragment extends Fragment {
                             return;
                         }
 
-                        statisticsHashMap = new HashMap<>();
+                        behaviorData = new ArrayList<>();
 
                         for (QueryDocumentSnapshot doc : value) {
-                            Statistics item = new Statistics(doc.getId(), (HashMap<String, Object>) doc.get("behavior_freq"), (HashMap<String, Object>) doc.get("summary"),
-                                    (HashMap<String, Object>) doc.get("type"), (HashMap<String, Object>) doc.get("reason_type"), (HashMap<String, Object>) doc.get("place"));
-                            statisticsHashMap.put(doc.getId(), item);
+                            BehaviorChart item = new BehaviorChart((Date) doc.getDate("start_time"), (Date) doc.getDate("end_time"), doc.get("place").toString(), doc.get("categorization").toString(),
+                                    doc.get("current_behavior").toString(), doc.get("before_behavior").toString(), doc.get("after_behavior").toString(), (HashMap<String, Object>) doc.get("type"),
+                                    Integer.parseInt(doc.get("intensity").toString()), (HashMap<String, Object>) doc.get("reason"), doc.get("created_at").toString(),  doc.get("updated_at").toString(),
+                                    doc.get("uid").toString(), doc.get("name").toString(), doc.get("cid").toString(), "");
+                            behaviorData.add(item);
                         }
 
                         if(getActivity()!=null) {
-                            forwardButton.setVisibility(View.GONE);
-
-                            cal = Calendar.getInstance();
-                            calSunday = Calendar.getInstance();
-                            calSaturday = Calendar.getInstance();
-                            weekDateandTime = sdfCompare.format(cal.getTime());
-
-                            int dayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
-                            if (Calendar.MONDAY == dayOfWeek) {
-                                calSunday.add(Calendar.DATE, -1);
-                                calSaturday.add(Calendar.DATE, +5);
-                            } else if (Calendar.TUESDAY == dayOfWeek) {
-                                calSunday.add(Calendar.DATE, -2);
-                                calSaturday.add(Calendar.DATE, +4);
-                            } else if (Calendar.WEDNESDAY == dayOfWeek) {
-                                calSunday.add(Calendar.DATE, -3);
-                                calSaturday.add(Calendar.DATE, +3);
-                            } else if (Calendar.THURSDAY == dayOfWeek) {
-                                calSunday.add(Calendar.DATE, -4);
-                                calSaturday.add(Calendar.DATE, +2);
-                            } else if (Calendar.FRIDAY == dayOfWeek) {
-                                calSunday.add(Calendar.DATE, -5);
-                                calSaturday.add(Calendar.DATE, +1);
-                            } else if (Calendar.SATURDAY == dayOfWeek) {
-                                calSunday.add(Calendar.DATE, -6);
-                                calSaturday.add(Calendar.DATE, +0);
-                            } else if (Calendar.SUNDAY == dayOfWeek) {
-                                calSunday.add(Calendar.DATE, -0);
-                                calSaturday.add(Calendar.DATE, +6);
-                            }
-                            weekDate.setText(weekDateResult(calSunday, calSaturday));
-
-                            tmpcal = Calendar.getInstance();
-                            tmpcal.add(Calendar.DATE, -7);
-                            previousDateandTime = sdfCompare.format(tmpcal.getTime());
-
-                            adapter = new ViewPagerAdapter(getFragmentManager());
-                            viewPager.setAdapter(adapter);
+                            // Setting ViewPager for each Tabs
+                            setupViewPager(viewPager);
                             lastPage = adapter.getCount()-1;
-                            viewPager.clearOnPageChangeListeners();
-                            viewPager.setCurrentItem(adapter.getCount()-1);
+
                             viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener()
                             {
                                 @Override
@@ -210,16 +207,16 @@ public class ChartWeekFragment extends Fragment {
                                         cal.add(Calendar.DATE, -7);
                                         calSunday.add(Calendar.DATE, -7);
                                         calSaturday.add(Calendar.DATE, -7);
-                                        weekDate.setText(weekDateResult(calSunday, calSaturday));
+                                        weekDate.setText(weekDateResult(cal, calSunday, calSaturday));
 
-                                        if(sdfCompare.format(cal.getTime()).equals(previousDateandTime)) {
+                                        if(sdfCompare.format(cal.getTime()).equals(yesterdayDateandTime)) {
                                             forwardButton.setVisibility(View.VISIBLE);
                                         }
                                     } else if(position > lastPage) {
                                         cal.add(Calendar.DATE, +7);
                                         calSunday.add(Calendar.DATE, +7);
                                         calSaturday.add(Calendar.DATE, +7);
-                                        weekDate.setText(weekDateResult(calSunday, calSaturday));
+                                        weekDate.setText(weekDateResult(cal, calSunday, calSaturday));
 
                                         if(sdfCompare.format(cal.getTime()).equals(weekDateandTime)) {
                                             forwardButton.setVisibility(View.GONE);
@@ -235,96 +232,24 @@ public class ChartWeekFragment extends Fragment {
                                 }
                             });
                         }
+
                     }
                 });
-
-//        db.collection("childs")
-//                .whereGreaterThanOrEqualTo("users."+user.getUid()+".name", "")
-//                .get()
-//                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-//                    @Override
-//                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-//                        if (task.isSuccessful()) {
-//                            for (QueryDocumentSnapshot document : task.getResult()) {
-//                                cid = document.getId();
-//                            }
-//
-//                            db.collection("behaviors")
-//                                    .whereEqualTo("cid", cid)
-//                                    .get()
-//                                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-//                                        @Override
-//                                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-//                                            if (task.isSuccessful()) {
-//                                                for (QueryDocumentSnapshot document : task.getResult()) {
-//                                                    Behavior item = new Behavior(document.getId(), (Date) document.getDate("start_time"), (Date) document.getDate("end_time"), document.get("place").toString(), document.get("categorization").toString(), document.get("current_behavior").toString(), document.get("before_behavior").toString(), document.get("after_behavior").toString(), (HashMap<String, Object>) document.get("type"), Integer.parseInt(document.get("intensity").toString()), (HashMap<String, Object>) document.get("reason_type"), (HashMap<String, Object>) document.get("reason"), document.get("created_at").toString(),  document.get("updated_at").toString(), document.get("uid").toString(), document.get("name").toString(), document.get("cid").toString(), "");
-//                                                    behaviorData.add(item);
-//                                                }
-//
-//                                                // Setting ViewPager for each Tabs
-//                                                viewPager = (ViewPager) v.findViewById(R.id.chart_week_viewpager);
-//                                                setupViewPager(viewPager);
-//                                                lastPage = adapter.getCount()-1;
-//
-//                                                viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener()
-//                                                {
-//                                                    @Override
-//                                                    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels)
-//                                                    {
-//
-//                                                    }
-//
-//                                                    @Override
-//                                                    public void onPageSelected(int position)
-//                                                    {
-//                                                        if(position < lastPage) {
-//                                                            cal.add(Calendar.DATE, -7);
-//                                                            calSunday.add(Calendar.DATE, -7);
-//                                                            calSaturday.add(Calendar.DATE, -7);
-//                                                            weekDate.setText(weekDateResult(calSunday, calSaturday));
-//
-//                                                            if(sdfCompare.format(cal.getTime()).equals(previousDateandTime)) {
-//                                                                forwardButton.setVisibility(View.VISIBLE);
-//                                                            }
-//                                                        } else if(position > lastPage) {
-//                                                            cal.add(Calendar.DATE, +7);
-//                                                            calSunday.add(Calendar.DATE, +7);
-//                                                            calSaturday.add(Calendar.DATE, +7);
-//                                                            weekDate.setText(weekDateResult(calSunday, calSaturday));
-//
-//                                                            if(sdfCompare.format(cal.getTime()).equals(weekDateandTime)) {
-//                                                                forwardButton.setVisibility(View.GONE);
-//                                                            }
-//                                                        }
-//
-//                                                        lastPage = position;
-//                                                    }
-//
-//                                                    @Override
-//                                                    public void onPageScrollStateChanged(int state) {
-//
-//                                                    }
-//                                                });
-//
-//                                            } else {
-//
-//                                            }
-//                                        }
-//                                    });
-//                        } else {
-////                                Log.d(TAG, "Error getting documents: ", task.getException());
-//                        }
-//                    }
-//                });
-
 
         return v;
     }
 
-    public String weekDateResult(Calendar calSunday, Calendar calSaturday) {
+    public String weekDateResult(Calendar cal, Calendar calSunday, Calendar calSaturday) {
+
         return sdf.format(calSunday.getTime()) + " " + sdfDay.format(calSunday.getTime()) + " - " + sdf.format(calSaturday.getTime()) + " " + sdfDay.format(calSaturday.getTime());
     }
 
+    private void setupViewPager(ViewPager viewPager) {
+        adapter = new ViewPagerAdapter(getFragmentManager());
+        viewPager.setAdapter(adapter);
+        viewPager.setCurrentItem(adapter.getCount()-1);
+
+    }
 
     public class ViewPagerAdapter extends FragmentStatePagerAdapter {
 
@@ -337,7 +262,7 @@ public class ChartWeekFragment extends Fragment {
 
         @Override
         public Fragment getItem(int position) {
-            return TemplateChartWeekFragment.newInstance(position);
+            return TemplateChartWeekFragment.newInstance(position, behaviorData);
         }
 
         @Override

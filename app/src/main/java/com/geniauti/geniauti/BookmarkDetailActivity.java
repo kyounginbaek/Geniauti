@@ -513,7 +513,9 @@ public class BookmarkDetailActivity extends AppCompatActivity {
                                 public Void apply(Transaction transaction) throws FirebaseFirestoreException {
                                     DocumentSnapshot snapshot = transaction.get(sfDocRef);
                                     List<Map<String, Object>> behaviorPresetArray = (List<Map<String, Object>>) snapshot.get("preset.behavior_preset");
-                                    behaviorPresetArray.remove(selectedBookmark.position);
+                                    if(behaviorPresetArray.size()!=0) {
+                                        behaviorPresetArray.remove(selectedBookmark.position);
+                                    }
                                     transaction.update(sfDocRef, "preset.behavior_preset", behaviorPresetArray);
 
                                     // Success
@@ -523,9 +525,19 @@ public class BookmarkDetailActivity extends AppCompatActivity {
                                 @Override
                                 public void onSuccess(Void aVoid) {
 //                        mProgressView.setVisibility(View.GONE);
-                                    ProfileFragment.bookmarkData.remove(selectedBookmark.position);
+                                    if(ProfileFragment.bookmarkData.size()!=0) {
+                                        if(ProfileFragment.bookmarkData.size() >= selectedBookmark.position+1) {
+                                            ProfileFragment.bookmarkData.remove(selectedBookmark.position);
+                                        }
+                                    }
+
                                     ProfileFragment.setListViewHeightBasedOnChildren(ProfileFragment.bookmarkListView);
-                                    MainFragment.bookmarkData.remove(selectedBookmark.position);
+
+                                    if(MainFragment.bookmarkData.size()!=0) {
+                                        if(MainFragment.bookmarkData.size() >= selectedBookmark.position+1) {
+                                            MainFragment.bookmarkData.remove(selectedBookmark.position);
+                                        }
+                                    }
 
                                     ProfileFragment.bookmarkAdapter.notifyDataSetChanged();
                                     MainFragment.bookmarkAdapter.notifyDataSetChanged();

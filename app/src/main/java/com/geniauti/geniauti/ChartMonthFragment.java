@@ -1,5 +1,6 @@
 package com.geniauti.geniauti;
 
+import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -19,7 +20,6 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -53,22 +53,23 @@ public class ChartMonthFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
+    private FirebaseUser user;
+    private FirebaseFirestore db;
+    private String cid;
+
     private View v;
-    public static HashMap<String, Statistics> statisticsHashMap;
+    private ArrayList<BehaviorChart> behaviorData;
 
     private ChartMonthFragment.OnFragmentInteractionListener mListener;
     public static ViewPager viewPager;
     public static ChartMonthFragment.ViewPagerAdapter adapter;
-    public static TextView monthDate;
+    private TextView monthDate;
     private Calendar cal, tmpcal;
-    private SimpleDateFormat sdf, sdfNew;
-    public static ImageView forwardButton;
-    public static ImageView backButton;
+    private SimpleDateFormat sdf;
+    private ImageView forwardButton;
     private String monthDateandTime;
-    private String previousDateandTime;
+    private String yesterdayDateandTime;
     private int lastPage;
-
-    public static View mProgressView;
 
     public ChartMonthFragment() {
         // Required empty public constructor
@@ -107,15 +108,19 @@ public class ChartMonthFragment extends Fragment {
         // Inflate the layout for this fragment
         v = inflater.inflate(R.layout.fragment_chart_month, container, false);
 
-        mProgressView = (View) v.findViewById(R.id.chart_month_progress);
-        mProgressView.bringToFront();
-
         monthDate = v.findViewById(R.id.txt_chart_month);
         sdf = new SimpleDateFormat("yyyy년 MM월", Locale.KOREAN);
-        sdfNew = new SimpleDateFormat("yyyyMM", Locale.KOREAN);
+        cal = Calendar.getInstance();
+        monthDateandTime = sdf.format(cal.getTime());
+        monthDate.setText(monthDateandTime);
 
-        backButton = v.findViewById(R.id.chart_month_back);
+        tmpcal = Calendar.getInstance();
+        tmpcal.add(Calendar.MONTH, -1);
+        yesterdayDateandTime = sdf.format(tmpcal.getTime());
+
+        ImageView backButton = v.findViewById(R.id.chart_month_back);
         forwardButton = v.findViewById(R.id.chart_month_forward);
+        forwardButton.setVisibility(View.GONE);
 
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -133,7 +138,8 @@ public class ChartMonthFragment extends Fragment {
 
         viewPager = (ViewPager) v.findViewById(R.id.chart_month_viewpager);
 
-        MainActivity.db.collection("statistics").document(MainActivity.cid).collection("month")
+        MainActivity.db.collection("behaviors")
+                .whereEqualTo("cid", MainActivity.cid)
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(@Nullable QuerySnapshot value,
@@ -143,30 +149,21 @@ public class ChartMonthFragment extends Fragment {
                             return;
                         }
 
-                        statisticsHashMap = new HashMap<>();
+                        behaviorData = new ArrayList<>();
 
                         for (QueryDocumentSnapshot doc : value) {
-                            Statistics item = new Statistics(doc.getId(), (HashMap<String, Object>) doc.get("behavior_freq"), (HashMap<String, Object>) doc.get("summary"),
-                                    (HashMap<String, Object>) doc.get("type"), (HashMap<String, Object>) doc.get("reason_type"), (HashMap<String, Object>) doc.get("place"));
-                            statisticsHashMap.put(doc.getId(), item);
+                            BehaviorChart item = new BehaviorChart((Date) doc.getDate("start_time"), (Date) doc.getDate("end_time"), doc.get("place").toString(), doc.get("categorization").toString(),
+                                    doc.get("current_behavior").toString(), doc.get("before_behavior").toString(), doc.get("after_behavior").toString(), (HashMap<String, Object>) doc.get("type"),
+                                    Integer.parseInt(doc.get("intensity").toString()), (HashMap<String, Object>) doc.get("reason"), doc.get("created_at").toString(),  doc.get("updated_at").toString(),
+                                    doc.get("uid").toString(), doc.get("name").toString(), doc.get("cid").toString(), "");
+                            behaviorData.add(item);
                         }
 
                         if(getActivity()!=null) {
-                            forwardButton.setVisibility(View.GONE);
-
-                            cal = Calendar.getInstance();
-                            monthDateandTime = sdf.format(cal.getTime());
-                            monthDate.setText(monthDateandTime);
-
-                            tmpcal = Calendar.getInstance();
-                            tmpcal.add(Calendar.MONTH, -1);
-                            previousDateandTime = sdf.format(tmpcal.getTime());
-
-                            adapter = new ChartMonthFragment.ViewPagerAdapter(getFragmentManager());
-                            viewPager.setAdapter(adapter);
+                            // Setting ViewPager for each Tabs
+                            setupViewPager(viewPager);
                             lastPage = adapter.getCount()-1;
-                            viewPager.clearOnPageChangeListeners();
-                            viewPager.setCurrentItem(adapter.getCount()-1);
+
                             viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener()
                             {
                                 @Override
@@ -182,7 +179,7 @@ public class ChartMonthFragment extends Fragment {
                                         cal.add(Calendar.MONTH, -1);
                                         monthDate.setText(sdf.format(cal.getTime()));
 
-                                        if(sdf.format(cal.getTime()).equals(previousDateandTime)) {
+                                        if(sdf.format(cal.getTime()).equals(yesterdayDateandTime)) {
                                             forwardButton.setVisibility(View.VISIBLE);
                                         }
                                     } else if(position > lastPage) {
@@ -203,86 +200,17 @@ public class ChartMonthFragment extends Fragment {
                                 }
                             });
                         }
+
                     }
                 });
 
-//        db.collection("childs")
-//                .whereGreaterThanOrEqualTo("users."+user.getUid()+".name", "")
-//                .get()
-//                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-//                    @Override
-//                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-//                        if (task.isSuccessful()) {
-//                            for (QueryDocumentSnapshot document : task.getResult()) {
-//                                cid = document.getId();
-//                            }
-//
-//                            db.collection("behaviors")
-//                                    .whereEqualTo("cid", cid)
-//                                    .get()
-//                                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-//                                        @Override
-//                                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-//                                            if (task.isSuccessful()) {
-//                                                for (QueryDocumentSnapshot document : task.getResult()) {
-//                                                    Behavior item = new Behavior(document.getId(), (Date) document.getDate("start_time"), (Date) document.getDate("end_time"), document.get("place").toString(), document.get("categorization").toString(), document.get("current_behavior").toString(), document.get("before_behavior").toString(), document.get("after_behavior").toString(), (HashMap<String, Object>) document.get("type"), Integer.parseInt(document.get("intensity").toString()), (HashMap<String, Object>) document.get("reason_type"), (HashMap<String, Object>) document.get("reason"), document.get("created_at").toString(),  document.get("updated_at").toString(), document.get("uid").toString(), document.get("name").toString(), document.get("cid").toString(), "");
-//                                                    behaviorData.add(item);
-//                                                }
-//
-//                                                // Setting ViewPager for each Tabs
-//                                                viewPager = (ViewPager) v.findViewById(R.id.chart_month_viewpager);
-//                                                setupViewPager(viewPager);
-//                                                lastPage = adapter.getCount()-1;
-//
-//                                                viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener()
-//                                                {
-//                                                    @Override
-//                                                    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels)
-//                                                    {
-//
-//                                                    }
-//
-//                                                    @Override
-//                                                    public void onPageSelected(int position)
-//                                                    {
-//                                                        if(position < lastPage) {
-//                                                            cal.add(Calendar.MONTH, -1);
-//                                                            monthDate.setText(sdf.format(cal.getTime()));
-//
-//                                                            if(sdf.format(cal.getTime()).equals(previousDateandTime)) {
-//                                                                forwardButton.setVisibility(View.VISIBLE);
-//                                                            }
-//                                                        } else if(position > lastPage) {
-//                                                            cal.add(Calendar.MONTH, 1);
-//                                                            monthDate.setText(sdf.format(cal.getTime()));
-//
-//                                                            if(sdf.format(cal.getTime()).equals(monthDateandTime)) {
-//                                                                forwardButton.setVisibility(View.GONE);
-//                                                            }
-//                                                        }
-//
-//                                                        lastPage = position;
-//                                                    }
-//
-//                                                    @Override
-//                                                    public void onPageScrollStateChanged(int state) {
-//
-//                                                    }
-//                                                });
-//
-//                                            } else {
-//
-//                                            }
-//                                        }
-//                                    });
-//                        } else {
-////                                Log.d(TAG, "Error getting documents: ", task.getException());
-//                        }
-//                    }
-//                });
-
-
         return v;
+    }
+
+    private void setupViewPager(ViewPager viewPager) {
+        adapter = new ChartMonthFragment.ViewPagerAdapter(getFragmentManager());
+        viewPager.setAdapter(adapter);
+        viewPager.setCurrentItem(adapter.getCount()-1);
     }
 
     public class ViewPagerAdapter extends FragmentStatePagerAdapter {
@@ -296,7 +224,7 @@ public class ChartMonthFragment extends Fragment {
 
         @Override
         public Fragment getItem(int position) {
-            return TemplateChartMonthFragment.newInstance(position);
+            return TemplateChartMonthFragment.newInstance(position, behaviorData);
         }
 
         @Override

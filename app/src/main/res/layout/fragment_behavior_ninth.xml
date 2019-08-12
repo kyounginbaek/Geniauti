@@ -42,6 +42,9 @@
             android:layout_height="wrap_content"
             android:fadeScrollbars="false"
             android:divider="#00000000"
+            android:paddingBottom="44dp"
+            android:clipToPadding="false"
+            android:scrollbarStyle="outsideOverlay"
             />
 
     </LinearLayout>
